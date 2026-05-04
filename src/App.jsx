@@ -264,6 +264,23 @@ function FadeIn({ children, delay = 0, direction = "up", style = {} }) {
   );
 }
 
+// ── Brand Logomark (inline SVG; inherits color via fill prop) ──────
+function Logomark({ size = 32, color = "currentColor", style }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1000 1000"
+      width={size}
+      height={size}
+      role="img"
+      aria-label="The Sixth Element"
+      style={{ display: "block", flexShrink: 0, ...style }}
+    >
+      <path fill={color} d="M500.15,47.9c-249.37,0-452.26,202.88-452.26,452.26s202.88,452.26,452.26,452.26s452.26-202.88,452.26-452.26S749.53,47.9,500.15,47.9z M885.05,483.42H740.98l-224.1-224.1V115.25C716.37,123.79,876.52,283.93,885.05,483.42z M693.66,483.42H516.88V306.64L693.66,483.42z M483.42,115.25v157.49l-0.22,0.22l0.22,0.22v210.24H273.18l-0.22-0.22l-0.22,0.22H115.25C123.79,283.94,283.93,123.79,483.42,115.25z M483.42,693.66L306.64,516.88h176.77V693.66z M114.83,500.09v0.12c0-0.02,0-0.04,0-0.06C114.83,500.13,114.83,500.11,114.83,500.09z M115.25,516.88h144.06l224.1,224.1v144.06C283.93,876.51,123.79,716.37,115.25,516.88z M516.88,885.05V516.88h368.16C876.52,716.37,716.37,876.52,516.88,885.05z" />
+    </svg>
+  );
+}
+
 // ── Main App ───────────────────────────────────────────────────────
 export default function TheSixthElement() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -450,12 +467,15 @@ function Navbar({ theme, isAM, setIsAM, menuOpen, setMenuOpen, navigate, current
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         {/* Logo */}
-        <div onClick={() => navigate("home")} style={{ cursor: "pointer" }}>
-          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 500, color: theme.heading, letterSpacing: "0.05em", lineHeight: 1.1 }}>
-            THE SIXTH
-          </div>
-          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 300, color: theme.heading, letterSpacing: "0.15em" }}>
-            ELEMENT
+        <div onClick={() => navigate("home")} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
+          <Logomark size={scrolled ? 36 : 42} color={theme.accent} />
+          <div>
+            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 500, color: theme.heading, letterSpacing: "0.05em", lineHeight: 1.1 }}>
+              THE SIXTH
+            </div>
+            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 300, color: theme.heading, letterSpacing: "0.15em" }}>
+              ELEMENT
+            </div>
           </div>
         </div>
 
@@ -555,6 +575,11 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, setOrderOpen, flags }
         }} />
 
         <FadeIn>
+          <div style={{ marginBottom: 24, display: "flex", justifyContent: "center" }}>
+            <Logomark size={88} color={theme.accent} />
+          </div>
+        </FadeIn>
+        <FadeIn delay={0.1}>
           <div style={{
             fontSize: 12, letterSpacing: "0.3em", textTransform: "uppercase",
             color: theme.muted, marginBottom: 32, fontWeight: 500,
@@ -562,7 +587,7 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, setOrderOpen, flags }
             Richmond-upon-Thames
           </div>
         </FadeIn>
-        <FadeIn delay={0.15}>
+        <FadeIn delay={0.2}>
           <h1 style={{
             fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(36px, 7vw, 80px)",
             fontWeight: 300, color: theme.heading, lineHeight: 1.1, marginBottom: 24,
@@ -1224,7 +1249,9 @@ function BookingModal({ theme, isAM, onClose, flags }) {
       }}>
         {confirmed ? (
           <div style={{ textAlign: "center", padding: "20px 0" }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>✦</div>
+            <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}>
+              <Logomark size={56} color={theme.accent} />
+            </div>
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400, color: theme.heading, marginBottom: 12 }}>
               Table Reserved
             </h2>
@@ -2566,8 +2593,11 @@ function Footer({ theme, navigate }) {
           gap: 40, marginBottom: 40,
         }}>
           <div>
-            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 500, color: theme.heading, marginBottom: 16 }}>
-              The Sixth Element
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+              <Logomark size={40} color={theme.accent} />
+              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 500, color: theme.heading }}>
+                The Sixth Element
+              </div>
             </div>
             <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, lineHeight: 1.7 }}>
               Specialty coffee by day, natural wine by night. A space designed to transform with you.
