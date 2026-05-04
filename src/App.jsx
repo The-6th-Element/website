@@ -1,0 +1,2627 @@
+import { useState, useEffect, useRef, useCallback } from "react";
+
+// ── Feature Flags (persisted in localStorage) ─────────────────────
+// Toggle these in the authenticated admin panel (?admin=true → login) or set defaults here
+const DEFAULT_FLAGS = {
+  cocktails_live: false,    // false = "Coming Soon" teaser, true = full live menu
+  instagram_feed: true,     // show/hide Instagram grid
+  booking_enabled: true,    // enable/disable reservations
+  brunch_duration: 60,      // minutes
+  evening_duration: 90,     // minutes
+};
+
+function useFeatureFlags() {
+  const [flags, setFlags] = useState(() => {
+    try {
+      const saved = localStorage.getItem("tse_flags");
+      return saved ? { ...DEFAULT_FLAGS, ...JSON.parse(saved) } : DEFAULT_FLAGS;
+    } catch { return DEFAULT_FLAGS; }
+  });
+  const updateFlag = (key, value) => {
+    setFlags(prev => {
+      const next = { ...prev, [key]: value };
+      try { localStorage.setItem("tse_flags", JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+  const resetFlags = () => {
+    try { localStorage.removeItem("tse_flags"); } catch {}
+    setFlags(DEFAULT_FLAGS);
+  };
+  return { flags, updateFlag, resetFlags };
+}
+
+// ── Delivery Platform Config ──────────────────────────────────────
+// Update these URLs once your restaurant is live on each platform.
+// Set url to null to hide a platform, or set status to "coming_soon" to show it greyed out.
+const DELIVERY_PLATFORMS = {
+  deliveroo: {
+    name: "Deliveroo",
+    color: "#00CCBC",
+    // URL pattern: https://deliveroo.co.uk/menu/london/richmond/YOUR-RESTAURANT-SLUG
+    url: null,
+    status: "coming_soon", // "active" | "coming_soon" | "hidden"
+    logo: "🦘",
+    tagline: "Free delivery on first order",
+  },
+  uber_eats: {
+    name: "Uber Eats",
+    color: "#06C167",
+    // URL pattern: https://www.ubereats.com/gb/store/YOUR-RESTAURANT-SLUG/STORE-ID
+    url: null,
+    status: "coming_soon",
+    logo: "🚗",
+    tagline: "Order with Uber One for free delivery",
+  },
+  just_eat: {
+    name: "Just Eat",
+    color: "#FF8000",
+    // URL pattern: https://www.just-eat.co.uk/restaurants-YOUR-RESTAURANT-richmond/menu
+    url: null,
+    status: "coming_soon",
+    logo: "🍽️",
+    tagline: "Collect stamps for free food",
+  },
+};
+
+// ── Theme & Design Tokens ──────────────────────────────────────────
+const COLORS = {
+  earthBrown: "#4B3621",
+  mossGreen: "#606E3D",
+  charcoal: "#2C2C2C",
+  warmAmber: "#BF8A2F",
+  ivory: "#F6F4E3",
+  cream: "#FAF8F0",
+  darkBg: "#1A1410",
+  warmBlack: "#0F0D0A",
+  softWhite: "#FEFDFB",
+  sand: "#D4C5A9",
+  deepMoss: "#3D4A26",
+};
+
+const AM_THEME = {
+  bg: COLORS.cream,
+  text: COLORS.charcoal,
+  heading: COLORS.earthBrown,
+  accent: COLORS.warmAmber,
+  surface: COLORS.ivory,
+  surfaceAlt: "#FFFFFF",
+  muted: "#9A9080",
+  hero: `linear-gradient(135deg, ${COLORS.ivory} 0%, ${COLORS.cream} 50%, #E8E0D0 100%)`,
+  navBg: "rgba(250,248,240,0.92)",
+  label: "Morning Mode",
+  icon: "☀️",
+};
+
+const PM_THEME = {
+  bg: COLORS.warmBlack,
+  text: COLORS.sand,
+  heading: COLORS.ivory,
+  accent: COLORS.warmAmber,
+  surface: "#1E1914",
+  surfaceAlt: "#252017",
+  muted: "#7A7060",
+  hero: `linear-gradient(135deg, #1A1410 0%, #2A1E14 50%, #1E1914 100%)`,
+  navBg: "rgba(15,13,10,0.94)",
+  label: "Evening Mode",
+  icon: "🌙",
+};
+
+// Fonts loaded via index.html (Cormorant Garamond + Outfit)
+
+// ── Menu Data ──────────────────────────────────────────────────────
+const MENU_DATA = {
+  grounded: {
+    title: "Grounded",
+    subtitle: "Honest, simple food rooted in the earth",
+    icon: "🌿",
+    sections: [
+      {
+        name: "Brunch Plates",
+        items: [
+          { name: "The Earth Bowl", desc: "Roasted sweet potato, avocado, poached eggs, dukkah, sourdough", price: "12.50", tags: ["V"] },
+          { name: "Richmond Granola", desc: "House-made granola, seasonal compote, Greek yoghurt, raw honey", price: "8.50", tags: ["V","GF"] },
+          { name: "The Full Element", desc: "Free-range eggs, sourdough, grilled halloumi, roasted tomato, mushrooms, greens", price: "14.00", tags: [] },
+          { name: "Smashed Avocado Toast", desc: "Chilli flakes, lime, heritage tomatoes on rye", price: "10.50", tags: ["VG"] },
+          { name: "Shakshuka", desc: "Spiced tomato, peppers, baked eggs, feta, warm flatbread", price: "11.50", tags: ["V"] },
+        ]
+      },
+      {
+        name: "Small Plates",
+        items: [
+          { name: "Soup of the Day", desc: "Seasonal, served with sourdough", price: "7.00", tags: ["VG"] },
+          { name: "Hummus & Flatbread", desc: "Smoky beetroot hummus, za'atar, olive oil", price: "8.00", tags: ["VG"] },
+          { name: "Halloumi Fries", desc: "With harissa yoghurt and mint", price: "7.50", tags: ["V","GF"] },
+        ]
+      }
+    ]
+  },
+  coffee: {
+    title: "Social Impact Coffee",
+    subtitle: "Every cup tells a story of positive change",
+    icon: "☕",
+    sections: [
+      {
+        name: "Espresso Bar",
+        items: [
+          { name: "Espresso", desc: "Single origin, rotating roast", price: "2.80", tags: [] },
+          { name: "Flat White", desc: "Double shot, silky microfoam", price: "3.80", tags: [] },
+          { name: "Cortado", desc: "Equal parts espresso and steamed milk", price: "3.20", tags: [] },
+          { name: "Long Black", desc: "Double shot over hot water", price: "3.00", tags: [] },
+          { name: "Oat Latte", desc: "Creamy oat milk, double shot", price: "4.20", tags: ["VG"] },
+        ]
+      },
+      {
+        name: "Filter & Brew",
+        items: [
+          { name: "V60 Pour Over", desc: "Hand-brewed single origin", price: "4.50", tags: [] },
+          { name: "Cold Brew", desc: "18-hour steeped, smooth and bold", price: "4.00", tags: [] },
+          { name: "Matcha Latte", desc: "Ceremonial grade, oat milk", price: "4.50", tags: ["VG"] },
+          { name: "Chai Latte", desc: "House-spiced masala blend", price: "4.00", tags: [] },
+        ]
+      }
+    ]
+  },
+  wine: {
+    title: "Flow",
+    subtitle: "Refined wines & craft beers",
+    icon: "🍷",
+    sections: [
+      {
+        name: "Natural Wine",
+        items: [
+          { name: "Skin Contact Orange", desc: "Friuli, Italy — textured, amber, apricot", price: "8.50", tags: [] },
+          { name: "Côtes du Rhône Rouge", desc: "Southern France — dark fruit, herbs, velvety", price: "7.50", tags: [] },
+          { name: "Albariño", desc: "Rías Baixas, Spain — crisp, citrus, mineral", price: "8.00", tags: [] },
+          { name: "Prosecco Superiore", desc: "Valdobbiadene — fine bubbles, apple, pear", price: "7.00", tags: [] },
+        ]
+      },
+      {
+        name: "Craft Beer",
+        items: [
+          { name: "Richmond Pale Ale", desc: "Local brewery, citrus hop, easy-drinking", price: "5.50", tags: [] },
+          { name: "Belgian Wheat", desc: "Coriander and orange peel, hazy gold", price: "6.00", tags: [] },
+          { name: "Oatmeal Stout", desc: "Chocolate, coffee, silky body", price: "6.50", tags: [] },
+        ]
+      }
+    ]
+  },
+  cocktails: {
+    title: "The Curator",
+    subtitle_teaser: "High-end curated cocktails — Coming Soon",
+    subtitle_live: "High-end curated cocktails",
+    icon: "🍸",
+    sections_teaser: [
+      {
+        name: "Phase 2 Preview",
+        items: [
+          { name: "The Fifth Element", desc: "A signature creation — details to be revealed", price: "TBA", tags: ["COMING SOON"] },
+          { name: "Earth Old Fashioned", desc: "Barrel-aged bourbon, demerara, walnut bitters", price: "TBA", tags: ["COMING SOON"] },
+          { name: "Fire Negroni", desc: "Smoked gin, Campari, sweet vermouth", price: "TBA", tags: ["COMING SOON"] },
+        ]
+      }
+    ],
+    sections_live: [
+      {
+        name: "Signature Cocktails",
+        items: [
+          { name: "The Fifth Element", desc: "Aged rum, cardamom, burnt honey, smoke — our signature", price: "14.00", tags: [] },
+          { name: "Earth Old Fashioned", desc: "Barrel-aged bourbon, demerara, walnut bitters", price: "13.00", tags: [] },
+          { name: "Fire Negroni", desc: "Smoked gin, Campari, sweet vermouth, charred orange", price: "13.50", tags: [] },
+          { name: "Air Spritz", desc: "Elderflower, prosecco, soda, fresh mint", price: "11.00", tags: [] },
+          { name: "Water Martini", desc: "Clarified gin, dry vermouth, saline, lemon oil", price: "14.00", tags: [] },
+        ]
+      },
+      {
+        name: "Low & No Alcohol",
+        items: [
+          { name: "Garden Tonic", desc: "Seedlip, cucumber, tonic, rosemary", price: "8.00", tags: ["0% ABV"] },
+          { name: "Smoke & Honey", desc: "Lyre's dark spirit, lemon, smoked honey", price: "8.50", tags: ["0% ABV"] },
+        ]
+      }
+    ]
+  }
+};
+
+// ── Elements Data ──────────────────────────────────────────────────
+const ELEMENTS = [
+  { name: "Earth", symbol: "🜃", color: COLORS.earthBrown, desc: "Our foundation. Honest ingredients, grounded in provenance. Every plate tells a story of soil and season." },
+  { name: "Water", symbol: "🜄", color: "#4A7C8F", desc: "The flow of community. Social impact coffee that connects Richmond to farming communities worldwide." },
+  { name: "Fire", symbol: "🜂", color: COLORS.warmAmber, desc: "Evening warmth. As the sun sets, the space transforms — natural wines, craft beers, and curated cocktails." },
+  { name: "Air", symbol: "🜁", color: "#B8C4A0", desc: "Morning lightness. Bright, breathable mornings filled with specialty coffee and sunlit brunch." },
+  { name: "Space", symbol: "✦", color: COLORS.mossGreen, desc: "The sixth element. The intangible feeling of belonging — the reason you return. This is what we create." },
+];
+
+// ── Intersection Observer Hook ─────────────────────────────────────
+function useInView(options = {}) {
+  const [isInView, setIsInView] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setIsInView(true); obs.unobserve(el); }
+    }, { threshold: 0.15, ...options });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return [ref, isInView];
+}
+
+// ── FadeIn Component ───────────────────────────────────────────────
+function FadeIn({ children, delay = 0, direction = "up", style = {} }) {
+  const [ref, isInView] = useInView();
+  const transforms = { up: "translateY(30px)", down: "translateY(-30px)", left: "translateX(30px)", right: "translateX(-30px)", none: "none" };
+  return (
+    <div ref={ref} style={{
+      opacity: isInView ? 1 : 0,
+      transform: isInView ? "none" : transforms[direction],
+      transition: `opacity 0.7s ease ${delay}s, transform 0.7s ease ${delay}s`,
+      ...style,
+    }}>
+      {children}
+    </div>
+  );
+}
+
+// ── Main App ───────────────────────────────────────────────────────
+export default function TheSixthElement() {
+  const [currentPage, setCurrentPage] = useState("home");
+  const [isAM, setIsAM] = useState(() => {
+    const h = parseInt(new Date().toLocaleString("en-GB", { timeZone: "Europe/London", hour: "numeric", hour12: false }), 10);
+    return h >= 8 && h < 14;
+  });
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [orderOpen, setOrderOpen] = useState(false);
+  const { flags, updateFlag, resetFlags } = useFeatureFlags();
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [adminAuth, setAdminAuth] = useState({ authenticated: false, user: null, token: null, loading: true });
+  const [showLogin, setShowLogin] = useState(false);
+  const [platforms, setPlatforms] = useState(() => {
+    try {
+      const saved = localStorage.getItem("tse_platforms");
+      return saved ? JSON.parse(saved) : DELIVERY_PLATFORMS;
+    } catch { return DELIVERY_PLATFORMS; }
+  });
+  const updatePlatform = (key, field, value) => {
+    setPlatforms(prev => {
+      const next = { ...prev, [key]: { ...prev[key], [field]: value } };
+      try { localStorage.setItem("tse_platforms", JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  // Admin auth: ?admin=true opens login gate, verifies existing session
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("admin") !== "true") {
+      setAdminAuth(a => ({ ...a, loading: false }));
+      return;
+    }
+    const savedToken = sessionStorage.getItem("tse_admin_token");
+    if (savedToken) {
+      fetch("/api/admin-auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "verify", token: savedToken }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.valid) {
+            setAdminAuth({ authenticated: true, user: data.user, token: savedToken, loading: false });
+            setShowAdmin(true);
+          } else {
+            sessionStorage.removeItem("tse_admin_token");
+            setAdminAuth({ authenticated: false, user: null, token: null, loading: false });
+            setShowLogin(true);
+          }
+        })
+        .catch(() => {
+          setAdminAuth(a => ({ ...a, loading: false }));
+          setShowLogin(true);
+        });
+    } else {
+      setAdminAuth(a => ({ ...a, loading: false }));
+      setShowLogin(true);
+    }
+  }, []);
+
+  const handleAdminLogin = async (username, password) => {
+    const resp = await fetch("/api/admin-auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "login", username, password }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || "Login failed");
+    sessionStorage.setItem("tse_admin_token", data.token);
+    setAdminAuth({ authenticated: true, user: username, token: data.token, loading: false });
+    setShowLogin(false);
+    setShowAdmin(true);
+  };
+
+  const handleAdminLogout = () => {
+    sessionStorage.removeItem("tse_admin_token");
+    setAdminAuth({ authenticated: false, user: null, token: null, loading: false });
+    setShowAdmin(false);
+  };
+
+  // Auto-detect AM/PM based on UK time (Europe/London handles BST/GMT automatically)
+  useEffect(() => {
+    const getUKHour = () => {
+      const ukTime = new Date().toLocaleString("en-GB", { timeZone: "Europe/London", hour: "numeric", hour12: false });
+      return parseInt(ukTime, 10);
+    };
+    const checkTime = () => {
+      const h = getUKHour();
+      setIsAM(h >= 8 && h < 14);
+    };
+    checkTime();
+    const interval = setInterval(checkTime, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const theme = isAM ? AM_THEME : PM_THEME;
+
+  const navigate = useCallback((page) => {
+    setCurrentPage(page);
+    setMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  return (
+    <div style={{
+      fontFamily: "'Outfit', sans-serif",
+      background: theme.bg,
+      color: theme.text,
+      minHeight: "100vh",
+      transition: "background 1.2s ease, color 1.2s ease",
+      position: "relative",
+      overflow: "hidden",
+    }}>
+      {/* Global Styles */}
+      <style>{`
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        ::selection { background: ${COLORS.warmAmber}40; color: ${COLORS.earthBrown}; }
+        html { scroll-behavior: smooth; }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+        @keyframes slideDown { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
+        .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .hover-lift:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        .menu-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; margin-left: 6px; }
+        input:focus, textarea:focus, select:focus { outline: 2px solid ${COLORS.warmAmber}; outline-offset: 2px; }
+        @media (max-width: 768px) {
+          .desktop-nav { display: none !important; }
+          .mobile-trigger { display: flex !important; }
+        }
+        @media (min-width: 769px) {
+          .mobile-trigger { display: none !important; }
+          .desktop-nav { display: flex !important; }
+        }
+      `}</style>
+
+      <Navbar theme={theme} isAM={isAM} setIsAM={setIsAM} menuOpen={menuOpen} setMenuOpen={setMenuOpen} navigate={navigate} currentPage={currentPage} />
+
+      {currentPage === "home" && <HomePage theme={theme} isAM={isAM} navigate={navigate} setBookingOpen={setBookingOpen} setOrderOpen={setOrderOpen} flags={flags} />}
+      {currentPage === "menu" && <MenuPage theme={theme} isAM={isAM} flags={flags} />}
+      {currentPage === "impact" && <SocialImpactPage theme={theme} />}
+      {currentPage === "about" && <AboutPage theme={theme} />}
+      {currentPage === "contact" && <ContactPage theme={theme} />}
+
+      <PersistentCTA theme={theme} setBookingOpen={setBookingOpen} setOrderOpen={setOrderOpen} />
+      {bookingOpen && <BookingModal theme={theme} isAM={isAM} onClose={() => setBookingOpen(false)} flags={flags} />}
+      {orderOpen && <OrderModal theme={theme} platforms={platforms} onClose={() => setOrderOpen(false)} />}
+      {showLogin && <AdminLogin theme={theme} onLogin={handleAdminLogin} onClose={() => setShowLogin(false)} />}
+      {showAdmin && adminAuth.authenticated && <AdminPanel theme={theme} flags={flags} updateFlag={updateFlag} resetFlags={resetFlags} platforms={platforms} updatePlatform={updatePlatform} adminUser={adminAuth.user} onLogout={handleAdminLogout} onClose={() => setShowAdmin(false)} />}
+      <StructuredData />
+      <Footer theme={theme} navigate={navigate} />
+    </div>
+  );
+}
+
+// ── Navbar ─────────────────────────────────────────────────────────
+function Navbar({ theme, isAM, setIsAM, menuOpen, setMenuOpen, navigate, currentPage }) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
+
+  const links = [
+    { id: "home", label: "Home" },
+    { id: "menu", label: "Menu" },
+    { id: "impact", label: "Social Impact" },
+    { id: "about", label: "Our Story" },
+    { id: "contact", label: "Contact" },
+  ];
+
+  return (
+    <nav style={{
+      position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000,
+      background: scrolled ? theme.navBg : "transparent",
+      backdropFilter: scrolled ? "blur(20px)" : "none",
+      borderBottom: scrolled ? `1px solid ${theme.muted}20` : "none",
+      transition: "all 0.4s ease",
+      padding: scrolled ? "12px 0" : "20px 0",
+    }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        {/* Logo */}
+        <div onClick={() => navigate("home")} style={{ cursor: "pointer" }}>
+          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 500, color: theme.heading, letterSpacing: "0.05em", lineHeight: 1.1 }}>
+            THE SIXTH
+          </div>
+          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 300, color: theme.heading, letterSpacing: "0.15em" }}>
+            ELEMENT
+          </div>
+        </div>
+
+        {/* Desktop Nav */}
+        <div className="desktop-nav" style={{ display: "flex", alignItems: "center", gap: 32 }}>
+          {links.map(l => (
+            <button key={l.id} onClick={() => navigate(l.id)} style={{
+              background: "none", border: "none", cursor: "pointer",
+              fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: "0.08em",
+              color: currentPage === l.id ? theme.accent : theme.text,
+              textTransform: "uppercase", padding: "4px 0",
+              borderBottom: currentPage === l.id ? `2px solid ${theme.accent}` : "2px solid transparent",
+              transition: "all 0.3s ease",
+            }}>
+              {l.label}
+            </button>
+          ))}
+          {/* AM/PM Toggle */}
+          <button onClick={() => setIsAM(!isAM)} style={{
+            background: `${theme.accent}18`, border: `1px solid ${theme.accent}40`,
+            borderRadius: 20, padding: "6px 14px", cursor: "pointer",
+            fontSize: 12, color: theme.accent, fontFamily: "'Outfit', sans-serif",
+            fontWeight: 500, letterSpacing: "0.05em",
+            display: "flex", alignItems: "center", gap: 6,
+          }}>
+            {isAM ? "☀️" : "🌙"} {isAM ? "AM" : "PM"}
+          </button>
+        </div>
+
+        {/* Mobile Hamburger */}
+        <button className="mobile-trigger" onClick={() => setMenuOpen(!menuOpen)} style={{
+          display: "none", background: "none", border: "none", cursor: "pointer",
+          flexDirection: "column", gap: 5, padding: 8,
+        }}>
+          {[0,1,2].map(i => (
+            <div key={i} style={{
+              width: 24, height: 2, background: theme.text, borderRadius: 2,
+              transition: "all 0.3s ease",
+              transform: menuOpen ? (i === 0 ? "rotate(45deg) translateY(7px)" : i === 2 ? "rotate(-45deg) translateY(-7px)" : "scaleX(0)") : "none",
+            }} />
+          ))}
+        </button>
+      </div>
+
+      {/* Mobile Dropdown */}
+      {menuOpen && (
+        <div style={{
+          position: "absolute", top: "100%", left: 0, right: 0,
+          background: theme.navBg, backdropFilter: "blur(20px)",
+          borderBottom: `1px solid ${theme.muted}20`, padding: "16px 24px",
+          animation: "slideDown 0.3s ease",
+        }}>
+          {links.map((l, i) => (
+            <button key={l.id} onClick={() => navigate(l.id)} style={{
+              display: "block", width: "100%", textAlign: "left",
+              background: "none", border: "none", cursor: "pointer",
+              fontFamily: "'Outfit', sans-serif", fontSize: 15, padding: "12px 0",
+              color: currentPage === l.id ? theme.accent : theme.text,
+              borderBottom: i < links.length - 1 ? `1px solid ${theme.muted}15` : "none",
+              letterSpacing: "0.05em",
+            }}>
+              {l.label}
+            </button>
+          ))}
+          <button onClick={() => setIsAM(!isAM)} style={{
+            marginTop: 12, background: `${theme.accent}18`, border: `1px solid ${theme.accent}40`,
+            borderRadius: 20, padding: "8px 16px", cursor: "pointer",
+            fontSize: 13, color: theme.accent, fontFamily: "'Outfit', sans-serif",
+          }}>
+            Switch to {isAM ? "PM 🌙" : "AM ☀️"} mode
+          </button>
+        </div>
+      )}
+    </nav>
+  );
+}
+
+// ── Homepage ───────────────────────────────────────────────────────
+function HomePage({ theme, isAM, navigate, setBookingOpen, setOrderOpen, flags }) {
+  return (
+    <div>
+      {/* Hero */}
+      <section style={{
+        minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+        background: theme.hero, position: "relative", textAlign: "center", padding: "120px 24px 80px",
+      }}>
+        {/* Decorative circles */}
+        <div style={{
+          position: "absolute", top: "15%", right: "10%", width: 300, height: 300,
+          borderRadius: "50%", border: `1px solid ${theme.accent}15`,
+          animation: "float 8s ease-in-out infinite",
+        }} />
+        <div style={{
+          position: "absolute", bottom: "20%", left: "5%", width: 200, height: 200,
+          borderRadius: "50%", background: `${theme.accent}08`,
+          animation: "float 6s ease-in-out infinite 1s",
+        }} />
+
+        <FadeIn>
+          <div style={{
+            fontSize: 12, letterSpacing: "0.3em", textTransform: "uppercase",
+            color: theme.muted, marginBottom: 32, fontWeight: 500,
+          }}>
+            Richmond-upon-Thames
+          </div>
+        </FadeIn>
+        <FadeIn delay={0.15}>
+          <h1 style={{
+            fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(36px, 7vw, 80px)",
+            fontWeight: 300, color: theme.heading, lineHeight: 1.1, marginBottom: 24,
+            maxWidth: 700,
+          }}>
+            The Five Elements Shape Life.
+          </h1>
+        </FadeIn>
+        <FadeIn delay={0.3}>
+          <h2 style={{
+            fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 5vw, 56px)",
+            fontWeight: 500, fontStyle: "italic", color: theme.accent, marginBottom: 40,
+          }}>
+            We Offer the Sixth.
+          </h2>
+        </FadeIn>
+        <FadeIn delay={0.45}>
+          <p style={{
+            fontSize: 16, lineHeight: 1.7, color: theme.muted,
+            maxWidth: 500, marginBottom: 48, fontWeight: 300,
+          }}>
+            A space where morning light meets evening warmth. Specialty coffee by day,
+            natural wine by night. Always intentional. Always Richmond.
+          </p>
+        </FadeIn>
+        <FadeIn delay={0.6}>
+          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
+            <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={theme} />
+            <CTAButton label="Order Now" onClick={() => setOrderOpen(true)} theme={theme} />
+          </div>
+        </FadeIn>
+
+        {/* Scroll indicator */}
+        <div style={{
+          position: "absolute", bottom: 40, left: "50%", transform: "translateX(-50%)",
+          animation: "float 2s ease-in-out infinite",
+        }}>
+          <div style={{ width: 1, height: 40, background: `linear-gradient(to bottom, ${theme.muted}, transparent)` }} />
+        </div>
+      </section>
+
+      {/* Elemental Story Scroller */}
+      <section style={{ padding: "100px 24px", background: theme.surface, transition: "background 1.2s ease" }}>
+        <FadeIn>
+          <div style={{ textAlign: "center", marginBottom: 60 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: theme.muted, marginBottom: 12 }}>
+              Our Foundation
+            </div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 400, color: theme.heading }}>
+              Five Elements, One Space
+            </h2>
+          </div>
+        </FadeIn>
+        <div style={{
+          display: "flex", overflowX: "auto", gap: 24, padding: "0 0 20px",
+          maxWidth: 1200, margin: "0 auto",
+          scrollSnapType: "x mandatory",
+          WebkitOverflowScrolling: "touch",
+        }}>
+          {ELEMENTS.map((el, i) => (
+            <FadeIn key={el.name} delay={i * 0.1}>
+              <div className="hover-lift" style={{
+                minWidth: 260, maxWidth: 280, padding: 32,
+                background: theme.surfaceAlt, borderRadius: 16,
+                border: `1px solid ${theme.muted}15`,
+                scrollSnapAlign: "start", cursor: "default",
+                transition: "all 0.3s ease",
+              }}>
+                <div style={{ fontSize: 36, marginBottom: 16, color: el.color }}>{el.symbol}</div>
+                <h3 style={{
+                  fontFamily: "'Cormorant Garamond', serif", fontSize: 24,
+                  fontWeight: 500, color: theme.heading, marginBottom: 12,
+                }}>
+                  {el.name}
+                </h3>
+                <p style={{ fontSize: 14, lineHeight: 1.7, color: theme.muted, fontWeight: 300 }}>
+                  {el.desc}
+                </p>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+      </section>
+
+      {/* Phase Showcase */}
+      <section style={{ padding: "100px 24px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <FadeIn>
+            <div style={{ textAlign: "center", marginBottom: 60 }}>
+              <div style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: theme.muted, marginBottom: 12 }}>
+                Dynamic Experience
+              </div>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 400, color: theme.heading }}>
+                Two Moods, One Space
+              </h2>
+            </div>
+          </FadeIn>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 32 }}>
+            <FadeIn delay={0.1}>
+              <div className="hover-lift" style={{
+                borderRadius: 20, overflow: "hidden",
+                background: `linear-gradient(135deg, ${COLORS.ivory}, ${COLORS.cream})`,
+                border: `1px solid ${COLORS.sand}40`,
+              }}>
+                <div style={{ padding: "40px 32px" }}>
+                  <div style={{ fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: COLORS.mossGreen, marginBottom: 8, fontWeight: 600 }}>
+                    ☀️ AM Phase · 8am – 2pm
+                  </div>
+                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400, color: COLORS.earthBrown, marginBottom: 12 }}>
+                    Air
+                  </h3>
+                  <p style={{ fontSize: 14, lineHeight: 1.7, color: COLORS.charcoal, fontWeight: 300 }}>
+                    Bright, breathable mornings. Sunlit interiors, specialty coffee, and honest brunch plates. 
+                    The space feels open, airy, and full of possibility.
+                  </p>
+                  <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
+                    {["Coffee", "Brunch", "Light"].map(t => (
+                      <span key={t} style={{
+                        padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 500,
+                        background: `${COLORS.mossGreen}15`, color: COLORS.mossGreen,
+                      }}>{t}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
+            <FadeIn delay={0.25}>
+              <div className="hover-lift" style={{
+                borderRadius: 20, overflow: "hidden",
+                background: `linear-gradient(135deg, #1A1410, #2A1E14)`,
+                border: `1px solid ${COLORS.warmAmber}20`,
+              }}>
+                <div style={{ padding: "40px 32px" }}>
+                  <div style={{ fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: COLORS.warmAmber, marginBottom: 8, fontWeight: 600 }}>
+                    🌙 PM Phase · 2pm – Close
+                  </div>
+                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400, color: COLORS.ivory, marginBottom: 12 }}>
+                    Fire
+                  </h3>
+                  <p style={{ fontSize: 14, lineHeight: 1.7, color: COLORS.sand, fontWeight: 300 }}>
+                    Warmer tones, lower light. The space transforms for natural wine, craft beers,
+                    and soon, curated cocktails. An intimate evening atmosphere.
+                  </p>
+                  <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
+                    {["Wine", "Beer", "Cocktails"].map(t => (
+                      <span key={t} style={{
+                        padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 500,
+                        background: `${COLORS.warmAmber}20`, color: COLORS.warmAmber,
+                      }}>{t}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+        </div>
+      </section>
+
+      {/* Instagram Feed — controlled by flags.instagram_feed */}
+      {flags.instagram_feed && <InstagramSection theme={theme} />}
+
+      {/* CTA Section */}
+      <section style={{
+        padding: "100px 24px", textAlign: "center",
+        background: `linear-gradient(135deg, ${COLORS.earthBrown}, ${COLORS.warmBlack})`,
+      }}>
+        <FadeIn>
+          <h2 style={{
+            fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 5vw, 48px)",
+            fontWeight: 300, color: COLORS.ivory, marginBottom: 16,
+          }}>
+            Find Your Element
+          </h2>
+          <p style={{ fontSize: 16, color: COLORS.sand, marginBottom: 40, fontWeight: 300 }}>
+            Whether it's morning light or evening warmth — your table awaits.
+          </p>
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+            <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={{ ...theme, text: COLORS.ivory }} />
+            <CTAButton label="View Menu" onClick={() => navigate("menu")} theme={{ ...theme, text: COLORS.ivory, accent: COLORS.ivory }} />
+          </div>
+        </FadeIn>
+      </section>
+    </div>
+  );
+}
+
+// ── Menu Page ──────────────────────────────────────────────────────
+function MenuPage({ theme, isAM, flags }) {
+  const tabs = [
+    { id: "grounded", label: "Grounded", icon: "🌿" },
+    { id: "coffee", label: "Coffee", icon: "☕" },
+    { id: "wine", label: "Wine & Beer", icon: "🍷" },
+    { id: "cocktails", label: flags.cocktails_live ? "Cocktails" : "Cocktails ✦", icon: "🍸" },
+  ];
+  const [activeTab, setActiveTab] = useState(isAM ? "grounded" : "wine");
+  const rawData = MENU_DATA[activeTab];
+
+  // Resolve cocktail teaser/live based on feature flag
+  const data = activeTab === "cocktails" ? {
+    ...rawData,
+    subtitle: flags.cocktails_live ? rawData.subtitle_live : rawData.subtitle_teaser,
+    sections: flags.cocktails_live ? rawData.sections_live : rawData.sections_teaser,
+  } : rawData;
+
+  return (
+    <div style={{ paddingTop: 120, minHeight: "100vh" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
+        <FadeIn>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: theme.muted, marginBottom: 12 }}>
+              The Menu
+            </div>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(32px, 5vw, 52px)", fontWeight: 400, color: theme.heading }}>
+              Nourish & Flow
+            </h1>
+          </div>
+        </FadeIn>
+
+        {/* Tabs */}
+        <FadeIn delay={0.1}>
+          <div style={{
+            display: "flex", gap: 8, justifyContent: "center", marginBottom: 48,
+            flexWrap: "wrap",
+          }}>
+            {tabs.map(tab => (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
+                padding: "10px 20px", borderRadius: 30, border: "none", cursor: "pointer",
+                fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 500,
+                letterSpacing: "0.04em",
+                background: activeTab === tab.id ? theme.accent : `${theme.muted}15`,
+                color: activeTab === tab.id ? "#fff" : theme.text,
+                transition: "all 0.3s ease",
+              }}>
+                {tab.icon} {tab.label}
+              </button>
+            ))}
+          </div>
+        </FadeIn>
+
+        {/* Menu Content */}
+        <div key={activeTab}>
+          <FadeIn>
+            <div style={{ textAlign: "center", marginBottom: 40 }}>
+              <div style={{ fontSize: 32 }}>{data.icon}</div>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 32, fontWeight: 400, color: theme.heading, marginTop: 8 }}>
+                {data.title}
+              </h2>
+              <p style={{ fontSize: 14, color: theme.muted, fontWeight: 300, marginTop: 8 }}>{data.subtitle}</p>
+            </div>
+          </FadeIn>
+
+          {data.sections.map((section, si) => (
+            <FadeIn key={section.name} delay={si * 0.1}>
+              <div style={{ marginBottom: 48 }}>
+                <h3 style={{
+                  fontSize: 12, letterSpacing: "0.2em", textTransform: "uppercase",
+                  color: theme.accent, marginBottom: 20, fontWeight: 600,
+                  paddingBottom: 8, borderBottom: `1px solid ${theme.muted}20`,
+                }}>
+                  {section.name}
+                </h3>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  {section.items.map((item, ii) => (
+                    <FadeIn key={item.name} delay={ii * 0.05}>
+                      <div style={{
+                        display: "flex", justifyContent: "space-between", alignItems: "flex-start",
+                        padding: "16px 0",
+                        borderBottom: ii < section.items.length - 1 ? `1px solid ${theme.muted}10` : "none",
+                      }}>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+                            <span style={{ fontSize: 16, fontWeight: 500, color: theme.heading }}>{item.name}</span>
+                            {item.tags.map(t => (
+                              <span key={t} className="menu-tag" style={{
+                                background: t === "COMING SOON" ? `${theme.accent}20` : `${COLORS.mossGreen}15`,
+                                color: t === "COMING SOON" ? theme.accent : COLORS.mossGreen,
+                              }}>
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                          <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginTop: 4, lineHeight: 1.5 }}>{item.desc}</p>
+                        </div>
+                        <div style={{
+                          fontSize: 16, fontWeight: 500, color: theme.accent,
+                          marginLeft: 20, whiteSpace: "nowrap",
+                          fontFamily: "'Cormorant Garamond', serif",
+                        }}>
+                          {item.price === "TBA" ? "TBA" : `£${item.price}`}
+                        </div>
+                      </div>
+                    </FadeIn>
+                  ))}
+                </div>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+
+        <FadeIn>
+          <div style={{
+            textAlign: "center", padding: "40px 0 80px",
+            fontSize: 13, color: theme.muted, fontWeight: 300, lineHeight: 1.7,
+          }}>
+            <p>V = Vegetarian · VG = Vegan · GF = Gluten Free</p>
+            <p style={{ marginTop: 8 }}>Please inform us of any allergies. All prices include VAT.</p>
+          </div>
+        </FadeIn>
+      </div>
+    </div>
+  );
+}
+
+// ── Social Impact Page ─────────────────────────────────────────────
+function SocialImpactPage({ theme }) {
+  const impacts = [
+    { icon: "🌱", title: "Direct Trade", desc: "We source directly from farming cooperatives, ensuring fair prices that sustain communities and promote regenerative agriculture." },
+    { icon: "📚", title: "Education Fund", desc: "A portion of every cup funds educational programs in coffee-growing regions, supporting the next generation of farmers." },
+    { icon: "🌍", title: "Carbon Conscious", desc: "We offset the carbon footprint of every shipment and prioritise sail freight and overland transport wherever possible." },
+    { icon: "🤝", title: "Community First", desc: "Richmond-based partnerships with local charities, shelters, and food banks. Our surplus never goes to waste." },
+  ];
+
+  return (
+    <div style={{ paddingTop: 120, minHeight: "100vh" }}>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px" }}>
+        <FadeIn>
+          <div style={{ textAlign: "center", marginBottom: 60 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: theme.muted, marginBottom: 12 }}>
+              Our Collaboration
+            </div>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(32px, 5vw, 52px)", fontWeight: 400, color: theme.heading, marginBottom: 16 }}>
+              Social Impact Coffee
+            </h1>
+            <p style={{ fontSize: 16, lineHeight: 1.7, color: theme.muted, fontWeight: 300, maxWidth: 600, margin: "0 auto" }}>
+              Every cup you drink at The Sixth Element is part of a larger story —
+              one of fairness, sustainability, and genuine human connection.
+            </p>
+          </div>
+        </FadeIn>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, marginBottom: 60 }}>
+          {impacts.map((item, i) => (
+            <FadeIn key={item.title} delay={i * 0.1}>
+              <div className="hover-lift" style={{
+                padding: 32, borderRadius: 16, background: theme.surfaceAlt,
+                border: `1px solid ${theme.muted}15`, transition: "all 0.3s ease",
+              }}>
+                <div style={{ fontSize: 32, marginBottom: 16 }}>{item.icon}</div>
+                <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 500, color: theme.heading, marginBottom: 8 }}>
+                  {item.title}
+                </h3>
+                <p style={{ fontSize: 14, lineHeight: 1.7, color: theme.muted, fontWeight: 300 }}>
+                  {item.desc}
+                </p>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+
+        <FadeIn>
+          <div style={{
+            padding: 40, borderRadius: 20,
+            background: `linear-gradient(135deg, ${COLORS.mossGreen}, ${COLORS.deepMoss})`,
+            textAlign: "center", marginBottom: 80,
+          }}>
+            <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400, color: COLORS.ivory, marginBottom: 12 }}>
+              View Our Shared Mission
+            </h3>
+            <p style={{ fontSize: 14, color: "#B8C4A0", fontWeight: 300, marginBottom: 24 }}>
+              Learn more about our sourcing partners, impact reports, and how every cup contributes.
+            </p>
+            <button style={{
+              padding: "12px 32px", borderRadius: 30, border: `2px solid ${COLORS.ivory}`,
+              background: "transparent", color: COLORS.ivory, cursor: "pointer",
+              fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 500, letterSpacing: "0.05em",
+              transition: "all 0.3s ease",
+            }}
+              onMouseEnter={e => { e.target.style.background = COLORS.ivory; e.target.style.color = COLORS.deepMoss; }}
+              onMouseLeave={e => { e.target.style.background = "transparent"; e.target.style.color = COLORS.ivory; }}
+            >
+              Download Impact Report
+            </button>
+          </div>
+        </FadeIn>
+      </div>
+    </div>
+  );
+}
+
+// ── About Page ─────────────────────────────────────────────────────
+function AboutPage({ theme }) {
+  return (
+    <div style={{ paddingTop: 120, minHeight: "100vh" }}>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px 80px" }}>
+        <FadeIn>
+          <div style={{ textAlign: "center", marginBottom: 60 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: theme.muted, marginBottom: 12 }}>
+              Our Story
+            </div>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(32px, 5vw, 52px)", fontWeight: 400, color: theme.heading }}>
+              The Space Between
+            </h1>
+          </div>
+        </FadeIn>
+
+        <FadeIn delay={0.1}>
+          <div style={{
+            fontFamily: "'Cormorant Garamond', serif", fontSize: 22, lineHeight: 1.8,
+            color: theme.heading, fontWeight: 300, marginBottom: 40,
+            textAlign: "center", fontStyle: "italic",
+          }}>
+            "In ancient philosophy, five elements compose all of existence — 
+            Earth, Water, Fire, Air, and Space. We believe there is a sixth: 
+            the feeling of belonging."
+          </div>
+        </FadeIn>
+
+        <FadeIn delay={0.2}>
+          <div style={{ fontSize: 15, lineHeight: 1.9, color: theme.muted, fontWeight: 300 }}>
+            <p style={{ marginBottom: 20 }}>
+              The Sixth Element was born from a simple observation: Richmond-upon-Thames 
+              has extraordinary places to eat and drink, but few that truly transform 
+              with the rhythms of the day.
+            </p>
+            <p style={{ marginBottom: 20 }}>
+              We designed a space that breathes — bright and airy for morning coffee and 
+              brunch, warm and intimate for evening wine and conversation. Not two venues 
+              in one, but a single space that flows naturally from dawn to dusk.
+            </p>
+            <p style={{ marginBottom: 20 }}>
+              Our coffee is sourced through direct-trade partnerships with farming 
+              communities, because every element of what we do must carry intention. 
+              Our food is simple, honest, and grounded in seasonal ingredients. Our 
+              wine list celebrates natural and biodynamic producers.
+            </p>
+            <p>
+              But the sixth element — the one that brings people back — isn't on any 
+              menu. It's the feeling you get when you walk through the door. That's 
+              the space we're building.
+            </p>
+          </div>
+        </FadeIn>
+
+        {/* Values */}
+        <FadeIn delay={0.3}>
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: 24, marginTop: 60,
+          }}>
+            {[
+              { label: "Intentional", value: "Every detail considered" },
+              { label: "Seasonal", value: "Menus that follow nature" },
+              { label: "Community", value: "Richmond at our heart" },
+              { label: "Sustainable", value: "From farm to cup to plate" },
+            ].map((v, i) => (
+              <div key={v.label} style={{
+                textAlign: "center", padding: 24,
+                borderTop: `2px solid ${theme.accent}`,
+              }}>
+                <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 500, color: theme.heading, marginBottom: 4 }}>
+                  {v.label}
+                </div>
+                <div style={{ fontSize: 13, color: theme.muted, fontWeight: 300 }}>{v.value}</div>
+              </div>
+            ))}
+          </div>
+        </FadeIn>
+      </div>
+    </div>
+  );
+}
+
+// ── Contact Page ───────────────────────────────────────────────────
+function ContactPage({ theme }) {
+  const [formState, setFormState] = useState({ name: "", email: "", message: "" });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = () => {
+    if (formState.name && formState.email && formState.message) {
+      setSubmitted(true);
+      setTimeout(() => { setSubmitted(false); setFormState({ name: "", email: "", message: "" }); }, 3000);
+    }
+  };
+
+  const inputStyle = {
+    width: "100%", padding: "14px 16px", borderRadius: 10,
+    border: `1px solid ${theme.muted}30`, background: theme.surfaceAlt,
+    color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 14,
+    transition: "border-color 0.3s ease",
+  };
+
+  return (
+    <div style={{ paddingTop: 120, minHeight: "100vh" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px 80px" }}>
+        <FadeIn>
+          <div style={{ textAlign: "center", marginBottom: 60 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: theme.muted, marginBottom: 12 }}>
+              Get in Touch
+            </div>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(32px, 5vw, 52px)", fontWeight: 400, color: theme.heading }}>
+              Find Us
+            </h1>
+          </div>
+        </FadeIn>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48 }}>
+          {/* Info */}
+          <FadeIn delay={0.1}>
+            <div>
+              <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 24, fontWeight: 500, color: theme.heading, marginBottom: 24 }}>
+                Visit The Sixth Element
+              </h3>
+              {[
+                { icon: "📍", label: "Address", value: "Richmond-upon-Thames\nLondon, TW9" },
+                { icon: "🕐", label: "Hours", value: "Mon–Fri: 8am – 10pm\nSat–Sun: 9am – 11pm" },
+                { icon: "📞", label: "Phone", value: "+44 (0) 20 XXXX XXXX" },
+                { icon: "📧", label: "Email", value: "hello@thesixthelement.co.uk" },
+              ].map(item => (
+                <div key={item.label} style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+                  <div style={{ fontSize: 20, marginTop: 2 }}>{item.icon}</div>
+                  <div>
+                    <div style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", color: theme.muted, fontWeight: 600, marginBottom: 4 }}>
+                      {item.label}
+                    </div>
+                    <div style={{ fontSize: 14, color: theme.text, fontWeight: 300, whiteSpace: "pre-line", lineHeight: 1.6 }}>
+                      {item.value}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Map Placeholder */}
+              <div style={{
+                width: "100%", height: 200, borderRadius: 16,
+                background: `${theme.muted}15`, marginTop: 24,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                border: `1px solid ${theme.muted}20`,
+              }}>
+                <div style={{ textAlign: "center", color: theme.muted }}>
+                  <div style={{ fontSize: 32, marginBottom: 8 }}>🗺️</div>
+                  <div style={{ fontSize: 13, fontWeight: 300 }}>Interactive map</div>
+                  <div style={{ fontSize: 11, marginTop: 4 }}>Google Maps embed area</div>
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+
+          {/* Contact Form */}
+          <FadeIn delay={0.2}>
+            <div>
+              <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 24, fontWeight: 500, color: theme.heading, marginBottom: 24 }}>
+                Send a Message
+              </h3>
+              {submitted ? (
+                <div style={{
+                  padding: 40, borderRadius: 16, background: `${COLORS.mossGreen}15`,
+                  textAlign: "center", border: `1px solid ${COLORS.mossGreen}30`,
+                }}>
+                  <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
+                  <div style={{ fontSize: 16, color: COLORS.mossGreen, fontWeight: 500 }}>Message sent!</div>
+                  <div style={{ fontSize: 13, color: theme.muted, marginTop: 4 }}>We'll get back to you soon.</div>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  <input
+                    type="text" placeholder="Your Name" value={formState.name}
+                    onChange={e => setFormState(p => ({ ...p, name: e.target.value }))}
+                    style={inputStyle}
+                  />
+                  <input
+                    type="email" placeholder="Your Email" value={formState.email}
+                    onChange={e => setFormState(p => ({ ...p, email: e.target.value }))}
+                    style={inputStyle}
+                  />
+                  <textarea
+                    placeholder="Your Message" value={formState.message}
+                    onChange={e => setFormState(p => ({ ...p, message: e.target.value }))}
+                    rows={5} style={{ ...inputStyle, resize: "vertical" }}
+                  />
+                  <button onClick={handleSubmit} style={{
+                    padding: "14px 32px", borderRadius: 30, border: "none",
+                    background: theme.accent, color: "#fff", cursor: "pointer",
+                    fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500,
+                    letterSpacing: "0.05em", transition: "all 0.3s ease",
+                  }}
+                    onMouseEnter={e => e.target.style.transform = "translateY(-2px)"}
+                    onMouseLeave={e => e.target.style.transform = "none"}
+                  >
+                    Send Message
+                  </button>
+                </div>
+              )}
+            </div>
+          </FadeIn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Booking Modal ──────────────────────────────────────────────────
+function BookingModal({ theme, isAM, onClose, flags }) {
+  const [step, setStep] = useState(1);
+  const [booking, setBooking] = useState({
+    date: "", time: "", guests: "2", name: "", email: "", phone: "", notes: "",
+    seating: isAM ? "brunch" : "evening",
+  });
+  const [confirmed, setConfirmed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [bookingRef, setBookingRef] = useState("");
+
+  const seatingOptions = [
+    { id: "brunch", label: "Brunch", duration: `${flags.brunch_duration} min`, available: "8am – 2pm" },
+    { id: "evening", label: "Evening", duration: `${flags.evening_duration} min`, available: "2pm – 10pm" },
+  ];
+
+  const handleConfirm = async () => {
+    setSubmitting(true);
+    setError("");
+    try {
+      const resp = await fetch("/api/book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(booking),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || "Booking failed");
+      setBookingRef(data.bookingRef || "");
+      setConfirmed(true);
+    } catch (err) {
+      setError(err.message || "Something went wrong. Please call us directly.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const inputStyle = {
+    width: "100%", padding: "12px 14px", borderRadius: 8,
+    border: `1px solid ${theme.muted}30`, background: theme.surfaceAlt,
+    color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 14,
+  };
+  const labelStyle = {
+    fontSize: 12, fontWeight: 600, letterSpacing: "0.08em",
+    textTransform: "uppercase", color: theme.muted, marginBottom: 6, display: "block",
+  };
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 2000,
+      background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      padding: 24, animation: "slideDown 0.3s ease",
+    }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{
+        width: "100%", maxWidth: 500, maxHeight: "85vh", overflowY: "auto",
+        background: theme.bg, borderRadius: 20, padding: 32,
+        border: `1px solid ${theme.muted}20`,
+      }}>
+        {confirmed ? (
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>✦</div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400, color: theme.heading, marginBottom: 12 }}>
+              Table Reserved
+            </h2>
+            <p style={{ fontSize: 14, color: theme.muted, fontWeight: 300, lineHeight: 1.6, marginBottom: 8 }}>
+              {booking.seating === "brunch" ? "Brunch" : "Evening"} for {booking.guests} on {booking.date} at {booking.time}
+            </p>
+            <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300 }}>
+              Confirmation sent to {booking.email}
+              {bookingRef && <><br/>Ref: {bookingRef}</>}
+            </p>
+
+            {/* Deposit Payment Option */}
+            <div style={{
+              margin: "24px 0 16px", padding: "16px 20px", borderRadius: 14,
+              background: `${theme.accent}08`, border: `1px solid ${theme.accent}20`,
+              textAlign: "left",
+            }}>
+              <div style={{ fontSize: 13, fontWeight: 500, color: theme.heading, marginBottom: 6 }}>
+                Guarantee your table with a deposit
+              </div>
+              <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300, lineHeight: 1.5, marginBottom: 12 }}>
+                Pay a small deposit now (deducted from your bill). This secures your reservation and helps us manage covers.
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={async () => {
+                    try {
+                      const resp = await fetch("/api/payment?action=reservation-deposit", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          bookingRef,
+                          name: booking.name,
+                          email: booking.email,
+                          date: booking.date,
+                          time: booking.time,
+                          guests: booking.guests,
+                          seating: booking.seating,
+                        }),
+                      });
+                      const data = await resp.json();
+                      if (data.url) window.location.href = data.url;
+                    } catch (err) {
+                      console.error("Payment error:", err);
+                    }
+                  }}
+                  style={{
+                    flex: 1, padding: "10px 16px", borderRadius: 10, border: "none",
+                    background: theme.accent, color: "#fff", cursor: "pointer",
+                    fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 500,
+                  }}
+                >
+                  Pay £{booking.seating === "brunch" ? "5" : "10"} Deposit
+                </button>
+                <button onClick={onClose} style={{
+                  padding: "10px 16px", borderRadius: 10,
+                  border: `1px solid ${theme.muted}25`, background: "transparent",
+                  color: theme.muted, cursor: "pointer",
+                  fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400,
+                }}>
+                  Skip
+                </button>
+              </div>
+              <div style={{ fontSize: 10, color: theme.muted, marginTop: 8, fontWeight: 300 }}>
+                Secure payment via Stripe. Apple Pay & Google Pay accepted.
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400, color: theme.heading }}>
+                Book a Table
+              </h2>
+              <button onClick={onClose} style={{
+                background: "none", border: "none", fontSize: 24, color: theme.muted,
+                cursor: "pointer", padding: 4,
+              }}>×</button>
+            </div>
+
+            {/* Step indicators */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 32 }}>
+              {[1, 2].map(s => (
+                <div key={s} style={{
+                  flex: 1, height: 3, borderRadius: 2,
+                  background: step >= s ? theme.accent : `${theme.muted}20`,
+                  transition: "background 0.3s ease",
+                }} />
+              ))}
+            </div>
+
+            {step === 1 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {/* Seating type */}
+                <div>
+                  <label style={labelStyle}>Seating Type</label>
+                  <div style={{ display: "flex", gap: 10 }}>
+                    {seatingOptions.map(opt => (
+                      <button key={opt.id} onClick={() => setBooking(p => ({ ...p, seating: opt.id }))} style={{
+                        flex: 1, padding: "14px 12px", borderRadius: 10, cursor: "pointer",
+                        border: booking.seating === opt.id ? `2px solid ${theme.accent}` : `1px solid ${theme.muted}20`,
+                        background: booking.seating === opt.id ? `${theme.accent}10` : "transparent",
+                        textAlign: "center", transition: "all 0.3s ease",
+                      }}>
+                        <div style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>{opt.label}</div>
+                        <div style={{ fontSize: 11, color: theme.muted, marginTop: 2 }}>{opt.duration} · {opt.available}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div>
+                    <label style={labelStyle}>Date</label>
+                    <input type="date" value={booking.date} onChange={e => setBooking(p => ({ ...p, date: e.target.value }))} style={inputStyle} />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Time</label>
+                    <select value={booking.time} onChange={e => setBooking(p => ({ ...p, time: e.target.value }))} style={inputStyle}>
+                      <option value="">Select...</option>
+                      {(booking.seating === "brunch"
+                        ? ["8:00","8:30","9:00","9:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30"]
+                        : ["14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","20:30","21:00"]
+                      ).map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label style={labelStyle}>Guests</label>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {["1","2","3","4","5","6","7","8+"].map(n => (
+                      <button key={n} onClick={() => setBooking(p => ({ ...p, guests: n }))} style={{
+                        width: 40, height: 40, borderRadius: "50%", border: "none", cursor: "pointer",
+                        background: booking.guests === n ? theme.accent : `${theme.muted}15`,
+                        color: booking.guests === n ? "#fff" : theme.text,
+                        fontSize: 13, fontWeight: 500, transition: "all 0.2s ease",
+                      }}>
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  onClick={() => { if (booking.date && booking.time) setStep(2); }}
+                  disabled={!booking.date || !booking.time}
+                  style={{
+                    padding: "14px 32px", borderRadius: 30, border: "none",
+                    background: booking.date && booking.time ? theme.accent : `${theme.muted}30`,
+                    color: booking.date && booking.time ? "#fff" : theme.muted,
+                    cursor: booking.date && booking.time ? "pointer" : "not-allowed",
+                    fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500,
+                    marginTop: 8, transition: "all 0.3s ease",
+                  }}
+                >
+                  Continue
+                </button>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div>
+                  <label style={labelStyle}>Full Name</label>
+                  <input type="text" value={booking.name} onChange={e => setBooking(p => ({ ...p, name: e.target.value }))} style={inputStyle} placeholder="Your name" />
+                </div>
+                <div>
+                  <label style={labelStyle}>Email</label>
+                  <input type="email" value={booking.email} onChange={e => setBooking(p => ({ ...p, email: e.target.value }))} style={inputStyle} placeholder="your@email.com" />
+                </div>
+                <div>
+                  <label style={labelStyle}>Phone</label>
+                  <input type="tel" value={booking.phone} onChange={e => setBooking(p => ({ ...p, phone: e.target.value }))} style={inputStyle} placeholder="+44..." />
+                </div>
+                <div>
+                  <label style={labelStyle}>Special Requests</label>
+                  <textarea value={booking.notes} onChange={e => setBooking(p => ({ ...p, notes: e.target.value }))} rows={3} style={{ ...inputStyle, resize: "vertical" }} placeholder="Allergies, celebrations, etc." />
+                </div>
+                <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+                  <button onClick={() => setStep(1)} style={{
+                    flex: 1, padding: "14px", borderRadius: 30,
+                    border: `1px solid ${theme.muted}30`, background: "transparent",
+                    color: theme.text, cursor: "pointer",
+                    fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500,
+                  }}>
+                    Back
+                  </button>
+                  <button
+                    onClick={handleConfirm}
+                    disabled={!booking.name || !booking.email || submitting}
+                    style={{
+                      flex: 2, padding: "14px", borderRadius: 30, border: "none",
+                      background: booking.name && booking.email && !submitting ? theme.accent : `${theme.muted}30`,
+                      color: booking.name && booking.email && !submitting ? "#fff" : theme.muted,
+                      cursor: booking.name && booking.email && !submitting ? "pointer" : "not-allowed",
+                      fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500,
+                      opacity: submitting ? 0.7 : 1,
+                    }}
+                  >
+                    {submitting ? "Reserving..." : "Confirm Reservation"}
+                  </button>
+                </div>
+                {error && (
+                  <div style={{
+                    marginTop: 12, padding: "10px 14px", borderRadius: 8,
+                    background: "#FEE2E2", color: "#991B1B", fontSize: 13,
+                  }}>
+                    {error}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Persistent CTA ─────────────────────────────────────────────────
+function PersistentCTA({ theme, setBookingOpen, setOrderOpen }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const fn = () => setVisible(window.scrollY > 400);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
+
+  if (!visible) return null;
+  return (
+    <div style={{
+      position: "fixed", bottom: 24, right: 24, zIndex: 1500,
+      display: "flex", gap: 10,
+      animation: "slideDown 0.3s ease",
+    }}>
+      <button onClick={() => setBookingOpen(true)} style={{
+        padding: "12px 24px", borderRadius: 30, border: "none",
+        background: theme.accent, color: "#fff", cursor: "pointer",
+        fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 500,
+        boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+        transition: "transform 0.3s ease",
+      }}
+        onMouseEnter={e => e.target.style.transform = "translateY(-2px)"}
+        onMouseLeave={e => e.target.style.transform = "none"}
+      >
+        Book a Table
+      </button>
+      <button onClick={() => setOrderOpen(true)} style={{
+        padding: "12px 24px", borderRadius: 30,
+        border: `1px solid ${theme.accent}60`, background: `${theme.bg}E0`,
+        backdropFilter: "blur(10px)", color: theme.accent, cursor: "pointer",
+        fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 500,
+        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+        transition: "transform 0.3s ease",
+      }}
+        onMouseEnter={e => e.target.style.transform = "translateY(-2px)"}
+        onMouseLeave={e => e.target.style.transform = "none"}
+      >
+        Order Now
+      </button>
+    </div>
+  );
+}
+
+// ── CTA Button Component ───────────────────────────────────────────
+function CTAButton({ label, onClick, primary, theme }) {
+  return (
+    <button onClick={onClick} style={{
+      padding: "14px 36px", borderRadius: 30, cursor: "pointer",
+      fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500,
+      letterSpacing: "0.05em", transition: "all 0.3s ease",
+      background: primary ? theme.accent : "transparent",
+      color: primary ? "#fff" : theme.text,
+      border: primary ? "none" : `1.5px solid ${theme.accent || theme.text}60`,
+    }}
+      onMouseEnter={e => e.target.style.transform = "translateY(-2px)"}
+      onMouseLeave={e => e.target.style.transform = "none"}
+    >
+      {label}
+    </button>
+  );
+}
+
+// ── Instagram Section ──────────────────────────────────────────────
+// To connect a live feed, set your Elfsight widget ID or Curator.io feed ID
+// in the INSTAGRAM_CONFIG below. Until then, styled placeholders are shown.
+const INSTAGRAM_CONFIG = {
+  handle: "thesixthelement.richmond",
+  profileUrl: "https://www.instagram.com/thesixthelement.richmond",
+  // Set ONE of these to enable a live feed:
+  elfsightWidgetId: null,   // e.g. "el-xxxxxxxx" — from elfsight.com (free tier)
+  curatorFeedId: null,      // e.g. "xxxxxxxx"   — from curator.io (free tier)
+};
+
+function InstagramSection({ theme }) {
+  const embedRef = useRef(null);
+
+  // Load third-party embed script if configured
+  useEffect(() => {
+    if (INSTAGRAM_CONFIG.elfsightWidgetId) {
+      const script = document.createElement("script");
+      script.src = "https://static.elfsight.com/platform/platform.js";
+      script.async = true;
+      document.body.appendChild(script);
+      return () => document.body.removeChild(script);
+    }
+    if (INSTAGRAM_CONFIG.curatorFeedId) {
+      const script = document.createElement("script");
+      script.src = `https://cdn.curator.io/published/${INSTAGRAM_CONFIG.curatorFeedId}.js`;
+      script.async = true;
+      document.body.appendChild(script);
+      return () => document.body.removeChild(script);
+    }
+  }, []);
+
+  return (
+    <section style={{ padding: "80px 24px", background: theme.surface }}>
+      <FadeIn>
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
+          <a href={INSTAGRAM_CONFIG.profileUrl} target="_blank" rel="noopener noreferrer"
+            style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: theme.muted, marginBottom: 12, display: "block", textDecoration: "none" }}>
+            @{INSTAGRAM_CONFIG.handle}
+          </a>
+          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(24px, 3.5vw, 36px)", fontWeight: 400, color: theme.heading }}>
+            A Sense of Belonging
+          </h2>
+        </div>
+      </FadeIn>
+
+      {/* Live feed embed area */}
+      {INSTAGRAM_CONFIG.elfsightWidgetId ? (
+        <div className={`elfsight-app-${INSTAGRAM_CONFIG.elfsightWidgetId}`} ref={embedRef} />
+      ) : INSTAGRAM_CONFIG.curatorFeedId ? (
+        <div id={`curator-feed-${INSTAGRAM_CONFIG.curatorFeedId}`} ref={embedRef} />
+      ) : (
+        /* Styled placeholders — replaced by live feed once connected */
+        <div style={{
+          display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+          gap: 4, maxWidth: 1000, margin: "0 auto",
+        }}>
+          {[
+            { emoji: "☕", bg: "#D4C5A9" }, { emoji: "🍳", bg: "#C8B896" },
+            { emoji: "🌿", bg: "#8B9E6B" }, { emoji: "🍷", bg: "#8B6B4E" },
+            { emoji: "✨", bg: "#BFA87A" }, { emoji: "🍺", bg: "#A08B6B" },
+          ].map((item, i) => (
+            <FadeIn key={i} delay={i * 0.08}>
+              <a href={INSTAGRAM_CONFIG.profileUrl} target="_blank" rel="noopener noreferrer"
+                style={{
+                  aspectRatio: "1", background: item.bg,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 40, cursor: "pointer", textDecoration: "none",
+                  transition: "transform 0.3s ease",
+                  position: "relative", overflow: "hidden",
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
+                onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+              >
+                {item.emoji}
+                <div style={{
+                  position: "absolute", inset: 0, background: "rgba(0,0,0,0.35)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  opacity: 0, transition: "opacity 0.3s ease",
+                  color: "white", fontSize: 13, fontWeight: 500,
+                }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = "1"}
+                  onMouseLeave={e => e.currentTarget.style.opacity = "0"}
+                >
+                  View on Instagram →
+                </div>
+              </a>
+            </FadeIn>
+          ))}
+        </div>
+      )}
+
+      <FadeIn delay={0.3}>
+        <div style={{ textAlign: "center", marginTop: 32 }}>
+          <a href={INSTAGRAM_CONFIG.profileUrl} target="_blank" rel="noopener noreferrer" style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "10px 24px", borderRadius: 30,
+            border: `1px solid ${theme.muted}30`, color: theme.text,
+            fontSize: 13, fontWeight: 500, textDecoration: "none",
+            transition: "all 0.3s ease",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = theme.accent; e.currentTarget.style.color = theme.accent; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = `${theme.muted}30`; e.currentTarget.style.color = theme.text; }}
+          >
+            Follow us on Instagram
+          </a>
+        </div>
+      </FadeIn>
+    </section>
+  );
+}
+
+// ── Order Modal (Delivery Platform Selector) ──────────────────────
+function OrderModal({ theme, platforms, onClose }) {
+  const activePlatforms = Object.entries(platforms).filter(([, p]) => p.status !== "hidden");
+  const hasAnyActive = activePlatforms.some(([, p]) => p.status === "active" && p.url);
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 2000,
+      background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      padding: 24, animation: "slideDown 0.3s ease",
+    }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{
+        width: "100%", maxWidth: 440,
+        background: theme.bg, borderRadius: 20, padding: 32,
+        border: `1px solid ${theme.muted}20`,
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400, color: theme.heading }}>
+            Order Delivery
+          </h2>
+          <button onClick={onClose} style={{
+            background: "none", border: "none", fontSize: 24, color: theme.muted, cursor: "pointer",
+          }}>×</button>
+        </div>
+        <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginBottom: 28, lineHeight: 1.5 }}>
+          Choose your preferred delivery platform. You'll be taken to their app or website to complete your order.
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {activePlatforms.map(([key, platform]) => {
+            const isActive = platform.status === "active" && platform.url;
+            return (
+              <button
+                key={key}
+                onClick={() => { if (isActive) window.open(platform.url, "_blank"); }}
+                disabled={!isActive}
+                style={{
+                  display: "flex", alignItems: "center", gap: 16,
+                  padding: "16px 20px", borderRadius: 14, cursor: isActive ? "pointer" : "default",
+                  background: isActive ? theme.surfaceAlt : `${theme.muted}08`,
+                  border: isActive ? `1px solid ${platform.color}30` : `1px solid ${theme.muted}15`,
+                  transition: "all 0.3s ease",
+                  opacity: isActive ? 1 : 0.5,
+                  textAlign: "left", width: "100%",
+                }}
+                onMouseEnter={e => { if (isActive) { e.currentTarget.style.borderColor = platform.color; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 4px 16px ${platform.color}15`; }}}
+                onMouseLeave={e => { if (isActive) { e.currentTarget.style.borderColor = `${platform.color}30`; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}}
+              >
+                {/* Platform icon */}
+                <div style={{
+                  width: 48, height: 48, borderRadius: 12,
+                  background: isActive ? `${platform.color}15` : `${theme.muted}10`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 24, flexShrink: 0,
+                }}>
+                  {platform.logo}
+                </div>
+
+                {/* Platform details */}
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{
+                      fontSize: 16, fontWeight: 500,
+                      color: isActive ? theme.heading : theme.muted,
+                      fontFamily: "'Outfit', sans-serif",
+                    }}>
+                      {platform.name}
+                    </span>
+                    {!isActive && (
+                      <span style={{
+                        fontSize: 10, fontWeight: 600, letterSpacing: "0.05em",
+                        padding: "2px 8px", borderRadius: 10,
+                        background: `${theme.accent}15`, color: theme.accent,
+                      }}>
+                        COMING SOON
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300, marginTop: 2 }}>
+                    {isActive ? platform.tagline : "We're setting this up — check back soon"}
+                  </div>
+                </div>
+
+                {/* Arrow */}
+                {isActive && (
+                  <div style={{ color: platform.color, fontSize: 18, flexShrink: 0 }}>→</div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {!hasAnyActive && (
+          <div style={{
+            marginTop: 20, padding: "16px 20px", borderRadius: 12,
+            background: `${theme.accent}08`, border: `1px solid ${theme.accent}20`,
+            textAlign: "center",
+          }}>
+            <div style={{ fontSize: 14, color: theme.heading, fontWeight: 500, marginBottom: 4 }}>
+              Delivery launching soon
+            </div>
+            <div style={{ fontSize: 13, color: theme.muted, fontWeight: 300, lineHeight: 1.5 }}>
+              We're finalising our delivery partnerships. For now, visit us in Richmond or call to arrange collection.
+            </div>
+            <div style={{ fontSize: 14, color: theme.accent, fontWeight: 500, marginTop: 8 }}>
+              +44 (0) 20 XXXX XXXX
+            </div>
+          </div>
+        )}
+
+        {/* Collection option */}
+        <div style={{
+          marginTop: 16, padding: "14px 20px", borderRadius: 12,
+          border: `1px solid ${theme.muted}15`, textAlign: "center",
+        }}>
+          <div style={{ fontSize: 13, color: theme.muted, fontWeight: 300 }}>
+            Prefer to collect? Call us to order ahead
+          </div>
+          <a href="tel:+442000000000" style={{
+            fontSize: 14, color: theme.accent, fontWeight: 500,
+            textDecoration: "none", marginTop: 4, display: "inline-block",
+          }}>
+            +44 (0) 20 XXXX XXXX
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Admin Login ────────────────────────────────────────────────────
+function AdminLogin({ theme, onLogin, onClose }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!username || !password) return;
+    setLoading(true);
+    setError("");
+    try {
+      await onLogin(username, password);
+    } catch (err) {
+      setError(err.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSubmit();
+  };
+
+  const inputStyle = {
+    width: "100%", padding: "12px 14px", borderRadius: 10,
+    border: `1px solid ${theme.muted}30`, background: theme.surfaceAlt,
+    color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 14,
+  };
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 3000,
+      background: "rgba(0,0,0,0.7)", backdropFilter: "blur(12px)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      padding: 24, animation: "slideDown 0.3s ease",
+    }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{
+        width: "100%", maxWidth: 380,
+        background: theme.bg, borderRadius: 20, padding: 36,
+        border: `1px solid ${theme.muted}20`,
+        boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+      }}>
+        {/* Lock icon */}
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <div style={{
+            width: 56, height: 56, borderRadius: "50%",
+            background: `${theme.accent}15`, border: `2px solid ${theme.accent}30`,
+            display: "inline-flex", alignItems: "center", justifyContent: "center",
+            fontSize: 24, marginBottom: 16,
+          }}>
+            🔒
+          </div>
+          <h2 style={{
+            fontFamily: "'Cormorant Garamond', serif", fontSize: 26,
+            fontWeight: 400, color: theme.heading,
+          }}>
+            Site Admin
+          </h2>
+          <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginTop: 6 }}>
+            Sign in to manage your site
+          </p>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div>
+            <label style={{
+              fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
+              textTransform: "uppercase", color: theme.muted, marginBottom: 6, display: "block",
+            }}>Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoFocus
+              autoComplete="username"
+              placeholder="Enter username"
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <label style={{
+              fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
+              textTransform: "uppercase", color: theme.muted, marginBottom: 6, display: "block",
+            }}>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoComplete="current-password"
+              placeholder="Enter password"
+              style={inputStyle}
+            />
+          </div>
+
+          {error && (
+            <div style={{
+              padding: "10px 14px", borderRadius: 8,
+              background: "#FEE2E2", color: "#991B1B", fontSize: 13,
+              display: "flex", alignItems: "center", gap: 8,
+            }}>
+              <span>⚠</span> {error}
+            </div>
+          )}
+
+          <button
+            onClick={handleSubmit}
+            disabled={!username || !password || loading}
+            style={{
+              padding: "14px", borderRadius: 30, border: "none",
+              background: username && password && !loading ? theme.accent : `${theme.muted}30`,
+              color: username && password && !loading ? "#fff" : theme.muted,
+              cursor: username && password && !loading ? "pointer" : "not-allowed",
+              fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500,
+              letterSpacing: "0.03em", marginTop: 4,
+              opacity: loading ? 0.7 : 1,
+              transition: "all 0.3s ease",
+            }}
+          >
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
+        </div>
+
+        <div style={{
+          marginTop: 20, fontSize: 11, color: theme.muted, textAlign: "center",
+          lineHeight: 1.6, fontWeight: 300,
+        }}>
+          Session expires after 12 hours.<br />
+          Credentials are set in your Vercel environment variables.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Admin Panel (authenticated) ────────────────────────────────────
+function AdminPanel({ theme, flags, updateFlag, resetFlags, platforms, updatePlatform, adminUser, onLogout, onClose }) {
+  const toggleStyle = (active) => ({
+    position: "relative", width: 44, height: 24, borderRadius: 12, cursor: "pointer",
+    background: active ? COLORS.mossGreen : `${theme.muted}30`,
+    border: "none", transition: "background 0.3s ease", flexShrink: 0,
+  });
+  const dotStyle = (active) => ({
+    position: "absolute", top: 3, left: active ? 23 : 3,
+    width: 18, height: 18, borderRadius: "50%", background: "#fff",
+    transition: "left 0.3s ease", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+  });
+
+  return (
+    <div style={{
+      position: "fixed", top: 0, right: 0, bottom: 0, width: 360, maxWidth: "90vw",
+      zIndex: 3000, background: theme.bg, borderLeft: `1px solid ${theme.muted}20`,
+      boxShadow: "-4px 0 30px rgba(0,0,0,0.15)", overflowY: "auto", padding: 24,
+      animation: "slideDown 0.3s ease",
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <div>
+          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 24, fontWeight: 500, color: theme.heading }}>
+            Site Admin
+          </h2>
+          <div style={{ fontSize: 11, color: theme.muted, letterSpacing: "0.1em", marginTop: 4 }}>
+            Feature flags & settings
+          </div>
+        </div>
+        <button onClick={onClose} style={{
+          background: "none", border: "none", fontSize: 24, color: theme.muted, cursor: "pointer",
+        }}>×</button>
+      </div>
+
+      {/* Authenticated user bar */}
+      <div style={{
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        padding: "10px 14px", borderRadius: 10, marginBottom: 28,
+        background: `${COLORS.mossGreen}10`, border: `1px solid ${COLORS.mossGreen}25`,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: "50%",
+            background: COLORS.mossGreen, color: "#fff",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 12, fontWeight: 600,
+          }}>
+            {(adminUser || "A").charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: theme.heading }}>{adminUser}</div>
+            <div style={{ fontSize: 10, color: COLORS.mossGreen, fontWeight: 500 }}>● Authenticated</div>
+          </div>
+        </div>
+        <button onClick={onLogout} style={{
+          background: "none", border: `1px solid ${theme.muted}25`,
+          borderRadius: 6, padding: "4px 10px", cursor: "pointer",
+          fontSize: 11, color: theme.muted, fontFamily: "'Outfit', sans-serif", fontWeight: 500,
+          transition: "all 0.2s ease",
+        }}
+          onMouseEnter={e => { e.target.style.borderColor = "#EF4444"; e.target.style.color = "#EF4444"; }}
+          onMouseLeave={e => { e.target.style.borderColor = `${theme.muted}25`; e.target.style.color = theme.muted; }}
+        >
+          Sign Out
+        </button>
+      </div>
+
+      {/* Toggle: Cocktails */}
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 16 }}>
+          Menu Sections
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>Cocktails Section</div>
+            <div style={{ fontSize: 12, color: theme.muted, marginTop: 2 }}>
+              {flags.cocktails_live ? "🟢 LIVE — full menu with prices" : "🟡 TEASER — \"Coming Soon\" mode"}
+            </div>
+          </div>
+          <button onClick={() => updateFlag("cocktails_live", !flags.cocktails_live)} style={toggleStyle(flags.cocktails_live)}>
+            <div style={dotStyle(flags.cocktails_live)} />
+          </button>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>Instagram Feed</div>
+            <div style={{ fontSize: 12, color: theme.muted, marginTop: 2 }}>Show feed on homepage</div>
+          </div>
+          <button onClick={() => updateFlag("instagram_feed", !flags.instagram_feed)} style={toggleStyle(flags.instagram_feed)}>
+            <div style={dotStyle(flags.instagram_feed)} />
+          </button>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>Reservations</div>
+            <div style={{ fontSize: 12, color: theme.muted, marginTop: 2 }}>Enable booking system</div>
+          </div>
+          <button onClick={() => updateFlag("booking_enabled", !flags.booking_enabled)} style={toggleStyle(flags.booking_enabled)}>
+            <div style={dotStyle(flags.booking_enabled)} />
+          </button>
+        </div>
+      </div>
+
+      {/* Seating Durations */}
+      <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
+        <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 16 }}>
+          Seating Durations
+        </div>
+        {[
+          { key: "brunch_duration", label: "Brunch (minutes)" },
+          { key: "evening_duration", label: "Evening (minutes)" },
+        ].map(({ key, label }) => (
+          <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <div style={{ fontSize: 14, color: theme.heading }}>{label}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {[30, 45, 60, 90, 120].map(v => (
+                <button key={v} onClick={() => updateFlag(key, v)} style={{
+                  padding: "4px 10px", borderRadius: 6, border: "none", cursor: "pointer",
+                  fontSize: 12, fontWeight: 500,
+                  background: flags[key] === v ? theme.accent : `${theme.muted}15`,
+                  color: flags[key] === v ? "#fff" : theme.text,
+                  transition: "all 0.2s ease",
+                }}>
+                  {v}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Delivery Platforms */}
+      <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
+        <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 16 }}>
+          Delivery Platforms
+        </div>
+        {Object.entries(platforms).map(([key, platform]) => (
+          <div key={key} style={{
+            marginBottom: 16, padding: 16, borderRadius: 12,
+            background: theme.surfaceAlt, border: `1px solid ${theme.muted}10`,
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 18 }}>{platform.logo}</span>
+                <span style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>{platform.name}</span>
+              </div>
+              <select
+                value={platform.status}
+                onChange={e => updatePlatform(key, "status", e.target.value)}
+                style={{
+                  padding: "4px 8px", borderRadius: 6, fontSize: 11, fontWeight: 600,
+                  border: `1px solid ${theme.muted}30`, background: theme.bg,
+                  color: platform.status === "active" ? COLORS.mossGreen : platform.status === "coming_soon" ? theme.accent : theme.muted,
+                  fontFamily: "'Outfit', sans-serif", cursor: "pointer",
+                }}
+              >
+                <option value="active">🟢 LIVE</option>
+                <option value="coming_soon">🟡 COMING SOON</option>
+                <option value="hidden">⚫ HIDDEN</option>
+              </select>
+            </div>
+            <div style={{ marginBottom: 6 }}>
+              <label style={{ fontSize: 10, color: theme.muted, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600 }}>
+                Restaurant URL
+              </label>
+              <input
+                type="url"
+                value={platform.url || ""}
+                onChange={e => updatePlatform(key, "url", e.target.value || null)}
+                placeholder={key === "deliveroo" ? "https://deliveroo.co.uk/menu/london/richmond/your-restaurant" : key === "uber_eats" ? "https://www.ubereats.com/gb/store/your-restaurant/store-id" : "https://www.just-eat.co.uk/restaurants-your-restaurant/menu"}
+                style={{
+                  width: "100%", padding: "8px 10px", borderRadius: 6, marginTop: 4,
+                  border: `1px solid ${theme.muted}20`, background: theme.bg,
+                  color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 12,
+                }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: 10, color: theme.muted, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600 }}>
+                Tagline
+              </label>
+              <input
+                type="text"
+                value={platform.tagline}
+                onChange={e => updatePlatform(key, "tagline", e.target.value)}
+                style={{
+                  width: "100%", padding: "8px 10px", borderRadius: 6, marginTop: 4,
+                  border: `1px solid ${theme.muted}20`, background: theme.bg,
+                  color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 12,
+                }}
+              />
+            </div>
+          </div>
+        ))}
+        <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.6, marginTop: 4 }}>
+          Set each platform's status and paste your restaurant's direct order URL. Customers will be deep-linked straight to your menu.
+        </div>
+      </div>
+
+      {/* CMS: Content Editor */}
+      <AdminSection theme={theme} title="Content Editor" icon="✏️">
+        <ContentEditor theme={theme} />
+      </AdminSection>
+
+      {/* CMS: Offers Manager */}
+      <AdminSection theme={theme} title="Offers & Promotions" icon="🎁">
+        <OffersManager theme={theme} />
+      </AdminSection>
+
+      {/* CMS: Gallery Manager */}
+      <AdminSection theme={theme} title="Gallery Images" icon="🖼️">
+        <GalleryManager theme={theme} />
+      </AdminSection>
+
+      {/* Payments */}
+      <AdminSection theme={theme} title="Payments (Stripe)" icon="💳">
+        <div style={{ fontSize: 13, color: theme.muted, lineHeight: 1.7, fontWeight: 300 }}>
+          <p style={{ marginBottom: 12 }}>
+            Stripe handles all payments — deposits, direct orders, and future gift vouchers. 
+            No card data touches your server.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer" style={{
+              display: "block", padding: "12px 16px", borderRadius: 10, textDecoration: "none",
+              background: "#635BFF15", border: "1px solid #635BFF30", color: "#635BFF",
+              fontSize: 13, fontWeight: 500, textAlign: "center",
+            }}>
+              Open Stripe Dashboard →
+            </a>
+            <div style={{ fontSize: 11, color: theme.muted, textAlign: "center" }}>
+              View transactions, refunds, payouts, and customer data
+            </div>
+          </div>
+          <div style={{ marginTop: 16, padding: "12px", borderRadius: 8, background: `${theme.muted}08`, fontSize: 12 }}>
+            <strong style={{ color: theme.heading }}>Deposit Amounts:</strong><br/>
+            Brunch: £5 per booking · Evening: £10 per booking<br/>
+            <span style={{ fontSize: 11, color: theme.muted }}>Edit in api/payment.js or configure via Stripe Products</span>
+          </div>
+        </div>
+      </AdminSection>
+
+      {/* Reset */}
+      <div style={{ paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
+        <button onClick={resetFlags} style={{
+          width: "100%", padding: "10px", borderRadius: 8,
+          border: `1px solid #EF444440`, background: "#EF444410",
+          color: "#EF4444", cursor: "pointer", fontSize: 13, fontWeight: 500,
+          fontFamily: "'Outfit', sans-serif",
+        }}>
+          Reset All to Defaults
+        </button>
+        <div style={{ fontSize: 11, color: theme.muted, marginTop: 12, lineHeight: 1.6 }}>
+          Access this panel at <code style={{ background: `${theme.muted}15`, padding: "2px 6px", borderRadius: 4 }}>yoursite.com?admin=true</code>
+          <br />Credentials are set in Vercel environment variables.
+          <br />Settings are saved in your browser.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Admin Collapsible Section ──────────────────────────────────────
+function AdminSection({ theme, title, icon, children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ marginBottom: 8, borderTop: `1px solid ${theme.muted}12`, paddingTop: 12 }}>
+      <button onClick={() => setOpen(!open)} style={{
+        width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+        background: "none", border: "none", cursor: "pointer", padding: "8px 0",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span>{icon}</span>
+          <span style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600 }}>
+            {title}
+          </span>
+        </div>
+        <span style={{ fontSize: 14, color: theme.muted, transform: open ? "rotate(90deg)" : "none", transition: "transform 0.2s ease" }}>›</span>
+      </button>
+      {open && <div style={{ paddingTop: 12, paddingBottom: 8 }}>{children}</div>}
+    </div>
+  );
+}
+
+// ── CMS: Content Editor ───────────────────────────────────────────
+function ContentEditor({ theme }) {
+  const [content, setContent] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [cmsConnected, setCmsConnected] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/content?resource=content")
+      .then(r => r.json())
+      .then(data => { setContent(data); setCmsConnected(true); })
+      .catch(() => setCmsConnected(false));
+  }, []);
+
+  const saveField = async (key, value) => {
+    const token = sessionStorage.getItem("tse_admin_token");
+    setLoading(true);
+    try {
+      await fetch("/api/content?resource=content", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ key, value }),
+      });
+      setContent(prev => ({ ...prev, [key]: value }));
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      console.error("Save failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (cmsConnected === false) {
+    return (
+      <div style={{ padding: 16, borderRadius: 10, background: `${theme.accent}08`, border: `1px solid ${theme.accent}20`, fontSize: 12, color: theme.muted, lineHeight: 1.6 }}>
+        <strong style={{ color: theme.heading }}>CMS not connected</strong><br/>
+        Set <code style={{ background: `${theme.muted}15`, padding: "1px 4px", borderRadius: 3 }}>SUPABASE_URL</code> and <code style={{ background: `${theme.muted}15`, padding: "1px 4px", borderRadius: 3 }}>SUPABASE_SERVICE_KEY</code> in Vercel to enable content editing. See CMS_SETUP.md.
+      </div>
+    );
+  }
+
+  const fields = [
+    { key: "hero_title", label: "Hero Title", type: "text" },
+    { key: "hero_subtitle", label: "Hero Subtitle", type: "text" },
+    { key: "hero_description", label: "Hero Description", type: "textarea" },
+    { key: "about_quote", label: "About Page Quote", type: "textarea" },
+    { key: "phone", label: "Phone Number", type: "text" },
+    { key: "email", label: "Email Address", type: "text" },
+    { key: "address", label: "Address", type: "textarea" },
+    { key: "hours_weekday", label: "Weekday Hours", type: "text" },
+    { key: "hours_weekend", label: "Weekend Hours", type: "text" },
+  ];
+
+  const inputStyle = {
+    width: "100%", padding: "8px 10px", borderRadius: 6, marginTop: 4,
+    border: `1px solid ${theme.muted}20`, background: theme.surfaceAlt,
+    color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 12,
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      {saved && <div style={{ padding: "6px 12px", borderRadius: 6, background: `${COLORS.mossGreen}15`, color: COLORS.mossGreen, fontSize: 12, fontWeight: 500 }}>✓ Saved</div>}
+      {fields.map(f => (
+        <div key={f.key}>
+          <label style={{ fontSize: 10, color: theme.muted, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600 }}>{f.label}</label>
+          {f.type === "textarea" ? (
+            <textarea
+              value={typeof content[f.key] === "string" ? content[f.key] : JSON.stringify(content[f.key] || "")}
+              onChange={e => setContent(prev => ({ ...prev, [f.key]: e.target.value }))}
+              onBlur={e => saveField(f.key, e.target.value)}
+              rows={2}
+              style={{ ...inputStyle, resize: "vertical" }}
+            />
+          ) : (
+            <input
+              type="text"
+              value={typeof content[f.key] === "string" ? content[f.key] : JSON.stringify(content[f.key] || "")}
+              onChange={e => setContent(prev => ({ ...prev, [f.key]: e.target.value }))}
+              onBlur={e => saveField(f.key, e.target.value)}
+              style={inputStyle}
+            />
+          )}
+        </div>
+      ))}
+      <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.5 }}>
+        Changes auto-save when you leave each field.
+      </div>
+    </div>
+  );
+}
+
+// ── CMS: Offers Manager ───────────────────────────────────────────
+function OffersManager({ theme }) {
+  const [offers, setOffers] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [cmsConnected, setCmsConnected] = useState(null);
+  const [newOffer, setNewOffer] = useState({
+    title: "", description: "", discount_text: "", badge_text: "NEW",
+    start_date: new Date().toISOString().slice(0, 10),
+    end_date: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
+    is_active: true, show_on_homepage: true,
+  });
+
+  useEffect(() => {
+    fetch("/api/content?resource=offers")
+      .then(r => r.json())
+      .then(data => { setOffers(Array.isArray(data) ? data : []); setCmsConnected(true); })
+      .catch(() => setCmsConnected(false));
+  }, []);
+
+  const saveOffer = async () => {
+    const token = sessionStorage.getItem("tse_admin_token");
+    try {
+      const resp = await fetch("/api/content?resource=offers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify(newOffer),
+      });
+      const saved = await resp.json();
+      setOffers(prev => [...prev, saved]);
+      setShowForm(false);
+      setNewOffer({ title: "", description: "", discount_text: "", badge_text: "NEW",
+        start_date: new Date().toISOString().slice(0, 10),
+        end_date: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
+        is_active: true, show_on_homepage: true,
+      });
+    } catch (err) { console.error("Failed to save offer:", err); }
+  };
+
+  const deleteOffer = async (id) => {
+    const token = sessionStorage.getItem("tse_admin_token");
+    try {
+      await fetch("/api/content?resource=offers", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ id }),
+      });
+      setOffers(prev => prev.filter(o => o.id !== id));
+    } catch (err) { console.error("Failed to delete:", err); }
+  };
+
+  if (cmsConnected === false) {
+    return (
+      <div style={{ padding: 16, borderRadius: 10, background: `${theme.accent}08`, border: `1px solid ${theme.accent}20`, fontSize: 12, color: theme.muted, lineHeight: 1.6 }}>
+        <strong style={{ color: theme.heading }}>CMS not connected</strong><br/>
+        Connect Supabase to manage offers. See CMS_SETUP.md.
+      </div>
+    );
+  }
+
+  const inputStyle = {
+    width: "100%", padding: "8px 10px", borderRadius: 6, marginTop: 4,
+    border: `1px solid ${theme.muted}20`, background: theme.surfaceAlt,
+    color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 12,
+  };
+
+  return (
+    <div>
+      {offers.length === 0 && !showForm && (
+        <div style={{ fontSize: 13, color: theme.muted, marginBottom: 12, fontWeight: 300 }}>No active offers.</div>
+      )}
+      {offers.map(offer => (
+        <div key={offer.id} style={{
+          padding: 12, borderRadius: 10, marginBottom: 8,
+          background: theme.surfaceAlt, border: `1px solid ${theme.muted}10`,
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+        }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: theme.heading }}>
+              {offer.badge_text && <span style={{
+                fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 4,
+                background: `${theme.accent}20`, color: theme.accent, marginRight: 6,
+              }}>{offer.badge_text}</span>}
+              {offer.title}
+            </div>
+            <div style={{ fontSize: 11, color: theme.muted, marginTop: 2 }}>
+              {offer.discount_text} · {offer.is_active ? "🟢 Active" : "⚫ Inactive"}
+            </div>
+          </div>
+          <button onClick={() => deleteOffer(offer.id)} style={{
+            background: "none", border: "none", color: "#EF4444", cursor: "pointer", fontSize: 14,
+          }}>×</button>
+        </div>
+      ))}
+      {showForm ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: 12, borderRadius: 10, background: theme.surfaceAlt, border: `1px solid ${theme.muted}15` }}>
+          <input placeholder="Offer title (e.g. Happy Hour)" value={newOffer.title} onChange={e => setNewOffer(p => ({ ...p, title: e.target.value }))} style={inputStyle} />
+          <input placeholder="Description" value={newOffer.description} onChange={e => setNewOffer(p => ({ ...p, description: e.target.value }))} style={inputStyle} />
+          <input placeholder="Discount text (e.g. 20% off all wine)" value={newOffer.discount_text} onChange={e => setNewOffer(p => ({ ...p, discount_text: e.target.value }))} style={inputStyle} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <div>
+              <label style={{ fontSize: 10, color: theme.muted }}>Start Date</label>
+              <input type="date" value={newOffer.start_date} onChange={e => setNewOffer(p => ({ ...p, start_date: e.target.value }))} style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ fontSize: 10, color: theme.muted }}>End Date</label>
+              <input type="date" value={newOffer.end_date} onChange={e => setNewOffer(p => ({ ...p, end_date: e.target.value }))} style={inputStyle} />
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            {["NEW", "LIMITED", "HOT", "SEASONAL"].map(b => (
+              <button key={b} onClick={() => setNewOffer(p => ({ ...p, badge_text: b }))} style={{
+                padding: "4px 8px", borderRadius: 4, border: "none", cursor: "pointer", fontSize: 10, fontWeight: 600,
+                background: newOffer.badge_text === b ? theme.accent : `${theme.muted}15`,
+                color: newOffer.badge_text === b ? "#fff" : theme.text,
+              }}>{b}</button>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+            <button onClick={saveOffer} disabled={!newOffer.title} style={{
+              flex: 1, padding: "8px", borderRadius: 6, border: "none",
+              background: newOffer.title ? theme.accent : `${theme.muted}30`,
+              color: newOffer.title ? "#fff" : theme.muted,
+              cursor: newOffer.title ? "pointer" : "not-allowed",
+              fontSize: 12, fontWeight: 500, fontFamily: "'Outfit', sans-serif",
+            }}>Save Offer</button>
+            <button onClick={() => setShowForm(false)} style={{
+              padding: "8px 12px", borderRadius: 6, border: `1px solid ${theme.muted}20`,
+              background: "transparent", color: theme.muted, cursor: "pointer", fontSize: 12,
+              fontFamily: "'Outfit', sans-serif",
+            }}>Cancel</button>
+          </div>
+        </div>
+      ) : (
+        <button onClick={() => setShowForm(true)} style={{
+          width: "100%", padding: "10px", borderRadius: 8, marginTop: 8,
+          border: `1px dashed ${theme.muted}30`, background: "transparent",
+          color: theme.accent, cursor: "pointer", fontSize: 12, fontWeight: 500,
+          fontFamily: "'Outfit', sans-serif",
+        }}>+ Add Offer</button>
+      )}
+    </div>
+  );
+}
+
+// ── CMS: Gallery Manager ──────────────────────────────────────────
+function GalleryManager({ theme }) {
+  const [images, setImages] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [cmsConnected, setCmsConnected] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/content?resource=gallery")
+      .then(r => r.json())
+      .then(data => { setImages(Array.isArray(data) ? data : []); setCmsConnected(true); })
+      .catch(() => setCmsConnected(false));
+  }, []);
+
+  const handleUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    const token = sessionStorage.getItem("tse_admin_token");
+
+    try {
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const uploadResp = await fetch("/api/content?resource=upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ filename: file.name, base64Data: base64, contentType: file.type, folder: "gallery" }),
+      });
+      const { url } = await uploadResp.json();
+
+      const galleryResp = await fetch("/api/content?resource=gallery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ image_url: url, alt_text: file.name, is_visible: true, sort_order: images.length }),
+      });
+      const newImage = await galleryResp.json();
+      setImages(prev => [...prev, newImage]);
+    } catch (err) { console.error("Upload failed:", err); }
+    finally { setUploading(false); }
+  };
+
+  const deleteImage = async (id) => {
+    const token = sessionStorage.getItem("tse_admin_token");
+    try {
+      await fetch("/api/content?resource=gallery", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ id }),
+      });
+      setImages(prev => prev.filter(img => img.id !== id));
+    } catch (err) { console.error("Delete failed:", err); }
+  };
+
+  if (cmsConnected === false) {
+    return (
+      <div style={{ padding: 16, borderRadius: 10, background: `${theme.accent}08`, border: `1px solid ${theme.accent}20`, fontSize: 12, color: theme.muted, lineHeight: 1.6 }}>
+        <strong style={{ color: theme.heading }}>CMS not connected</strong><br/>
+        Connect Supabase to manage gallery images. See CMS_SETUP.md.
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{
+        display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6, marginBottom: 12,
+      }}>
+        {images.map(img => (
+          <div key={img.id} style={{ position: "relative", aspectRatio: "1", borderRadius: 8, overflow: "hidden", background: `${theme.muted}10` }}>
+            <img src={img.image_url} alt={img.alt_text || ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <button onClick={() => deleteImage(img.id)} style={{
+              position: "absolute", top: 4, right: 4, width: 20, height: 20,
+              borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.6)",
+              color: "#fff", fontSize: 12, cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>×</button>
+          </div>
+        ))}
+      </div>
+      <label style={{
+        display: "block", width: "100%", padding: "12px", borderRadius: 8, textAlign: "center",
+        border: `1px dashed ${theme.muted}30`, background: "transparent",
+        color: uploading ? theme.muted : theme.accent, cursor: uploading ? "wait" : "pointer",
+        fontSize: 12, fontWeight: 500, fontFamily: "'Outfit', sans-serif",
+      }}>
+        {uploading ? "Uploading..." : "+ Upload Image"}
+        <input type="file" accept="image/*" onChange={handleUpload} style={{ display: "none" }} />
+      </label>
+      <div style={{ fontSize: 11, color: theme.muted, marginTop: 8, lineHeight: 1.5 }}>
+        Images appear in the homepage gallery grid. Max 1GB free storage on Supabase.
+      </div>
+    </div>
+  );
+}
+
+// ── Structured Data (JSON-LD for Local SEO) ────────────────────────
+function StructuredData() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "The Sixth Element",
+    "description": "Specialty coffee by day, natural wine by night. A space designed to transform with you. Richmond-upon-Thames.",
+    "url": "https://thesixthelement.co.uk",
+    "telephone": "+442000000000",
+    "email": "hello@thesixthelement.co.uk",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Richmond-upon-Thames",
+      "addressLocality": "Richmond",
+      "addressRegion": "London",
+      "postalCode": "TW9",
+      "addressCountry": "GB"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 51.4613,
+      "longitude": -0.3037
+    },
+    "servesCuisine": ["Coffee", "Brunch", "Wine Bar"],
+    "priceRange": "££",
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "22:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday","Sunday"], "opens": "09:00", "closes": "23:00" }
+    ],
+    "sameAs": [
+      "https://www.instagram.com/thesixthelement.richmond"
+    ],
+    "keywords": "Specialty Coffee Richmond, Brunch near Richmond Park, Evening drinks Richmond, Natural Wine Richmond, Social Impact Coffee Richmond, Best brunch Richmond-upon-Thames",
+    "hasMenu": {
+      "@type": "Menu",
+      "url": "https://thesixthelement.co.uk/menu"
+    },
+    "acceptsReservations": true
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
+// ── Footer ─────────────────────────────────────────────────────────
+function Footer({ theme, navigate }) {
+  return (
+    <footer style={{
+      padding: "60px 24px 40px",
+      borderTop: `1px solid ${theme.muted}15`,
+      background: theme.surface,
+    }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gap: 40, marginBottom: 40,
+        }}>
+          <div>
+            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 500, color: theme.heading, marginBottom: 16 }}>
+              The Sixth Element
+            </div>
+            <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, lineHeight: 1.7 }}>
+              Specialty coffee by day, natural wine by night. A space designed to transform with you.
+            </p>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.muted, fontWeight: 600, marginBottom: 16 }}>
+              Navigate
+            </div>
+            {["home","menu","impact","about","contact"].map(p => (
+              <button key={p} onClick={() => navigate(p)} style={{
+                display: "block", background: "none", border: "none", cursor: "pointer",
+                color: theme.text, fontSize: 13, fontWeight: 300, padding: "4px 0",
+                fontFamily: "'Outfit', sans-serif", textTransform: "capitalize",
+              }}>
+                {p === "impact" ? "Social Impact" : p === "about" ? "Our Story" : p}
+              </button>
+            ))}
+          </div>
+          <div>
+            <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.muted, fontWeight: 600, marginBottom: 16 }}>
+              Connect
+            </div>
+            {["Instagram","Facebook","TikTok"].map(s => (
+              <div key={s} style={{ fontSize: 13, color: theme.text, fontWeight: 300, padding: "4px 0", cursor: "pointer" }}>
+                {s}
+              </div>
+            ))}
+          </div>
+          <div>
+            <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.muted, fontWeight: 600, marginBottom: 16 }}>
+              Hours
+            </div>
+            <div style={{ fontSize: 13, color: theme.text, fontWeight: 300, lineHeight: 1.7 }}>
+              Mon – Fri: 8am – 10pm<br />
+              Sat – Sun: 9am – 11pm
+            </div>
+          </div>
+        </div>
+        <div style={{
+          borderTop: `1px solid ${theme.muted}15`, paddingTop: 24,
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          flexWrap: "wrap", gap: 12,
+        }}>
+          <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300 }}>
+            © 2026 The Sixth Element. Richmond-upon-Thames.
+          </div>
+          <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300, display: "flex", gap: 16 }}>
+            <span style={{ cursor: "pointer" }}>Privacy</span>
+            <span style={{ cursor: "pointer" }}>Terms</span>
+            <span style={{ cursor: "pointer" }}>Accessibility</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
