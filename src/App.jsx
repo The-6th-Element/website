@@ -7,7 +7,7 @@ const DEFAULT_FLAGS = {
   instagram_feed: true,     // show/hide Instagram grid
   booking_enabled: true,    // enable/disable reservations
   brunch_duration: 60,      // minutes
-  evening_duration: 90,     // minutes
+  evening_duration: 90,     // minutes. 
 };
 
 function useFeatureFlags() {
