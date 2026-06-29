@@ -31,37 +31,15 @@ function useFeatureFlags() {
   return { flags, updateFlag, resetFlags };
 }
 
-// ── Delivery Platform Config ──────────────────────────────────────
-// Update these URLs once your restaurant is live on each platform.
-// Set url to null to hide a platform, or set status to "coming_soon" to show it greyed out.
-const DELIVERY_PLATFORMS = {
-  deliveroo: {
-    name: "Deliveroo",
-    color: "#00CCBC",
-    // URL pattern: https://deliveroo.co.uk/menu/london/richmond/YOUR-RESTAURANT-SLUG
-    url: null,
-    status: "coming_soon", // "active" | "coming_soon" | "hidden"
-    logo: "🦘",
-    tagline: "Free delivery on first order",
-  },
-  uber_eats: {
-    name: "Uber Eats",
-    color: "#06C167",
-    // URL pattern: https://www.ubereats.com/gb/store/YOUR-RESTAURANT-SLUG/STORE-ID
-    url: null,
-    status: "coming_soon",
-    logo: "🚗",
-    tagline: "Order with Uber One for free delivery",
-  },
-  just_eat: {
-    name: "Just Eat",
-    color: "#FF8000",
-    // URL pattern: https://www.just-eat.co.uk/restaurants-YOUR-RESTAURANT-richmond/menu
-    url: null,
-    status: "coming_soon",
-    logo: "🍽️",
-    tagline: "Collect stamps for free food",
-  },
+// ── Toast Tables Reservation Config ───────────────────────────────
+// Reservations are handled by Toast Tables. Paste your restaurant's
+// online reservation link below.
+//   Toast Web → Waitlist & Reservations → Settings → Reservations →
+//   Online access → "Copy online reservation link"
+// The "Book a Table" buttons open this link inside an embedded modal,
+// with a "open in new tab" fallback (some Toast pages block iframing).
+const TOAST_CONFIG = {
+  reservationUrl: "", // e.g. "https://www.toasttab.com/the-sixth-element/reservations"
 };
 
 // ── Theme & Design Tokens ──────────────────────────────────────────
@@ -290,24 +268,10 @@ export default function TheSixthElement() {
   });
   const [menuOpen, setMenuOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
-  const [orderOpen, setOrderOpen] = useState(false);
   const { flags, updateFlag, resetFlags } = useFeatureFlags();
   const [showAdmin, setShowAdmin] = useState(false);
   const [adminAuth, setAdminAuth] = useState({ authenticated: false, user: null, token: null, loading: true });
   const [showLogin, setShowLogin] = useState(false);
-  const [platforms, setPlatforms] = useState(() => {
-    try {
-      const saved = localStorage.getItem("tse_platforms");
-      return saved ? JSON.parse(saved) : DELIVERY_PLATFORMS;
-    } catch { return DELIVERY_PLATFORMS; }
-  });
-  const updatePlatform = (key, field, value) => {
-    setPlatforms(prev => {
-      const next = { ...prev, [key]: { ...prev[key], [field]: value } };
-      try { localStorage.setItem("tse_platforms", JSON.stringify(next)); } catch {}
-      return next;
-    });
-  };
 
   // Admin auth: ?admin=true opens login gate, verifies existing session
   useEffect(() => {
@@ -422,17 +386,16 @@ export default function TheSixthElement() {
 
       <Navbar theme={theme} isAM={isAM} setIsAM={setIsAM} menuOpen={menuOpen} setMenuOpen={setMenuOpen} navigate={navigate} currentPage={currentPage} />
 
-      {currentPage === "home" && <HomePage theme={theme} isAM={isAM} navigate={navigate} setBookingOpen={setBookingOpen} setOrderOpen={setOrderOpen} flags={flags} />}
+      {currentPage === "home" && <HomePage theme={theme} isAM={isAM} navigate={navigate} setBookingOpen={setBookingOpen} flags={flags} />}
       {currentPage === "menu" && <MenuPage theme={theme} isAM={isAM} flags={flags} />}
       {currentPage === "impact" && <SocialImpactPage theme={theme} />}
       {currentPage === "about" && <AboutPage theme={theme} />}
       {currentPage === "contact" && <ContactPage theme={theme} />}
 
-      <PersistentCTA theme={theme} setBookingOpen={setBookingOpen} setOrderOpen={setOrderOpen} />
-      {bookingOpen && <BookingModal theme={theme} isAM={isAM} onClose={() => setBookingOpen(false)} flags={flags} />}
-      {orderOpen && <OrderModal theme={theme} platforms={platforms} onClose={() => setOrderOpen(false)} />}
+      <PersistentCTA theme={theme} setBookingOpen={setBookingOpen} />
+      {bookingOpen && <ReservationModal theme={theme} onClose={() => setBookingOpen(false)} />}
       {showLogin && <AdminLogin theme={theme} onLogin={handleAdminLogin} onClose={() => setShowLogin(false)} />}
-      {showAdmin && adminAuth.authenticated && <AdminPanel theme={theme} flags={flags} updateFlag={updateFlag} resetFlags={resetFlags} platforms={platforms} updatePlatform={updatePlatform} adminUser={adminAuth.user} onLogout={handleAdminLogout} onClose={() => setShowAdmin(false)} />}
+      {showAdmin && adminAuth.authenticated && <AdminPanel theme={theme} flags={flags} updateFlag={updateFlag} resetFlags={resetFlags} adminUser={adminAuth.user} onLogout={handleAdminLogout} onClose={() => setShowAdmin(false)} />}
       <StructuredData />
       <Footer theme={theme} navigate={navigate} />
     </div>
@@ -554,7 +517,7 @@ function Navbar({ theme, isAM, setIsAM, menuOpen, setMenuOpen, navigate, current
 }
 
 // ── Homepage ───────────────────────────────────────────────────────
-function HomePage({ theme, isAM, navigate, setBookingOpen, setOrderOpen, flags }) {
+function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
   return (
     <div>
       {/* Hero */}
@@ -616,7 +579,6 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, setOrderOpen, flags }
         <FadeIn delay={0.6}>
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
             <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={theme} />
-            <CTAButton label="Order Now" onClick={() => setOrderOpen(true)} theme={theme} />
           </div>
         </FadeIn>
 
@@ -642,18 +604,17 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, setOrderOpen, flags }
           </div>
         </FadeIn>
         <div style={{
-          display: "flex", overflowX: "auto", gap: 24, padding: "0 0 20px",
+          display: "flex", flexWrap: "wrap", justifyContent: "center",
+          gap: 24, padding: "0 0 20px",
           maxWidth: 1200, margin: "0 auto",
-          scrollSnapType: "x mandatory",
-          WebkitOverflowScrolling: "touch",
         }}>
           {ELEMENTS.map((el, i) => (
-            <FadeIn key={el.name} delay={i * 0.1}>
+            <FadeIn key={el.name} delay={i * 0.1} style={{ flex: "1 1 200px", minWidth: 200, maxWidth: 280 }}>
               <div className="hover-lift" style={{
-                minWidth: 260, maxWidth: 280, padding: 32,
+                height: "100%", padding: 32,
                 background: theme.surfaceAlt, borderRadius: 16,
                 border: `1px solid ${theme.muted}15`,
-                scrollSnapAlign: "start", cursor: "default",
+                cursor: "default",
                 transition: "all 0.3s ease",
               }}>
                 <div style={{ fontSize: 36, marginBottom: 16, color: el.color }}>{el.symbol}</div>
@@ -1101,7 +1062,7 @@ function ContactPage({ theme }) {
                 Visit The Sixth Element
               </h3>
               {[
-                { icon: "📍", label: "Address", value: "Richmond-upon-Thames\nLondon, TW9" },
+                { icon: "📍", label: "Address", value: "210 Upper Richmond Road West\nLondon, SW14 8AH" },
                 { icon: "🕐", label: "Hours", value: "Mon–Fri: 8am – 10pm\nSat–Sun: 9am – 11pm" },
                 { icon: "📞", label: "Phone", value: "+44 (0) 20 XXXX XXXX" },
                 { icon: "📧", label: "Email", value: "hello@thesixthelement.co.uk" },
@@ -1188,52 +1149,12 @@ function ContactPage({ theme }) {
   );
 }
 
-// ── Booking Modal ──────────────────────────────────────────────────
-function BookingModal({ theme, isAM, onClose, flags }) {
-  const [step, setStep] = useState(1);
-  const [booking, setBooking] = useState({
-    date: "", time: "", guests: "2", name: "", email: "", phone: "", notes: "",
-    seating: isAM ? "brunch" : "evening",
-  });
-  const [confirmed, setConfirmed] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const [bookingRef, setBookingRef] = useState("");
-
-  const seatingOptions = [
-    { id: "brunch", label: "Brunch", duration: `${flags.brunch_duration} min`, available: "8am – 2pm" },
-    { id: "evening", label: "Evening", duration: `${flags.evening_duration} min`, available: "2pm – 10pm" },
-  ];
-
-  const handleConfirm = async () => {
-    setSubmitting(true);
-    setError("");
-    try {
-      const resp = await fetch("/api/book", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(booking),
-      });
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || "Booking failed");
-      setBookingRef(data.bookingRef || "");
-      setConfirmed(true);
-    } catch (err) {
-      setError(err.message || "Something went wrong. Please call us directly.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const inputStyle = {
-    width: "100%", padding: "12px 14px", borderRadius: 8,
-    border: `1px solid ${theme.muted}30`, background: theme.surfaceAlt,
-    color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 14,
-  };
-  const labelStyle = {
-    fontSize: 12, fontWeight: 600, letterSpacing: "0.08em",
-    textTransform: "uppercase", color: theme.muted, marginBottom: 6, display: "block",
-  };
+// ── Reservation Modal (Toast Tables) ──────────────────────────────
+// Embeds the Toast Tables online reservation page in an iframe, with a
+// graceful fallback to opening it in a new tab (some Toast pages block
+// iframing via X-Frame-Options). Set the link in TOAST_CONFIG above.
+function ReservationModal({ theme, onClose }) {
+  const url = TOAST_CONFIG.reservationUrl;
 
   return (
     <div style={{
@@ -1243,226 +1164,65 @@ function BookingModal({ theme, isAM, onClose, flags }) {
       padding: 24, animation: "slideDown 0.3s ease",
     }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{
-        width: "100%", maxWidth: 500, maxHeight: "85vh", overflowY: "auto",
-        background: theme.bg, borderRadius: 20, padding: 32,
+        width: "100%", maxWidth: 560, maxHeight: "90vh",
+        display: "flex", flexDirection: "column",
+        background: theme.bg, borderRadius: 20, overflow: "hidden",
         border: `1px solid ${theme.muted}20`,
       }}>
-        {confirmed ? (
-          <div style={{ textAlign: "center", padding: "20px 0" }}>
-            <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}>
-              <Logomark size={56} color={theme.accent} />
-            </div>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400, color: theme.heading, marginBottom: 12 }}>
-              Table Reserved
-            </h2>
-            <p style={{ fontSize: 14, color: theme.muted, fontWeight: 300, lineHeight: 1.6, marginBottom: 8 }}>
-              {booking.seating === "brunch" ? "Brunch" : "Evening"} for {booking.guests} on {booking.date} at {booking.time}
-            </p>
-            <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300 }}>
-              Confirmation sent to {booking.email}
-              {bookingRef && <><br/>Ref: {bookingRef}</>}
-            </p>
+        {/* Header */}
+        <div style={{
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          padding: "20px 24px", borderBottom: `1px solid ${theme.muted}15`,
+        }}>
+          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 26, fontWeight: 400, color: theme.heading }}>
+            Reserve a Table
+          </h2>
+          <button onClick={onClose} style={{
+            background: "none", border: "none", fontSize: 24, color: theme.muted,
+            cursor: "pointer", padding: 4, lineHeight: 1,
+          }}>×</button>
+        </div>
 
-            {/* Deposit Payment Option */}
-            <div style={{
-              margin: "24px 0 16px", padding: "16px 20px", borderRadius: 14,
-              background: `${theme.accent}08`, border: `1px solid ${theme.accent}20`,
-              textAlign: "left",
-            }}>
-              <div style={{ fontSize: 13, fontWeight: 500, color: theme.heading, marginBottom: 6 }}>
-                Guarantee your table with a deposit
-              </div>
-              <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300, lineHeight: 1.5, marginBottom: 12 }}>
-                Pay a small deposit now (deducted from your bill). This secures your reservation and helps us manage covers.
-              </div>
-              <div style={{ display: "flex", gap: 8 }}>
-                <button
-                  onClick={async () => {
-                    try {
-                      const resp = await fetch("/api/payment?action=reservation-deposit", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          bookingRef,
-                          name: booking.name,
-                          email: booking.email,
-                          date: booking.date,
-                          time: booking.time,
-                          guests: booking.guests,
-                          seating: booking.seating,
-                        }),
-                      });
-                      const data = await resp.json();
-                      if (data.url) window.location.href = data.url;
-                    } catch (err) {
-                      console.error("Payment error:", err);
-                    }
-                  }}
-                  style={{
-                    flex: 1, padding: "10px 16px", borderRadius: 10, border: "none",
-                    background: theme.accent, color: "#fff", cursor: "pointer",
-                    fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 500,
-                  }}
-                >
-                  Pay £{booking.seating === "brunch" ? "5" : "10"} Deposit
-                </button>
-                <button onClick={onClose} style={{
-                  padding: "10px 16px", borderRadius: 10,
-                  border: `1px solid ${theme.muted}25`, background: "transparent",
-                  color: theme.muted, cursor: "pointer",
-                  fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400,
-                }}>
-                  Skip
-                </button>
-              </div>
-              <div style={{ fontSize: 10, color: theme.muted, marginTop: 8, fontWeight: 300 }}>
-                Secure payment via Stripe. Apple Pay & Google Pay accepted.
-              </div>
-            </div>
-          </div>
-        ) : (
+        {url ? (
           <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400, color: theme.heading }}>
-                Book a Table
-              </h2>
-              <button onClick={onClose} style={{
-                background: "none", border: "none", fontSize: 24, color: theme.muted,
-                cursor: "pointer", padding: 4,
-              }}>×</button>
+            <iframe
+              src={url}
+              title="Book a table with Toast"
+              style={{ width: "100%", height: "70vh", border: "none", background: "#fff" }}
+              allow="payment"
+            />
+            <div style={{
+              padding: "12px 24px", borderTop: `1px solid ${theme.muted}15`,
+              textAlign: "center", fontSize: 12, color: theme.muted, fontWeight: 300,
+            }}>
+              Trouble loading?{" "}
+              <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: theme.accent, fontWeight: 500, textDecoration: "none" }}>
+                Open the booking page in a new tab →
+              </a>
             </div>
-
-            {/* Step indicators */}
-            <div style={{ display: "flex", gap: 8, marginBottom: 32 }}>
-              {[1, 2].map(s => (
-                <div key={s} style={{
-                  flex: 1, height: 3, borderRadius: 2,
-                  background: step >= s ? theme.accent : `${theme.muted}20`,
-                  transition: "background 0.3s ease",
-                }} />
-              ))}
-            </div>
-
-            {step === 1 && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                {/* Seating type */}
-                <div>
-                  <label style={labelStyle}>Seating Type</label>
-                  <div style={{ display: "flex", gap: 10 }}>
-                    {seatingOptions.map(opt => (
-                      <button key={opt.id} onClick={() => setBooking(p => ({ ...p, seating: opt.id }))} style={{
-                        flex: 1, padding: "14px 12px", borderRadius: 10, cursor: "pointer",
-                        border: booking.seating === opt.id ? `2px solid ${theme.accent}` : `1px solid ${theme.muted}20`,
-                        background: booking.seating === opt.id ? `${theme.accent}10` : "transparent",
-                        textAlign: "center", transition: "all 0.3s ease",
-                      }}>
-                        <div style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>{opt.label}</div>
-                        <div style={{ fontSize: 11, color: theme.muted, marginTop: 2 }}>{opt.duration} · {opt.available}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                  <div>
-                    <label style={labelStyle}>Date</label>
-                    <input type="date" value={booking.date} onChange={e => setBooking(p => ({ ...p, date: e.target.value }))} style={inputStyle} />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Time</label>
-                    <select value={booking.time} onChange={e => setBooking(p => ({ ...p, time: e.target.value }))} style={inputStyle}>
-                      <option value="">Select...</option>
-                      {(booking.seating === "brunch"
-                        ? ["8:00","8:30","9:00","9:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30"]
-                        : ["14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","20:30","21:00"]
-                      ).map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label style={labelStyle}>Guests</label>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    {["1","2","3","4","5","6","7","8+"].map(n => (
-                      <button key={n} onClick={() => setBooking(p => ({ ...p, guests: n }))} style={{
-                        width: 40, height: 40, borderRadius: "50%", border: "none", cursor: "pointer",
-                        background: booking.guests === n ? theme.accent : `${theme.muted}15`,
-                        color: booking.guests === n ? "#fff" : theme.text,
-                        fontSize: 13, fontWeight: 500, transition: "all 0.2s ease",
-                      }}>
-                        {n}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <button
-                  onClick={() => { if (booking.date && booking.time) setStep(2); }}
-                  disabled={!booking.date || !booking.time}
-                  style={{
-                    padding: "14px 32px", borderRadius: 30, border: "none",
-                    background: booking.date && booking.time ? theme.accent : `${theme.muted}30`,
-                    color: booking.date && booking.time ? "#fff" : theme.muted,
-                    cursor: booking.date && booking.time ? "pointer" : "not-allowed",
-                    fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500,
-                    marginTop: 8, transition: "all 0.3s ease",
-                  }}
-                >
-                  Continue
-                </button>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                <div>
-                  <label style={labelStyle}>Full Name</label>
-                  <input type="text" value={booking.name} onChange={e => setBooking(p => ({ ...p, name: e.target.value }))} style={inputStyle} placeholder="Your name" />
-                </div>
-                <div>
-                  <label style={labelStyle}>Email</label>
-                  <input type="email" value={booking.email} onChange={e => setBooking(p => ({ ...p, email: e.target.value }))} style={inputStyle} placeholder="your@email.com" />
-                </div>
-                <div>
-                  <label style={labelStyle}>Phone</label>
-                  <input type="tel" value={booking.phone} onChange={e => setBooking(p => ({ ...p, phone: e.target.value }))} style={inputStyle} placeholder="+44..." />
-                </div>
-                <div>
-                  <label style={labelStyle}>Special Requests</label>
-                  <textarea value={booking.notes} onChange={e => setBooking(p => ({ ...p, notes: e.target.value }))} rows={3} style={{ ...inputStyle, resize: "vertical" }} placeholder="Allergies, celebrations, etc." />
-                </div>
-                <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
-                  <button onClick={() => setStep(1)} style={{
-                    flex: 1, padding: "14px", borderRadius: 30,
-                    border: `1px solid ${theme.muted}30`, background: "transparent",
-                    color: theme.text, cursor: "pointer",
-                    fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500,
-                  }}>
-                    Back
-                  </button>
-                  <button
-                    onClick={handleConfirm}
-                    disabled={!booking.name || !booking.email || submitting}
-                    style={{
-                      flex: 2, padding: "14px", borderRadius: 30, border: "none",
-                      background: booking.name && booking.email && !submitting ? theme.accent : `${theme.muted}30`,
-                      color: booking.name && booking.email && !submitting ? "#fff" : theme.muted,
-                      cursor: booking.name && booking.email && !submitting ? "pointer" : "not-allowed",
-                      fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500,
-                      opacity: submitting ? 0.7 : 1,
-                    }}
-                  >
-                    {submitting ? "Reserving..." : "Confirm Reservation"}
-                  </button>
-                </div>
-                {error && (
-                  <div style={{
-                    marginTop: 12, padding: "10px 14px", borderRadius: 8,
-                    background: "#FEE2E2", color: "#991B1B", fontSize: 13,
-                  }}>
-                    {error}
-                  </div>
-                )}
-              </div>
-            )}
           </>
+        ) : (
+          /* Link not configured yet — show owner-facing setup hint + call option */
+          <div style={{ padding: "40px 32px", textAlign: "center" }}>
+            <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}>
+              <Logomark size={48} color={theme.accent} />
+            </div>
+            <p style={{ fontSize: 15, color: theme.heading, fontWeight: 500, marginBottom: 8 }}>
+              Online booking is being set up
+            </p>
+            <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, lineHeight: 1.6, marginBottom: 16 }}>
+              To take reservations here, paste your Toast Tables online reservation
+              link into <code style={{ background: `${theme.muted}15`, padding: "2px 6px", borderRadius: 4 }}>TOAST_CONFIG.reservationUrl</code>.
+              In the meantime, please call us to book.
+            </p>
+            <a href="tel:+442000000000" style={{
+              display: "inline-block", padding: "12px 28px", borderRadius: 30,
+              background: theme.accent, color: "#fff", fontSize: 14, fontWeight: 500,
+              textDecoration: "none",
+            }}>
+              +44 (0) 20 XXXX XXXX
+            </a>
+          </div>
         )}
       </div>
     </div>
@@ -1470,7 +1230,7 @@ function BookingModal({ theme, isAM, onClose, flags }) {
 }
 
 // ── Persistent CTA ─────────────────────────────────────────────────
-function PersistentCTA({ theme, setBookingOpen, setOrderOpen }) {
+function PersistentCTA({ theme, setBookingOpen }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const fn = () => setVisible(window.scrollY > 400);
@@ -1496,19 +1256,6 @@ function PersistentCTA({ theme, setBookingOpen, setOrderOpen }) {
         onMouseLeave={e => e.target.style.transform = "none"}
       >
         Book a Table
-      </button>
-      <button onClick={() => setOrderOpen(true)} style={{
-        padding: "12px 24px", borderRadius: 30,
-        border: `1px solid ${theme.accent}60`, background: `${theme.bg}E0`,
-        backdropFilter: "blur(10px)", color: theme.accent, cursor: "pointer",
-        fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 500,
-        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-        transition: "transform 0.3s ease",
-      }}
-        onMouseEnter={e => e.target.style.transform = "translateY(-2px)"}
-        onMouseLeave={e => e.target.style.transform = "none"}
-      >
-        Order Now
       </button>
     </div>
   );
@@ -1587,7 +1334,7 @@ function InstagramSection({ theme }) {
       ) : (
         /* Styled placeholders — replaced by live feed once connected */
         <div style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+          display: "grid", gridTemplateColumns: "repeat(6, 1fr)",
           gap: 4, maxWidth: 1000, margin: "0 auto",
         }}>
           {[
@@ -1642,137 +1389,6 @@ function InstagramSection({ theme }) {
         </div>
       </FadeIn>
     </section>
-  );
-}
-
-// ── Order Modal (Delivery Platform Selector) ──────────────────────
-function OrderModal({ theme, platforms, onClose }) {
-  const activePlatforms = Object.entries(platforms).filter(([, p]) => p.status !== "hidden");
-  const hasAnyActive = activePlatforms.some(([, p]) => p.status === "active" && p.url);
-
-  return (
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 2000,
-      background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      padding: 24, animation: "slideDown 0.3s ease",
-    }} onClick={onClose}>
-      <div onClick={e => e.stopPropagation()} style={{
-        width: "100%", maxWidth: 440,
-        background: theme.bg, borderRadius: 20, padding: 32,
-        border: `1px solid ${theme.muted}20`,
-      }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400, color: theme.heading }}>
-            Order Delivery
-          </h2>
-          <button onClick={onClose} style={{
-            background: "none", border: "none", fontSize: 24, color: theme.muted, cursor: "pointer",
-          }}>×</button>
-        </div>
-        <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginBottom: 28, lineHeight: 1.5 }}>
-          Choose your preferred delivery platform. You'll be taken to their app or website to complete your order.
-        </p>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {activePlatforms.map(([key, platform]) => {
-            const isActive = platform.status === "active" && platform.url;
-            return (
-              <button
-                key={key}
-                onClick={() => { if (isActive) window.open(platform.url, "_blank"); }}
-                disabled={!isActive}
-                style={{
-                  display: "flex", alignItems: "center", gap: 16,
-                  padding: "16px 20px", borderRadius: 14, cursor: isActive ? "pointer" : "default",
-                  background: isActive ? theme.surfaceAlt : `${theme.muted}08`,
-                  border: isActive ? `1px solid ${platform.color}30` : `1px solid ${theme.muted}15`,
-                  transition: "all 0.3s ease",
-                  opacity: isActive ? 1 : 0.5,
-                  textAlign: "left", width: "100%",
-                }}
-                onMouseEnter={e => { if (isActive) { e.currentTarget.style.borderColor = platform.color; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 4px 16px ${platform.color}15`; }}}
-                onMouseLeave={e => { if (isActive) { e.currentTarget.style.borderColor = `${platform.color}30`; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}}
-              >
-                {/* Platform icon */}
-                <div style={{
-                  width: 48, height: 48, borderRadius: 12,
-                  background: isActive ? `${platform.color}15` : `${theme.muted}10`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 24, flexShrink: 0,
-                }}>
-                  {platform.logo}
-                </div>
-
-                {/* Platform details */}
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{
-                      fontSize: 16, fontWeight: 500,
-                      color: isActive ? theme.heading : theme.muted,
-                      fontFamily: "'Outfit', sans-serif",
-                    }}>
-                      {platform.name}
-                    </span>
-                    {!isActive && (
-                      <span style={{
-                        fontSize: 10, fontWeight: 600, letterSpacing: "0.05em",
-                        padding: "2px 8px", borderRadius: 10,
-                        background: `${theme.accent}15`, color: theme.accent,
-                      }}>
-                        COMING SOON
-                      </span>
-                    )}
-                  </div>
-                  <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300, marginTop: 2 }}>
-                    {isActive ? platform.tagline : "We're setting this up — check back soon"}
-                  </div>
-                </div>
-
-                {/* Arrow */}
-                {isActive && (
-                  <div style={{ color: platform.color, fontSize: 18, flexShrink: 0 }}>→</div>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {!hasAnyActive && (
-          <div style={{
-            marginTop: 20, padding: "16px 20px", borderRadius: 12,
-            background: `${theme.accent}08`, border: `1px solid ${theme.accent}20`,
-            textAlign: "center",
-          }}>
-            <div style={{ fontSize: 14, color: theme.heading, fontWeight: 500, marginBottom: 4 }}>
-              Delivery launching soon
-            </div>
-            <div style={{ fontSize: 13, color: theme.muted, fontWeight: 300, lineHeight: 1.5 }}>
-              We're finalising our delivery partnerships. For now, visit us in Richmond or call to arrange collection.
-            </div>
-            <div style={{ fontSize: 14, color: theme.accent, fontWeight: 500, marginTop: 8 }}>
-              +44 (0) 20 XXXX XXXX
-            </div>
-          </div>
-        )}
-
-        {/* Collection option */}
-        <div style={{
-          marginTop: 16, padding: "14px 20px", borderRadius: 12,
-          border: `1px solid ${theme.muted}15`, textAlign: "center",
-        }}>
-          <div style={{ fontSize: 13, color: theme.muted, fontWeight: 300 }}>
-            Prefer to collect? Call us to order ahead
-          </div>
-          <a href="tel:+442000000000" style={{
-            fontSize: 14, color: theme.accent, fontWeight: 500,
-            textDecoration: "none", marginTop: 4, display: "inline-block",
-          }}>
-            +44 (0) 20 XXXX XXXX
-          </a>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -1914,7 +1530,7 @@ function AdminLogin({ theme, onLogin, onClose }) {
 }
 
 // ── Admin Panel (authenticated) ────────────────────────────────────
-function AdminPanel({ theme, flags, updateFlag, resetFlags, platforms, updatePlatform, adminUser, onLogout, onClose }) {
+function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, onLogout, onClose }) {
   const toggleStyle = (active) => ({
     position: "relative", width: 44, height: 24, borderRadius: 12, cursor: "pointer",
     background: active ? COLORS.mossGreen : `${theme.muted}30`,
@@ -2044,71 +1660,19 @@ function AdminPanel({ theme, flags, updateFlag, resetFlags, platforms, updatePla
         ))}
       </div>
 
-      {/* Delivery Platforms */}
+      {/* Reservations (Toast Tables) */}
       <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
         <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 16 }}>
-          Delivery Platforms
+          Reservations (Toast Tables)
         </div>
-        {Object.entries(platforms).map(([key, platform]) => (
-          <div key={key} style={{
-            marginBottom: 16, padding: 16, borderRadius: 12,
-            background: theme.surfaceAlt, border: `1px solid ${theme.muted}10`,
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 18 }}>{platform.logo}</span>
-                <span style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>{platform.name}</span>
-              </div>
-              <select
-                value={platform.status}
-                onChange={e => updatePlatform(key, "status", e.target.value)}
-                style={{
-                  padding: "4px 8px", borderRadius: 6, fontSize: 11, fontWeight: 600,
-                  border: `1px solid ${theme.muted}30`, background: theme.bg,
-                  color: platform.status === "active" ? COLORS.mossGreen : platform.status === "coming_soon" ? theme.accent : theme.muted,
-                  fontFamily: "'Outfit', sans-serif", cursor: "pointer",
-                }}
-              >
-                <option value="active">🟢 LIVE</option>
-                <option value="coming_soon">🟡 COMING SOON</option>
-                <option value="hidden">⚫ HIDDEN</option>
-              </select>
-            </div>
-            <div style={{ marginBottom: 6 }}>
-              <label style={{ fontSize: 10, color: theme.muted, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600 }}>
-                Restaurant URL
-              </label>
-              <input
-                type="url"
-                value={platform.url || ""}
-                onChange={e => updatePlatform(key, "url", e.target.value || null)}
-                placeholder={key === "deliveroo" ? "https://deliveroo.co.uk/menu/london/richmond/your-restaurant" : key === "uber_eats" ? "https://www.ubereats.com/gb/store/your-restaurant/store-id" : "https://www.just-eat.co.uk/restaurants-your-restaurant/menu"}
-                style={{
-                  width: "100%", padding: "8px 10px", borderRadius: 6, marginTop: 4,
-                  border: `1px solid ${theme.muted}20`, background: theme.bg,
-                  color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 12,
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ fontSize: 10, color: theme.muted, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600 }}>
-                Tagline
-              </label>
-              <input
-                type="text"
-                value={platform.tagline}
-                onChange={e => updatePlatform(key, "tagline", e.target.value)}
-                style={{
-                  width: "100%", padding: "8px 10px", borderRadius: 6, marginTop: 4,
-                  border: `1px solid ${theme.muted}20`, background: theme.bg,
-                  color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 12,
-                }}
-              />
-            </div>
-          </div>
-        ))}
-        <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.6, marginTop: 4 }}>
-          Set each platform's status and paste your restaurant's direct order URL. Customers will be deep-linked straight to your menu.
+        <div style={{ fontSize: 13, color: theme.muted, lineHeight: 1.7, fontWeight: 300 }}>
+          Table bookings are handled by Toast Tables and open inside the
+          "Reserve a Table" popup. To change the booking page, update{" "}
+          <code style={{ background: `${theme.muted}15`, padding: "2px 6px", borderRadius: 4 }}>TOAST_CONFIG.reservationUrl</code>{" "}
+          in <code style={{ background: `${theme.muted}15`, padding: "2px 6px", borderRadius: 4 }}>src/App.jsx</code>.
+          <br /><br />
+          Find your link in Toast Web → <strong style={{ color: theme.heading }}>Waitlist &amp; Reservations → Settings → Reservations → Online access → "Copy online reservation link"</strong>.
+          Deposits, durations, and covers are all managed in Toast.
         </div>
       </div>
 
@@ -2131,7 +1695,8 @@ function AdminPanel({ theme, flags, updateFlag, resetFlags, platforms, updatePla
       <AdminSection theme={theme} title="Payments (Stripe)" icon="💳">
         <div style={{ fontSize: 13, color: theme.muted, lineHeight: 1.7, fontWeight: 300 }}>
           <p style={{ marginBottom: 12 }}>
-            Stripe handles all payments — deposits, direct orders, and future gift vouchers. 
+            Stripe handles any on-site payments (e.g. future gift vouchers).
+            Reservation deposits are now taken by Toast Tables at the time of booking.
             No card data touches your server.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -2147,9 +1712,8 @@ function AdminPanel({ theme, flags, updateFlag, resetFlags, platforms, updatePla
             </div>
           </div>
           <div style={{ marginTop: 16, padding: "12px", borderRadius: 8, background: `${theme.muted}08`, fontSize: 12 }}>
-            <strong style={{ color: theme.heading }}>Deposit Amounts:</strong><br/>
-            Brunch: £5 per booking · Evening: £10 per booking<br/>
-            <span style={{ fontSize: 11, color: theme.muted }}>Edit in api/payment.js or configure via Stripe Products</span>
+            <strong style={{ color: theme.heading }}>Reservation deposits:</strong><br/>
+            Configured in Toast → Waitlist &amp; Reservations → Settings.
           </div>
         </div>
       </AdminSection>
@@ -2543,10 +2107,10 @@ function StructuredData() {
     "email": "hello@thesixthelement.co.uk",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Richmond-upon-Thames",
-      "addressLocality": "Richmond",
+      "streetAddress": "210 Upper Richmond Road West",
+      "addressLocality": "London",
       "addressRegion": "London",
-      "postalCode": "TW9",
+      "postalCode": "SW14 8AH",
       "addressCountry": "GB"
     },
     "geo": {
