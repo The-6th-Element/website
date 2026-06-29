@@ -1064,8 +1064,8 @@ function ContactPage({ theme }) {
               {[
                 { icon: "📍", label: "Address", value: "210 Upper Richmond Road West\nLondon, SW14 8AH" },
                 { icon: "🕐", label: "Hours", value: "Mon–Fri: 8am – 10pm\nSat–Sun: 9am – 11pm" },
-                { icon: "📞", label: "Phone", value: "+44 (0) 20 XXXX XXXX" },
-                { icon: "📧", label: "Email", value: "hello@thesixthelement.co.uk" },
+                { icon: "📞", label: "Phone", value: "+44(0)20 35188688" },
+                { icon: "📧", label: "Email", value: "info@the6thelement.co.uk" },
               ].map(item => (
                 <div key={item.label} style={{ display: "flex", gap: 16, marginBottom: 24 }}>
                   <div style={{ fontSize: 20, marginTop: 2 }}>{item.icon}</div>
@@ -1215,12 +1215,12 @@ function ReservationModal({ theme, onClose }) {
               link into <code style={{ background: `${theme.muted}15`, padding: "2px 6px", borderRadius: 4 }}>TOAST_CONFIG.reservationUrl</code>.
               In the meantime, please call us to book.
             </p>
-            <a href="tel:+442000000000" style={{
+            <a href="tel:+44(0)20 35188688" style={{
               display: "inline-block", padding: "12px 28px", borderRadius: 30,
               background: theme.accent, color: "#fff", fontSize: 14, fontWeight: 500,
               textDecoration: "none",
             }}>
-              +44 (0) 20 XXXX XXXX
+              +44(0)20 35188688
             </a>
           </div>
         )}
@@ -1285,7 +1285,7 @@ function CTAButton({ label, onClick, primary, theme }) {
 // in the INSTAGRAM_CONFIG below. Until then, styled placeholders are shown.
 const INSTAGRAM_CONFIG = {
   handle: "thesixthelement.richmond",
-  profileUrl: "https://www.instagram.com/thesixthelement.richmond",
+  profileUrl: "https://www.instagram.com/the.sixth.element.210",
   // Set ONE of these to enable a live feed:
   elfsightWidgetId: null,   // e.g. "el-xxxxxxxx" — from elfsight.com (free tier)
   curatorFeedId: null,      // e.g. "xxxxxxxx"   — from curator.io (free tier)
@@ -2103,8 +2103,8 @@ function StructuredData() {
     "name": "The Sixth Element",
     "description": "Specialty coffee by day, natural wine by night. A space designed to transform with you. Richmond-upon-Thames.",
     "url": "https://thesixthelement.co.uk",
-    "telephone": "+442000000000",
-    "email": "hello@thesixthelement.co.uk",
+    "telephone": "+44(0)20 35188688",
+    "email": "info@the6thelement.co.uk",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "210 Upper Richmond Road West",
@@ -2125,7 +2125,7 @@ function StructuredData() {
       { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday","Sunday"], "opens": "09:00", "closes": "23:00" }
     ],
     "sameAs": [
-      "https://www.instagram.com/thesixthelement.richmond"
+      "https://www.instagram.com/the.sixth.element.210"
     ],
     "keywords": "Specialty Coffee Richmond, Brunch near Richmond Park, Evening drinks Richmond, Natural Wine Richmond, Social Impact Coffee Richmond, Best brunch Richmond-upon-Thames",
     "hasMenu": {
