@@ -39,7 +39,7 @@ function useFeatureFlags() {
 // The "Book a Table" buttons open this link inside an embedded modal,
 // with a "open in new tab" fallback (some Toast pages block iframing).
 const TOAST_CONFIG = {
-  reservationUrl: "", // e.g. "https://www.toasttab.com/the-sixth-element/reservations"
+  reservationUrl: "https://tables.toasttab.com/restaurants/5503e03f-b188-421c-aa8f-5a2c8e27fd59/findTime", // e.g. "https://www.toasttab.com/the-sixth-element/reservations"
 };
 
 // ── Theme & Design Tokens ──────────────────────────────────────────
