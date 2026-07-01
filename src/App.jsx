@@ -7,8 +7,15 @@ const DEFAULT_FLAGS = {
   instagram_feed: true,     // show/hide Instagram grid
   booking_enabled: true,    // enable/disable reservations
   brunch_duration: 60,      // minutes
-  evening_duration: 90,     // minutes. 
+  evening_duration: 90,     // minutes.
+  pm_switch_hour: 14,       // UK hour (24h) when the site switches to evening/dark mode
 };
+
+// AM (light) between 8am and the configurable evening switch hour, UK time.
+function computeIsAM(pmSwitchHour = 14) {
+  const h = parseInt(new Date().toLocaleString("en-GB", { timeZone: "Europe/London", hour: "numeric", hour12: false }), 10);
+  return h >= 8 && h < pmSwitchHour;
+}
 
 function useFeatureFlags() {
   const [flags, setFlags] = useState(() => {
@@ -228,17 +235,11 @@ const DEFAULT_PROMOTIONS = [
   },
 ];
 
-// ── Generic localStorage-backed store ──────────────────────────────
-function readStore(key, fallback) {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch { return fallback; }
-}
-function writeStore(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
-}
-
+// ── Supabase-backed content (menu + promotions) ────────────────────
+// Menu and promotions live as JSON in the Supabase `site_content` table
+// (keys "menu_data" / "promotions"), served via /api/content. Reads are
+// public; writes need the admin token. Falls back to the built-in
+// defaults when the CMS isn't configured, so the site always works.
 function isPromoLive(p) {
   const today = new Date().toISOString().slice(0, 10);
   return p.is_active
@@ -246,21 +247,65 @@ function isPromoLive(p) {
     && (!p.end_date || p.end_date >= today);
 }
 
+async function saveContentKey(key, value) {
+  const token = sessionStorage.getItem("tse_admin_token");
+  const resp = await fetch("/api/content?resource=content", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: JSON.stringify({ key, value }),
+  });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.error || "Save failed");
+  }
+  return resp.json();
+}
+
+// Loads one site_content key. status: "loading" | "connected" | "offline".
+function useContentKey(key, fallback) {
+  const [value, setValue] = useState(fallback);
+  const [status, setStatus] = useState("loading");
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/content?resource=content")
+      .then(r => (r.ok ? r.json() : Promise.reject(new Error("cms"))))
+      .then(map => {
+        if (!alive) return;
+        if (map && map[key] != null) setValue(map[key]);
+        setStatus("connected");
+      })
+      .catch(() => { if (alive) setStatus("offline"); });
+    return () => { alive = false; };
+  }, [key]);
+  return [value, setValue, status];
+}
+
 function usePromotions() {
-  const [promotions, setPromotions] = useState(() => readStore("tse_promotions", DEFAULT_PROMOTIONS));
-  const persist = (next) => { setPromotions(next); writeStore("tse_promotions", next); };
+  const [promotions, setPromotions, status] = useContentKey("promotions", DEFAULT_PROMOTIONS);
+  const [saveState, setSaveState] = useState("idle"); // idle | saving | saved | error
+  const persist = (next) => {
+    setPromotions(next);
+    setSaveState("saving");
+    saveContentKey("promotions", next).then(() => setSaveState("saved")).catch(() => setSaveState("error"));
+  };
   const addPromotion = (promo) => persist([...promotions, { ...promo, id: `promo-${Date.now()}` }]);
   const updatePromotion = (id, patch) => persist(promotions.map(p => p.id === id ? { ...p, ...patch } : p));
   const deletePromotion = (id) => persist(promotions.filter(p => p.id !== id));
-  const resetPromotions = () => { try { localStorage.removeItem("tse_promotions"); } catch {} setPromotions(DEFAULT_PROMOTIONS); };
-  return { promotions, addPromotion, updatePromotion, deletePromotion, resetPromotions };
+  const resetPromotions = () => persist(DEFAULT_PROMOTIONS);
+  return { promotions, status, saveState, addPromotion, updatePromotion, deletePromotion, resetPromotions };
 }
 
 function useMenu() {
-  const [menu, setMenu] = useState(() => readStore("tse_menu", MENU_DATA));
-  const saveMenu = (next) => { setMenu(next); writeStore("tse_menu", next); };
-  const resetMenu = () => { try { localStorage.removeItem("tse_menu"); } catch {} setMenu(MENU_DATA); };
-  return { menu, saveMenu, resetMenu };
+  const [menu, setMenu, status] = useContentKey("menu_data", MENU_DATA);
+  const [saveState, setSaveState] = useState("idle");
+  const persist = (next) => {
+    setMenu(next);
+    setSaveState("saving");
+    saveContentKey("menu_data", next).then(() => setSaveState("saved")).catch(() => setSaveState("error"));
+  };
+  const saveMenu = (next) => persist(next);
+  const resetMenu = () => persist(MENU_DATA);
+  return { menu, status, saveState, saveMenu, resetMenu };
 }
 
 // ── Intersection Observer Hook ─────────────────────────────────────
@@ -316,8 +361,9 @@ function Logomark({ size = 32, color = "currentColor", style }) {
 export default function TheSixthElement() {
   const [currentPage, setCurrentPage] = useState("home");
   const [isAM, setIsAM] = useState(() => {
-    const h = parseInt(new Date().toLocaleString("en-GB", { timeZone: "Europe/London", hour: "numeric", hour12: false }), 10);
-    return h >= 8 && h < 14;
+    let pm = 14;
+    try { const s = JSON.parse(localStorage.getItem("tse_flags")); if (s && s.pm_switch_hour) pm = s.pm_switch_hour; } catch {}
+    return computeIsAM(pm);
   });
   const [menuOpen, setMenuOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -381,20 +427,14 @@ export default function TheSixthElement() {
     setShowAdmin(false);
   };
 
-  // Auto-detect AM/PM based on UK time (Europe/London handles BST/GMT automatically)
+  // Auto-detect AM/PM based on UK time (Europe/London handles BST/GMT automatically).
+  // The evening switch hour is admin-configurable via flags.pm_switch_hour.
   useEffect(() => {
-    const getUKHour = () => {
-      const ukTime = new Date().toLocaleString("en-GB", { timeZone: "Europe/London", hour: "numeric", hour12: false });
-      return parseInt(ukTime, 10);
-    };
-    const checkTime = () => {
-      const h = getUKHour();
-      setIsAM(h >= 8 && h < 14);
-    };
+    const checkTime = () => setIsAM(computeIsAM(flags.pm_switch_hour));
     checkTime();
     const interval = setInterval(checkTime, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [flags.pm_switch_hour]);
 
   const theme = isAM ? AM_THEME : PM_THEME;
 
@@ -607,67 +647,76 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           opacity: isAM ? 0.06 : 0.1, pointerEvents: "none", zIndex: 0,
         }} />
 
-        <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-        <FadeIn>
-          {/* Rotating five-elements emblem medallion with the sixth-element "VI" mark */}
-          <div style={{ position: "relative", width: "min(46vw, 200px)", height: "min(46vw, 200px)", marginBottom: 28 }}>
-            <img src="/elements-mark.png" alt="The Sixth Element — five elements emblem" className="rotate-emblem" style={{
-              width: "100%", height: "100%", objectFit: "contain",
-              opacity: isAM ? 0.85 : 0.95,
-              filter: isAM ? "none" : "drop-shadow(0 0 20px rgba(191,138,47,0.35))",
-            }} />
-            <div style={{
-              position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
-              pointerEvents: "none",
-            }}>
-              <span style={{
-                fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(40px, 9vw, 68px)", fontWeight: 500,
-                background: "linear-gradient(135deg, #E8C57D 0%, #BF8A2F 60%, #8A6220 100%)",
-                WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent",
-                color: theme.accent, letterSpacing: "0.02em",
-              }}>VI</span>
+        <div style={{
+          position: "relative", zIndex: 1, width: "100%", maxWidth: 1080, margin: "0 auto",
+          display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center",
+          gap: "clamp(24px, 5vw, 64px)",
+        }}>
+          {/* Left: rotating five-elements emblem medallion with the "VI" mark */}
+          <FadeIn>
+            <div style={{ position: "relative", width: "min(52vw, 260px)", height: "min(52vw, 260px)", flexShrink: 0 }}>
+              <img src="/elements-mark.png" alt="The Sixth Element — five elements emblem" className="rotate-emblem" style={{
+                width: "100%", height: "100%", objectFit: "contain",
+                opacity: isAM ? 0.5 : 0.92,
+                filter: isAM
+                  ? "drop-shadow(0 4px 14px rgba(75,54,33,0.18))"
+                  : "drop-shadow(0 0 22px rgba(191,138,47,0.4))",
+              }} />
+              <div style={{
+                position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                pointerEvents: "none",
+              }}>
+                <span style={{
+                  fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(26px, 4.5vw, 40px)", fontWeight: 500,
+                  background: "linear-gradient(135deg, #E8C57D 0%, #BF8A2F 60%, #8A6220 100%)",
+                  WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent",
+                  color: theme.accent, letterSpacing: "0.02em",
+                }}>VI</span>
+              </div>
             </div>
+          </FadeIn>
+
+          {/* Right: headline + copy */}
+          <div style={{ flex: "1 1 340px", minWidth: 280, maxWidth: 620, textAlign: "left" }}>
+            <FadeIn delay={0.1}>
+              <div style={{
+                fontSize: 12, letterSpacing: "0.3em", textTransform: "uppercase",
+                color: theme.muted, marginBottom: 20, fontWeight: 500,
+              }}>
+                Richmond-upon-Thames
+              </div>
+            </FadeIn>
+            <FadeIn delay={0.2}>
+              <h1 style={{
+                fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(36px, 6vw, 72px)",
+                fontWeight: 300, color: theme.heading, lineHeight: 1.1, marginBottom: 16,
+              }}>
+                The Five Elements Shape Life.
+              </h1>
+            </FadeIn>
+            <FadeIn delay={0.3}>
+              <h2 style={{
+                fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(26px, 4.5vw, 48px)",
+                fontWeight: 500, fontStyle: "italic", color: theme.accent, marginBottom: 28,
+              }}>
+                We Offer the Sixth.
+              </h2>
+            </FadeIn>
+            <FadeIn delay={0.45}>
+              <p style={{
+                fontSize: 16, lineHeight: 1.7, color: theme.muted,
+                maxWidth: 520, marginBottom: 36, fontWeight: 300,
+              }}>
+                A space where morning light meets evening warmth. Specialty coffee by day,
+                natural wine by night. Always intentional. Always Richmond.
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.6}>
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={theme} />
+              </div>
+            </FadeIn>
           </div>
-        </FadeIn>
-        <FadeIn delay={0.1}>
-          <div style={{
-            fontSize: 12, letterSpacing: "0.3em", textTransform: "uppercase",
-            color: theme.muted, marginBottom: 32, fontWeight: 500,
-          }}>
-            Richmond-upon-Thames
-          </div>
-        </FadeIn>
-        <FadeIn delay={0.2}>
-          <h1 style={{
-            fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(36px, 7vw, 80px)",
-            fontWeight: 300, color: theme.heading, lineHeight: 1.1, marginBottom: 24,
-            maxWidth: 700,
-          }}>
-            The Five Elements Shape Life.
-          </h1>
-        </FadeIn>
-        <FadeIn delay={0.3}>
-          <h2 style={{
-            fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 5vw, 56px)",
-            fontWeight: 500, fontStyle: "italic", color: theme.accent, marginBottom: 40,
-          }}>
-            We Offer the Sixth.
-          </h2>
-        </FadeIn>
-        <FadeIn delay={0.45}>
-          <p style={{
-            fontSize: 16, lineHeight: 1.7, color: theme.muted,
-            maxWidth: 500, marginBottom: 48, fontWeight: 300,
-          }}>
-            A space where morning light meets evening warmth. Specialty coffee by day,
-            natural wine by night. Always intentional. Always Richmond.
-          </p>
-        </FadeIn>
-        <FadeIn delay={0.6}>
-          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
-            <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={theme} />
-          </div>
-        </FadeIn>
         </div>
 
         {/* Scroll indicator */}
@@ -1894,6 +1943,31 @@ function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, onLogout,
         ))}
       </div>
 
+      {/* Display Mode — when the site switches to evening/dark */}
+      <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
+        <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 8 }}>
+          Display Mode
+        </div>
+        <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300, marginBottom: 12, lineHeight: 1.5 }}>
+          The site shows the light "AM" look from 8am, then switches to the dark "evening" look at the time below (UK time).
+        </div>
+        <div style={{ fontSize: 13, color: theme.heading, marginBottom: 8 }}>Evening mode starts at</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {[11, 12, 13, 14, 15, 16, 17, 18, 19].map(h => {
+            const label = h === 12 ? "12pm" : h < 12 ? `${h}am` : `${h - 12}pm`;
+            return (
+              <button key={h} onClick={() => updateFlag("pm_switch_hour", h)} style={{
+                padding: "6px 10px", borderRadius: 6, border: "none", cursor: "pointer",
+                fontSize: 12, fontWeight: 500,
+                background: flags.pm_switch_hour === h ? theme.accent : `${theme.muted}15`,
+                color: flags.pm_switch_hour === h ? "#fff" : theme.text,
+                transition: "all 0.2s ease",
+              }}>{label}</button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Reservations (Toast Tables) */}
       <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
         <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 16 }}>
@@ -2066,11 +2140,16 @@ function ContentEditor({ theme }) {
 
 // ── Menu Manager (browser/localStorage) ───────────────────────────
 function MenuManager({ theme }) {
-  const { menu, saveMenu, resetMenu } = useMenu();
+  const { menu, status, saveState, saveMenu, resetMenu } = useMenu();
   const [draft, setDraft] = useState(() => JSON.parse(JSON.stringify(menu)));
   const [cat, setCat] = useState("grounded");
   const [dirty, setDirty] = useState(false);
-  const [saved, setSaved] = useState(false);
+
+  // When the menu loads from Supabase (or resets), sync the editor — but
+  // don't clobber unsaved edits in progress.
+  useEffect(() => {
+    if (!dirty) setDraft(JSON.parse(JSON.stringify(menu)));
+  }, [menu]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const catKeys = Object.keys(draft);
   const sectionsKey = draft[cat].sections ? "sections" : "sections_live";
@@ -2078,7 +2157,7 @@ function MenuManager({ theme }) {
 
   const mutate = (fn) => {
     setDraft(prev => { const next = JSON.parse(JSON.stringify(prev)); fn(next); return next; });
-    setDirty(true); setSaved(false);
+    setDirty(true);
   };
   const editItem = (si, ii, field, value) => mutate(d => { d[cat][sectionsKey][si].items[ii][field] = value; });
   const editTags = (si, ii, value) => mutate(d => { d[cat][sectionsKey][si].items[ii].tags = value.split(",").map(t => t.trim()).filter(Boolean); });
@@ -2088,8 +2167,8 @@ function MenuManager({ theme }) {
   const addSection = () => mutate(d => { d[cat][sectionsKey].push({ name: "New Section", items: [] }); });
   const deleteSection = (si) => mutate(d => { d[cat][sectionsKey].splice(si, 1); });
 
-  const doSave = () => { saveMenu(draft); setDirty(false); setSaved(true); };
-  const doReset = () => { resetMenu(); setDraft(JSON.parse(JSON.stringify(MENU_DATA))); setDirty(false); setSaved(false); };
+  const doSave = () => { saveMenu(draft); setDirty(false); };
+  const doReset = () => { resetMenu(); setDirty(false); };
 
   const input = {
     padding: "6px 8px", borderRadius: 6, border: `1px solid ${theme.muted}20`,
@@ -2099,8 +2178,14 @@ function MenuManager({ theme }) {
   return (
     <div>
       <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.6, marginBottom: 12, fontWeight: 300 }}>
-        Edit items, prices and descriptions. Saved in this browser. For the Cocktails tab you're editing the live menu (shown when Cocktails is enabled above).
+        Edit items, prices and descriptions. For the Cocktails tab you're editing the live menu (shown when Cocktails is enabled above).
       </div>
+      {status === "offline" && (
+        <div style={{ padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 11, lineHeight: 1.5,
+          background: "#F59E0B18", border: "1px solid #F59E0B40", color: theme.heading }}>
+          <strong>Supabase not connected.</strong> You can preview edits, but Save won't persist until the CMS is configured (see CMS_SETUP.md).
+        </div>
+      )}
 
       {/* Category tabs */}
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
@@ -2146,12 +2231,12 @@ function MenuManager({ theme }) {
       }}>+ Add section</button>
 
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <button onClick={doSave} disabled={!dirty} style={{
+        <button onClick={doSave} disabled={!dirty && saveState !== "error"} style={{
           flex: 1, padding: "10px", borderRadius: 8, border: "none",
           background: dirty ? theme.accent : `${theme.muted}30`,
           color: dirty ? "#fff" : theme.muted, cursor: dirty ? "pointer" : "not-allowed",
           fontSize: 12, fontWeight: 600, fontFamily: "'Outfit', sans-serif",
-        }}>{saved ? "Saved ✓" : "Save Menu"}</button>
+        }}>{saveState === "saving" ? "Saving…" : saveState === "saved" && !dirty ? "Saved ✓" : saveState === "error" ? "Retry save" : "Save Menu"}</button>
         <button onClick={doReset} title="Restore default menu" style={{
           padding: "10px 12px", borderRadius: 8, border: `1px solid ${theme.muted}20`,
           background: "transparent", color: theme.muted, cursor: "pointer", fontSize: 12,
@@ -2162,9 +2247,9 @@ function MenuManager({ theme }) {
   );
 }
 
-// ── Promotions Manager (browser/localStorage) ─────────────────────
+// ── Promotions Manager (Supabase-backed) ──────────────────────────
 function PromotionsManager({ theme }) {
-  const { promotions, addPromotion, updatePromotion, deletePromotion, resetPromotions } = usePromotions();
+  const { promotions, status, saveState, addPromotion, updatePromotion, deletePromotion, resetPromotions } = usePromotions();
   const [showForm, setShowForm] = useState(false);
   const blank = {
     title: "", description: "", discount_text: "", badge_text: "NEW",
@@ -2190,8 +2275,17 @@ function PromotionsManager({ theme }) {
   return (
     <div>
       <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.6, marginBottom: 12, fontWeight: 300 }}>
-        Promotions show on the homepage while active and within their date window. Saved in this browser.
+        Promotions show on the homepage while active and within their date window.
+        {saveState === "saving" && <span style={{ color: theme.accent }}> · Saving…</span>}
+        {saveState === "saved" && <span style={{ color: COLORS.mossGreen }}> · Saved ✓</span>}
+        {saveState === "error" && <span style={{ color: "#EF4444" }}> · Save failed</span>}
       </div>
+      {status === "offline" && (
+        <div style={{ padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 11, lineHeight: 1.5,
+          background: "#F59E0B18", border: "1px solid #F59E0B40", color: theme.heading }}>
+          <strong>Supabase not connected.</strong> Edits won't persist until the CMS is configured (see CMS_SETUP.md).
+        </div>
+      )}
 
       {promotions.length === 0 && !showForm && (
         <div style={{ fontSize: 13, color: theme.muted, marginBottom: 12, fontWeight: 300 }}>No promotions yet.</div>
