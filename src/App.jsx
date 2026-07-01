@@ -1240,27 +1240,14 @@ function AboutPage({ theme }) {
 }
 
 // ── Contact Page ───────────────────────────────────────────────────
+const VENUE_ADDRESS = "210 Upper Richmond Road West, London, SW14 8AH";
+const MAP_EMBED_SRC = `https://www.google.com/maps?q=${encodeURIComponent(VENUE_ADDRESS)}&output=embed`;
+const MAP_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(VENUE_ADDRESS)}`;
+
 function ContactPage({ theme }) {
-  const [formState, setFormState] = useState({ name: "", email: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = () => {
-    if (formState.name && formState.email && formState.message) {
-      setSubmitted(true);
-      setTimeout(() => { setSubmitted(false); setFormState({ name: "", email: "", message: "" }); }, 3000);
-    }
-  };
-
-  const inputStyle = {
-    width: "100%", padding: "14px 16px", borderRadius: 10,
-    border: `1px solid ${theme.muted}30`, background: theme.surfaceAlt,
-    color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 14,
-    transition: "border-color 0.3s ease",
-  };
-
   return (
     <div style={{ paddingTop: 120, minHeight: "100vh" }}>
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px 80px" }}>
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 24px 80px" }}>
         <FadeIn>
           <div style={{ textAlign: "center", marginBottom: 60 }}>
             <div style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: theme.muted, marginBottom: 12 }}>
@@ -1272,7 +1259,7 @@ function ContactPage({ theme }) {
           </div>
         </FadeIn>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48, alignItems: "start" }}>
           {/* Info */}
           <FadeIn delay={0.1}>
             <div>
@@ -1298,67 +1285,37 @@ function ContactPage({ theme }) {
                 </div>
               ))}
 
-              {/* Map Placeholder */}
-              <div style={{
-                width: "100%", height: 200, borderRadius: 16,
-                background: `${theme.muted}15`, marginTop: 24,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                border: `1px solid ${theme.muted}20`,
-              }}>
-                <div style={{ textAlign: "center", color: theme.muted }}>
-                  <div style={{ fontSize: 32, marginBottom: 8 }}>🗺️</div>
-                  <div style={{ fontSize: 13, fontWeight: 300 }}>Interactive map</div>
-                  <div style={{ fontSize: 11, marginTop: 4 }}>Google Maps embed area</div>
-                </div>
-              </div>
+              <a href={MAP_DIRECTIONS_URL} target="_blank" rel="noopener noreferrer" style={{
+                display: "inline-flex", alignItems: "center", gap: 8, marginTop: 8,
+                padding: "12px 24px", borderRadius: 30, textDecoration: "none",
+                background: theme.accent, color: "#fff",
+                fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500, letterSpacing: "0.03em",
+                transition: "transform 0.3s ease",
+              }}
+                onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
+                onMouseLeave={e => e.currentTarget.style.transform = "none"}
+              >
+                📍 Get Directions
+              </a>
             </div>
           </FadeIn>
 
-          {/* Contact Form */}
+          {/* Interactive Google Map */}
           <FadeIn delay={0.2}>
-            <div>
-              <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 24, fontWeight: 500, color: theme.heading, marginBottom: 24 }}>
-                Send a Message
-              </h3>
-              {submitted ? (
-                <div style={{
-                  padding: 40, borderRadius: 16, background: `${COLORS.mossGreen}15`,
-                  textAlign: "center", border: `1px solid ${COLORS.mossGreen}30`,
-                }}>
-                  <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
-                  <div style={{ fontSize: 16, color: COLORS.mossGreen, fontWeight: 500 }}>Message sent!</div>
-                  <div style={{ fontSize: 13, color: theme.muted, marginTop: 4 }}>We'll get back to you soon.</div>
-                </div>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  <input
-                    type="text" placeholder="Your Name" value={formState.name}
-                    onChange={e => setFormState(p => ({ ...p, name: e.target.value }))}
-                    style={inputStyle}
-                  />
-                  <input
-                    type="email" placeholder="Your Email" value={formState.email}
-                    onChange={e => setFormState(p => ({ ...p, email: e.target.value }))}
-                    style={inputStyle}
-                  />
-                  <textarea
-                    placeholder="Your Message" value={formState.message}
-                    onChange={e => setFormState(p => ({ ...p, message: e.target.value }))}
-                    rows={5} style={{ ...inputStyle, resize: "vertical" }}
-                  />
-                  <button onClick={handleSubmit} style={{
-                    padding: "14px 32px", borderRadius: 30, border: "none",
-                    background: theme.accent, color: "#fff", cursor: "pointer",
-                    fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500,
-                    letterSpacing: "0.05em", transition: "all 0.3s ease",
-                  }}
-                    onMouseEnter={e => e.target.style.transform = "translateY(-2px)"}
-                    onMouseLeave={e => e.target.style.transform = "none"}
-                  >
-                    Send Message
-                  </button>
-                </div>
-              )}
+            <div style={{
+              borderRadius: 16, overflow: "hidden",
+              border: `1px solid ${theme.muted}20`, height: 460, minHeight: 320,
+              boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+            }}>
+              <iframe
+                title="The Sixth Element — location map"
+                src={MAP_EMBED_SRC}
+                width="100%" height="100%"
+                style={{ border: 0, display: "block" }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             </div>
           </FadeIn>
         </div>
