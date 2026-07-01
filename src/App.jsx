@@ -599,18 +599,34 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           background: `linear-gradient(180deg, ${theme.bg}CC 0%, ${theme.bg}66 40%, ${theme.bg}CC 100%)`,
         }} />
 
-        {/* Rotating five-elements emblem */}
+        {/* Faint oversized emblem for depth */}
         <img src="/elements-mark.png" alt="" aria-hidden="true" className="rotate-emblem" style={{
           position: "absolute", top: "50%", left: "50%",
-          width: "min(72vw, 620px)", height: "min(72vw, 620px)",
+          width: "min(90vw, 780px)", height: "min(90vw, 780px)",
           transform: "translate(-50%, -50%)",
-          opacity: isAM ? 0.08 : 0.14, pointerEvents: "none", zIndex: 0,
+          opacity: isAM ? 0.06 : 0.1, pointerEvents: "none", zIndex: 0,
         }} />
 
         <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
         <FadeIn>
-          <div style={{ marginBottom: 24, display: "flex", justifyContent: "center" }}>
-            <Logomark size={88} color={theme.accent} />
+          {/* Rotating five-elements emblem medallion with the sixth-element "VI" mark */}
+          <div style={{ position: "relative", width: "min(46vw, 200px)", height: "min(46vw, 200px)", marginBottom: 28 }}>
+            <img src="/elements-mark.png" alt="The Sixth Element — five elements emblem" className="rotate-emblem" style={{
+              width: "100%", height: "100%", objectFit: "contain",
+              opacity: isAM ? 0.85 : 0.95,
+              filter: isAM ? "none" : "drop-shadow(0 0 20px rgba(191,138,47,0.35))",
+            }} />
+            <div style={{
+              position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+              pointerEvents: "none",
+            }}>
+              <span style={{
+                fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(40px, 9vw, 68px)", fontWeight: 500,
+                background: "linear-gradient(135deg, #E8C57D 0%, #BF8A2F 60%, #8A6220 100%)",
+                WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent",
+                color: theme.accent, letterSpacing: "0.02em",
+              }}>VI</span>
+            </div>
           </div>
         </FadeIn>
         <FadeIn delay={0.1}>
