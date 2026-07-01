@@ -71,7 +71,7 @@ const AM_THEME = {
   accent: COLORS.warmAmber,
   surface: COLORS.ivory,
   surfaceAlt: "#FFFFFF",
-  muted: "#9A9080",
+  muted: "#6E6456",
   hero: `linear-gradient(135deg, ${COLORS.ivory} 0%, ${COLORS.cream} 50%, #E8E0D0 100%)`,
   navBg: "rgba(250,248,240,0.92)",
   label: "Morning Mode",
@@ -698,13 +698,13 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           position: "absolute", inset: 0,
           backgroundImage: `url(${isAM ? "/day-cafe.jpg" : "/evening-lounge.jpg"})`,
           backgroundSize: "cover", backgroundPosition: "center",
-          opacity: isAM ? 0.5 : 0.28, pointerEvents: "none",
+          opacity: isAM ? 0.4 : 0.28, pointerEvents: "none",
         }} />
-        {/* Gradient veil to keep text legible over the photo — lighter in AM so the photo reads clearly */}
+        {/* Gradient veil to keep text legible over the photo */}
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none",
           background: isAM
-            ? `linear-gradient(180deg, ${theme.bg}99 0%, ${theme.bg}2E 40%, ${theme.bg}99 100%)`
+            ? `linear-gradient(180deg, ${theme.bg}CC 0%, ${theme.bg}59 40%, ${theme.bg}CC 100%)`
             : `linear-gradient(180deg, ${theme.bg}CC 0%, ${theme.bg}66 40%, ${theme.bg}CC 100%)`,
         }} />
 
