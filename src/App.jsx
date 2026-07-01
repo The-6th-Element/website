@@ -6,8 +6,6 @@ const DEFAULT_FLAGS = {
   cocktails_live: false,    // false = "Coming Soon" teaser, true = full live menu
   instagram_feed: true,     // show/hide Instagram grid
   booking_enabled: true,    // enable/disable reservations
-  brunch_duration: 60,      // minutes
-  evening_duration: 90,     // minutes.
   pm_switch_hour: 14,       // UK hour (24h) when the site switches to evening/dark mode
 };
 
@@ -1937,34 +1935,6 @@ function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, onLogout,
             <div style={dotStyle(flags.booking_enabled)} />
           </button>
         </div>
-      </div>
-
-      {/* Seating Durations */}
-      <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
-        <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 16 }}>
-          Seating Durations
-        </div>
-        {[
-          { key: "brunch_duration", label: "Brunch (minutes)" },
-          { key: "evening_duration", label: "Evening (minutes)" },
-        ].map(({ key, label }) => (
-          <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <div style={{ fontSize: 14, color: theme.heading }}>{label}</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              {[30, 45, 60, 90, 120].map(v => (
-                <button key={v} onClick={() => updateFlag(key, v)} style={{
-                  padding: "4px 10px", borderRadius: 6, border: "none", cursor: "pointer",
-                  fontSize: 12, fontWeight: 500,
-                  background: flags[key] === v ? theme.accent : `${theme.muted}15`,
-                  color: flags[key] === v ? "#fff" : theme.text,
-                  transition: "all 0.2s ease",
-                }}>
-                  {v}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
       </div>
 
       {/* Display Mode — when the site switches to evening/dark */}
