@@ -6,6 +6,24 @@
 
 Supabase gives you a Postgres database + file storage for images — all free up to 500MB database and 1GB file storage.
 
+> **Menu & Promotions (what powers the admin panel):** these are stored as JSON
+> in the **`site_content`** table under the keys `menu_data` and `promotions`,
+> served via `/api/content`. The site reads them publicly and falls back to the
+> built-in defaults until Supabase is connected — so nothing breaks before setup.
+>
+> **Minimum to make admin edits go live for all visitors:**
+> 1. Create a Supabase project and run the SQL below (the `site_content` table is the essential one).
+> 2. Set these Vercel env vars, then redeploy (`vercel --prod`):
+>    ```bash
+>    vercel env add SUPABASE_URL          # https://xxxx.supabase.co
+>    vercel env add SUPABASE_SERVICE_KEY  # service_role key (Settings → API)
+>    vercel env add ADMIN_USERNAME        # e.g. owner
+>    vercel env add ADMIN_PASSWORD        # a strong passphrase
+>    vercel env add ADMIN_SECRET          # 64-char hex (openssl rand -hex 32)
+>    ```
+> `ADMIN_*` gate the admin panel and sign the token that authorises saves;
+> `SUPABASE_*` are where the data lives.
+
 ### Step 1: Create Supabase Project
 
 1. Go to [supabase.com](https://supabase.com) → create a free account
