@@ -631,20 +631,23 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           position: "absolute", inset: 0,
           backgroundImage: `url(${isAM ? "/day-cafe.jpg" : "/evening-lounge.jpg"})`,
           backgroundSize: "cover", backgroundPosition: "center",
-          opacity: isAM ? 0.16 : 0.28, pointerEvents: "none",
+          opacity: isAM ? 0.5 : 0.28, pointerEvents: "none",
         }} />
-        {/* Gradient veil to keep text legible over the photo */}
+        {/* Gradient veil to keep text legible over the photo — lighter in AM so the photo reads clearly */}
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none",
-          background: `linear-gradient(180deg, ${theme.bg}CC 0%, ${theme.bg}66 40%, ${theme.bg}CC 100%)`,
+          background: isAM
+            ? `linear-gradient(180deg, ${theme.bg}99 0%, ${theme.bg}2E 40%, ${theme.bg}99 100%)`
+            : `linear-gradient(180deg, ${theme.bg}CC 0%, ${theme.bg}66 40%, ${theme.bg}CC 100%)`,
         }} />
 
-        {/* Faint oversized emblem for depth */}
+        {/* Faint oversized emblem for depth (darker in AM so it reads on the light background) */}
         <img src="/elements-mark.png" alt="" aria-hidden="true" className="rotate-emblem" style={{
           position: "absolute", top: "50%", left: "50%",
           width: "min(90vw, 780px)", height: "min(90vw, 780px)",
           transform: "translate(-50%, -50%)",
-          opacity: isAM ? 0.06 : 0.1, pointerEvents: "none", zIndex: 0,
+          opacity: isAM ? 0.12 : 0.1, pointerEvents: "none", zIndex: 0,
+          filter: isAM ? "brightness(0.5) contrast(1.1)" : "none",
         }} />
 
         <div style={{
@@ -657,9 +660,9 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             <div style={{ position: "relative", width: "min(52vw, 260px)", height: "min(52vw, 260px)", flexShrink: 0 }}>
               <img src="/elements-mark.png" alt="The Sixth Element — five elements emblem" className="rotate-emblem" style={{
                 width: "100%", height: "100%", objectFit: "contain",
-                opacity: isAM ? 0.5 : 0.92,
+                opacity: isAM ? 0.9 : 0.92,
                 filter: isAM
-                  ? "drop-shadow(0 4px 14px rgba(75,54,33,0.18))"
+                  ? "brightness(0.5) contrast(1.15) drop-shadow(0 4px 14px rgba(75,54,33,0.25))"
                   : "drop-shadow(0 0 22px rgba(191,138,47,0.4))",
               }} />
               <div style={{
