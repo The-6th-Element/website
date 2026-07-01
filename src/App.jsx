@@ -477,6 +477,9 @@ export default function TheSixthElement() {
         @media (max-width: 768px) {
           .desktop-nav { display: none !important; }
           .mobile-trigger { display: flex !important; }
+          .hero-copy { text-align: center; }
+          .hero-copy p { margin-left: auto; margin-right: auto; }
+          .hero-cta { justify-content: center; }
         }
         @media (min-width: 769px) {
           .mobile-trigger { display: none !important; }
@@ -680,7 +683,7 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           </FadeIn>
 
           {/* Right: headline + copy */}
-          <div style={{ flex: "1 1 340px", minWidth: 280, maxWidth: 620, textAlign: "left" }}>
+          <div className="hero-copy" style={{ flex: "1 1 340px", minWidth: 280, maxWidth: 620, textAlign: "left" }}>
             <FadeIn delay={0.1}>
               <div style={{
                 fontSize: 12, letterSpacing: "0.3em", textTransform: "uppercase",
@@ -715,7 +718,7 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
               </p>
             </FadeIn>
             <FadeIn delay={0.6}>
-              <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+              <div className="hero-cta" style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
                 <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={theme} />
               </div>
             </FadeIn>
