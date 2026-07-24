@@ -95,76 +95,217 @@ const PM_THEME = {
 // ── Menu Data ──────────────────────────────────────────────────────
 const MENU_DATA = {
   grounded: {
-    title: "Grounded",
-    subtitle: "Honest, simple food rooted in the earth",
+    title: "Brunch",
+    subtitle: "Served 8am – 2pm · A balanced morning through the Six Elements",
     icon: "🌿",
     sections: [
       {
-        name: "Brunch Plates",
+        name: "Earth · Grounded, Wholesome, Comfort",
         items: [
-          { name: "The Earth Bowl", desc: "Roasted sweet potato, avocado, poached eggs, dukkah, sourdough", price: "12.50", tags: ["V"] },
-          { name: "Richmond Granola", desc: "House-made granola, seasonal compote, Greek yoghurt, raw honey", price: "8.50", tags: ["V","GF"] },
-          { name: "The Full Element", desc: "Free-range eggs, sourdough, grilled halloumi, roasted tomato, mushrooms, greens", price: "14.00", tags: [] },
-          { name: "Smashed Avocado Toast", desc: "Chilli flakes, lime, heritage tomatoes on rye", price: "10.50", tags: ["VG"] },
-          { name: "Shakshuka", desc: "Spiced tomato, peppers, baked eggs, feta, warm flatbread", price: "11.50", tags: ["V"] },
+          { name: "Avocado & Feta Sourdough", desc: "Crushed avocado & feta · seeds · lemon · chilli flakes", price: "12", tags: ["V","GF*"] },
+          { name: "Masala Beans on Toast", desc: "Home-made spiced cannellini beans · grilled sourdough", price: "10", tags: ["VE","GF*"] },
         ]
       },
       {
-        name: "Small Plates",
+        name: "Water · Fresh, Light, Hydrating",
         items: [
-          { name: "Soup of the Day", desc: "Seasonal, served with sourdough", price: "7.00", tags: ["VG"] },
-          { name: "Hummus & Flatbread", desc: "Smoky beetroot hummus, za'atar, olive oil", price: "8.00", tags: ["VG"] },
-          { name: "Halloumi Fries", desc: "With harissa yoghurt and mint", price: "7.50", tags: ["V","GF"] },
+          { name: "Rose Water Fruit Bowl", desc: "Coconut yoghurt · seasonal fruits · basil seeds · rose water · mint", price: "12", tags: ["VE","GF"] },
+          { name: "Greek Yoghurt & Granola", desc: "Local honey · seasonal berries · toasted nuts", price: "9", tags: ["V","GF"] },
+        ]
+      },
+      {
+        name: "Ether · Balance, Calm, Functional",
+        items: [
+          { name: "Wellness Shots", desc: "Turmeric · ginger · greens", price: "6", tags: ["V","VE","GF"] },
+          { name: "Morning Ritual", desc: "Pressed juice · wellness shots · fruit bowl", price: "15", tags: ["V","VE","GF"] },
+        ]
+      },
+      {
+        name: "Air · Light, Indulgent, Uplifting",
+        items: [
+          { name: "Buttermilk Pancakes", desc: "Maple syrup · seasonal berries · whipped cream", price: "14", tags: ["V"] },
+          { name: "Crispy Chicken Waffle", desc: "Buttermilk-fried chicken · chilli honey", price: "16", tags: [] },
+        ]
+      },
+      {
+        name: "Fire · Hearty, Warm, Energising",
+        items: [
+          { name: "House Masala Shakshuka", desc: "Spiced tomatoes · poached eggs · coriander · sourdough", price: "13", tags: ["GF"] },
+          { name: "Green Shakshuka", desc: "Spiced greens · tofu · coriander · sourdough", price: "14", tags: ["VE","GF"] },
+          { name: "Breakfast Wrap", desc: "Scrambled egg · avocado · chilli sauce · coriander", price: "15", tags: ["V","GF*"] },
+        ]
+      },
+      {
+        name: "Signatures · Elevated Classics, Chef-Driven",
+        items: [
+          { name: "Mango & Saffron Pot", desc: "Coconut yoghurt · granola · pistachio · toasted coconut", price: "12", tags: ["VE","GF"] },
+          { name: "Gin-Cured Salmon & Scrambled Eggs", desc: "Sourdough · chives · crème fraîche", price: "16", tags: ["GF*"] },
+          { name: "Truffle Mushroom Croissant", desc: "Creamy wild mushrooms · parmesan · truffle oil", price: "15", tags: ["V"] },
+        ]
+      },
+      {
+        name: "Caviar & Champagne for Two",
+        items: [
+          { name: "Prosecco & Caviar for Two", desc: "Exmoor caviar · blinis · crème fraîche · Fidora Prosecco", price: "50", tags: [] },
+          { name: "Champagne & Caviar for Two", desc: "Exmoor caviar · blinis · crème fraîche · Taittinger NV", price: "90", tags: [] },
+          { name: "Prosecco Brunch for Two", desc: "Caviar prelude · 3 signature dishes · Fidora Biodynamic Prosecco", price: "90", tags: [] },
+          { name: "Champagne Brunch for Two", desc: "Caviar prelude · 3 signature dishes · Taittinger Brut Réserve NV", price: "130", tags: [] },
+        ]
+      },
+      {
+        name: "Viennoiserie · Freshly Baked Daily",
+        items: [
+          { name: "Croissant", desc: "Freshly baked daily", price: "3.50", tags: ["V"] },
+          { name: "Pain au Chocolat", desc: "Freshly baked daily", price: "3.50", tags: ["V"] },
+          { name: "Cinnamon Swirl", desc: "Freshly baked daily", price: "3.50", tags: ["V"] },
+        ]
+      },
+      {
+        name: "Sides",
+        items: [
+          { name: "Two Eggs", desc: "", price: "3", tags: [] },
+          { name: "Bacon", desc: "", price: "3", tags: [] },
+          { name: "Sausage", desc: "", price: "3", tags: [] },
+          { name: "Avocado", desc: "", price: "3", tags: [] },
+          { name: "Mushrooms", desc: "", price: "3", tags: [] },
+          { name: "Tomatoes", desc: "", price: "3", tags: [] },
+          { name: "Sourdough", desc: "", price: "3", tags: [] },
+          { name: "Halloumi", desc: "", price: "5", tags: [] },
+          { name: "Smoked Salmon", desc: "", price: "5.50", tags: [] },
+        ]
+      },
+      {
+        name: "Charcuterie & Boards · Until 6pm",
+        items: [
+          { name: "Sheen Charcuterie", desc: "Serves 2 · Prosciutto · salami · coppa · bresaola · olives · cornichons · crackers", price: "22", tags: ["GF"] },
+          { name: "Sheen Grazing Board", desc: "Serves 4 · Premium cured meats · pickled vegetables · crackers · chutney", price: "42", tags: ["GF"] },
+          { name: "Bar Nibbles", desc: "Marinated olives · spiced mixed nuts · vegetable crisps", price: "5", tags: ["V","VE","GF"] },
         ]
       }
     ]
   },
   coffee: {
-    title: "Social Impact Coffee",
-    subtitle: "Every cup tells a story of positive change",
+    title: "Coffee & Tea",
+    subtitle: "Old Spike Roastery · Rare Tea · Crafted with intention",
     icon: "☕",
     sections: [
       {
-        name: "Espresso Bar",
+        name: "Coffee · Old Spike Roastery Specialty",
         items: [
-          { name: "Espresso", desc: "Single origin, rotating roast", price: "2.80", tags: [] },
-          { name: "Flat White", desc: "Double shot, silky microfoam", price: "3.80", tags: [] },
-          { name: "Cortado", desc: "Equal parts espresso and steamed milk", price: "3.20", tags: [] },
-          { name: "Long Black", desc: "Double shot over hot water", price: "3.00", tags: [] },
-          { name: "Oat Latte", desc: "Creamy oat milk, double shot", price: "4.20", tags: ["VG"] },
+          { name: "Espresso", desc: "", price: "3.80", tags: [] },
+          { name: "Americano", desc: "", price: "4.00", tags: [] },
+          { name: "Long Black", desc: "", price: "4.00", tags: [] },
+          { name: "Cortado", desc: "", price: "4.30", tags: [] },
+          { name: "Flat White", desc: "", price: "4.50", tags: [] },
+          { name: "Latte", desc: "", price: "4.50", tags: [] },
+          { name: "Cappuccino", desc: "", price: "4.50", tags: [] },
+          { name: "Mocha", desc: "", price: "5.20", tags: [] },
+          { name: "Irish Coffee", desc: "", price: "7.00", tags: [] },
         ]
       },
       {
-        name: "Filter & Brew",
+        name: "House & Matcha · Ceremonial, Spiced, Warming",
         items: [
-          { name: "V60 Pour Over", desc: "Hand-brewed single origin", price: "4.50", tags: [] },
-          { name: "Cold Brew", desc: "18-hour steeped, smooth and bold", price: "4.00", tags: [] },
-          { name: "Matcha Latte", desc: "Ceremonial grade, oat milk", price: "4.50", tags: ["VG"] },
-          { name: "Chai Latte", desc: "House-spiced masala blend", price: "4.00", tags: [] },
+          { name: "Masala Chai", desc: "", price: "5.50", tags: [] },
+          { name: "Cardamom Chai", desc: "", price: "5.50", tags: [] },
+          { name: "Dirty Chai", desc: "Chai + espresso", price: "5.30", tags: [] },
+          { name: "Matcha Latte", desc: "Ceremonial grade", price: "6.50", tags: [] },
+          { name: "Hot Chocolate", desc: "", price: "4.50", tags: [] },
+        ]
+      },
+      {
+        name: "Rare Tea · Loose Leaf, A Gift to Our Farms",
+        items: [
+          { name: "English Breakfast", desc: "", price: "4.00", tags: [] },
+          { name: "Earl Grey", desc: "", price: "4.00", tags: [] },
+          { name: "Nepali Gunpowder Green", desc: "", price: "5.00", tags: [] },
+          { name: "Peppermint / Fresh Mint", desc: "", price: "5.00", tags: [] },
+          { name: "Ginger & Lemongrass", desc: "", price: "5.00", tags: [] },
+          { name: "Orange Blossom", desc: "", price: "8.00", tags: [] },
+        ]
+      },
+      {
+        name: "Smoothies · Blended Fresh, Dairy-Free",
+        items: [
+          { name: "Detox Zing", desc: "Greens · citrus · ginger", price: "6.50", tags: ["VE"] },
+          { name: "Pash N' Shoot", desc: "Passionfruit · mango", price: "6.50", tags: ["VE"] },
+          { name: "Big 5", desc: "Five fruits · five-a-day", price: "6.50", tags: ["VE"] },
+          { name: "Berry Go Round", desc: "Mixed berries · banana", price: "6.50", tags: ["VE"] },
+        ]
+      },
+      {
+        name: "Fresh Juices · Locally Sourced, Pressed Daily",
+        items: [
+          { name: "Orange", desc: "", price: "6.00", tags: ["VE"] },
+          { name: "Apple", desc: "", price: "6.00", tags: ["VE"] },
+          { name: "Pineapple", desc: "", price: "6.00", tags: ["VE"] },
+        ]
+      },
+      {
+        name: "Little Ones · For Our Younger Guests",
+        items: [
+          { name: "Juice — Orange / Apple", desc: "", price: "2.00", tags: [] },
+          { name: "Soft Drink", desc: "", price: "2.00", tags: [] },
+        ]
+      },
+      {
+        name: "Extras",
+        items: [
+          { name: "Iced", desc: "Any coffee served over ice", price: "0.40", tags: [] },
+          { name: "Extra Shot", desc: "", price: "0.50", tags: [] },
+          { name: "Plant Milk", desc: "Oat · almond · soya · coconut", price: "0.20", tags: ["VE"] },
         ]
       }
     ]
   },
   wine: {
-    title: "Flow",
-    subtitle: "Refined wines & craft beers",
+    title: "Wine List",
+    subtitle: "Thoughtfully selected — by the glass (175ml) & bottle",
     icon: "🍷",
     sections: [
       {
-        name: "Natural Wine",
+        name: "White",
         items: [
-          { name: "Skin Contact Orange", desc: "Friuli, Italy — textured, amber, apricot", price: "8.50", tags: [] },
-          { name: "Côtes du Rhône Rouge", desc: "Southern France — dark fruit, herbs, velvety", price: "7.50", tags: [] },
-          { name: "Albariño", desc: "Rías Baixas, Spain — crisp, citrus, mineral", price: "8.00", tags: [] },
-          { name: "Prosecco Superiore", desc: "Valdobbiadene — fine bubbles, apple, pear", price: "7.00", tags: [] },
+          { name: "Muscadet Sèvre et Maine", desc: "Sur Lie · France · Bottle £36", price: "9.50", tags: [] },
+          { name: "Peth Wetz Estate Riesling", desc: "Organic · Germany · Bottle £38", price: "10.00", tags: [] },
+          { name: "Babydoll Sauvignon Blanc", desc: "Marlborough, New Zealand · Bottle £42", price: "11.00", tags: [] },
+          { name: "Trouble White", desc: "Vin de France · Bottle £44", price: "11.50", tags: [] },
+          { name: "Bodegas Castro Martín Albariño", desc: "Rías Baixas, Spain · Bottle £46", price: "12.00", tags: [] },
+          { name: "Gerard Bertrand Orange Gold", desc: "Organic · Occitanie, France · Bottle £52", price: "13.50", tags: [] },
+          { name: "Sancerre Blanc", desc: "Domaine de la Chezatte · France · Bottle £56", price: "14.50", tags: [] },
         ]
       },
       {
-        name: "Craft Beer",
+        name: "Red",
         items: [
-          { name: "Richmond Pale Ale", desc: "Local brewery, citrus hop, easy-drinking", price: "5.50", tags: [] },
-          { name: "Belgian Wheat", desc: "Coriander and orange peel, hazy gold", price: "6.00", tags: [] },
-          { name: "Oatmeal Stout", desc: "Chocolate, coffee, silky body", price: "6.50", tags: [] },
+          { name: "Nyala Cabernet Sauvignon", desc: "South Africa · Bottle £32", price: "8.50", tags: [] },
+          { name: "Zensa Primitivo", desc: "Organic · Puglia, Italy · Bottle £38", price: "10.00", tags: [] },
+          { name: "Zuccardi Serie A Malbec", desc: "Uco Valley, Argentina · Bottle £48", price: "12.50", tags: [] },
+          { name: "Journey's End V5 Shiraz", desc: "South Africa · Bottle £50", price: "13.00", tags: [] },
+          { name: "Château La Croix Ferrandat", desc: "St-Émilion 2019 · France · Bottle only", price: "52", tags: [] },
+        ]
+      },
+      {
+        name: "Sparkling & Champagne",
+        items: [
+          { name: "Santa Fosca Prosecco DOC", desc: "Extra Dry · Italy · Bottle £34", price: "9.00", tags: [] },
+          { name: "Fidora Prosecco Brut", desc: "Biodynamic · Italy · Bottle £42", price: "11.00", tags: [] },
+          { name: "Taittinger Brut Réserve NV", desc: "Champagne · France · Bottle only", price: "99", tags: [] },
+        ]
+      },
+      {
+        name: "Rosé",
+        items: [
+          { name: "Zensa Rosato", desc: "Organic · Puglia, Italy · Bottle £36", price: "9.50", tags: [] },
+          { name: "Château St Baillon", desc: "Côtes de Provence · France · Bottle £48", price: "12.50", tags: [] },
+        ]
+      },
+      {
+        name: "Brunch Pours",
+        items: [
+          { name: "Mimosa", desc: "Prosecco · fresh orange", price: "9.00", tags: [] },
+          { name: "Aperol Spritz", desc: "Aperol · Prosecco · soda", price: "10.00", tags: [] },
+          { name: "Bellini", desc: "Prosecco · peach", price: "9.50", tags: [] },
         ]
       }
     ]
@@ -943,9 +1084,9 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
 // ── Menu Page ──────────────────────────────────────────────────────
 function MenuPage({ theme, isAM, flags }) {
   const tabs = [
-    { id: "grounded", label: "Grounded", icon: "🌿" },
-    { id: "coffee", label: "Coffee", icon: "☕" },
-    { id: "wine", label: "Wine & Beer", icon: "🍷" },
+    { id: "grounded", label: "Brunch", icon: "🌿" },
+    { id: "coffee", label: "Coffee & Tea", icon: "☕" },
+    { id: "wine", label: "Wine", icon: "🍷" },
     { id: "cocktails", label: flags.cocktails_live ? "Cocktails" : "Cocktails ✦", icon: "🍸" },
   ];
   const [activeTab, setActiveTab] = useState(isAM ? "grounded" : "wine");
@@ -1036,7 +1177,7 @@ function MenuPage({ theme, isAM, flags }) {
                               </span>
                             ))}
                           </div>
-                          <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginTop: 4, lineHeight: 1.5 }}>{item.desc}</p>
+                          {item.desc && <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginTop: 4, lineHeight: 1.5 }}>{item.desc}</p>}
                         </div>
                         <div style={{
                           fontSize: 16, fontWeight: 500, color: theme.accent,
@@ -1059,8 +1200,8 @@ function MenuPage({ theme, isAM, flags }) {
             textAlign: "center", padding: "40px 0 80px",
             fontSize: 13, color: theme.muted, fontWeight: 300, lineHeight: 1.7,
           }}>
-            <p>V = Vegetarian · VG = Vegan · GF = Gluten Free</p>
-            <p style={{ marginTop: 8 }}>Please inform us of any allergies. All prices include VAT.</p>
+            <p>(V) Vegetarian · (VE) Vegan · (GF) Gluten Free · (*) available on request</p>
+            <p style={{ marginTop: 8 }}>Please inform our team of any allergies or dietary requirements. All prices include VAT.</p>
           </div>
         </FadeIn>
       </div>
