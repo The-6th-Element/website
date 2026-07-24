@@ -7,12 +7,38 @@ const DEFAULT_FLAGS = {
   instagram_feed: true,     // show/hide Instagram grid
   booking_enabled: true,    // enable/disable reservations
   pm_switch_hour: 14,       // UK hour (24h) when the site switches to evening/dark mode
+  menu_coffee_hour: 14,     // UK hour when the Menu page defaults to Coffee & Tea
+  menu_wine_hour: 17,       // UK hour when the Menu page defaults to Wine
 };
 
 // AM (light) between 8am and the configurable evening switch hour, UK time.
 function computeIsAM(pmSwitchHour = 14) {
   const h = parseInt(new Date().toLocaleString("en-GB", { timeZone: "Europe/London", hour: "numeric", hour12: false }), 10);
   return h >= 8 && h < pmSwitchHour;
+}
+
+// Jump to the top instantly. Bypasses the global `scroll-behavior: smooth`,
+// whose animation mobile browsers abandon mid-flight during a page swap.
+function scrollToTop() {
+  const root = document.documentElement;
+  const prev = root.style.scrollBehavior;
+  root.style.scrollBehavior = "auto";
+  window.scrollTo(0, 0);
+  root.scrollTop = 0;
+  document.body.scrollTop = 0; // older mobile Safari
+  root.style.scrollBehavior = prev;
+}
+
+// Which menu tab opens first, based on UK time of day:
+// Brunch → Coffee & Tea → Wine. Overnight/pre-open falls to Brunch
+// (the next service), so the wine list never greets a 3am visitor.
+function defaultMenuTab(flags = {}) {
+  const coffeeFrom = flags.menu_coffee_hour ?? 14;
+  const wineFrom = flags.menu_wine_hour ?? 17;
+  const h = parseInt(new Date().toLocaleString("en-GB", { timeZone: "Europe/London", hour: "numeric", hour12: false }), 10);
+  if (h < coffeeFrom) return "grounded";
+  if (h < wineFrom) return "coffee";
+  return "wine";
 }
 
 function useFeatureFlags() {
@@ -570,8 +596,13 @@ export default function TheSixthElement() {
   const navigate = useCallback((page) => {
     setCurrentPage(page);
     setMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollToTop();
   }, []);
+
+  // Also reset scroll *after* the new page commits. On mobile Safari a scroll
+  // started before the content swap gets cancelled as the document height
+  // changes, leaving you stranded at the old footer.
+  useEffect(() => { scrollToTop(); }, [currentPage]);
 
   return (
     <div style={{
@@ -1080,7 +1111,7 @@ function MenuPage({ theme, isAM, flags }) {
     { id: "wine", label: "Wine", icon: "🍷" },
     ...(flags.cocktails_live ? [{ id: "cocktails", label: "Cocktails", icon: "🍸" }] : []),
   ];
-  const [activeTab, setActiveTab] = useState(isAM ? "grounded" : "wine");
+  const [activeTab, setActiveTab] = useState(() => defaultMenuTab(flags));
   // Fall back to the first tab if the active one is hidden or missing
   const current = tabs.some(t => t.id === activeTab) && menu[activeTab] ? activeTab : tabs[0].id;
   const data = menu[current] || { title: "", subtitle: "", icon: "", sections: [] };
@@ -2102,6 +2133,35 @@ function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, onLogout,
             );
           })}
         </div>
+      </div>
+
+      {/* Menu default tab — which menu opens first, by time of day */}
+      <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
+        <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 8 }}>
+          Menu Default Tab
+        </div>
+        <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300, marginBottom: 14, lineHeight: 1.5 }}>
+          Which menu opens first, by UK time: <strong style={{ color: theme.heading }}>Brunch</strong> → <strong style={{ color: theme.heading }}>Coffee &amp; Tea</strong> → <strong style={{ color: theme.heading }}>Wine</strong>. Overnight falls back to Brunch.
+        </div>
+        {[
+          { key: "menu_coffee_hour", label: "Coffee & Tea from", hours: [10, 11, 12, 13, 14, 15, 16] },
+          { key: "menu_wine_hour", label: "Wine from", hours: [15, 16, 17, 18, 19, 20, 21] },
+        ].map(({ key, label, hours }) => (
+          <div key={key} style={{ marginBottom: 12 }}>
+            <div style={{ fontSize: 13, color: theme.heading, marginBottom: 6 }}>{label}</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {hours.map(h => (
+                <button key={h} onClick={() => updateFlag(key, h)} style={{
+                  padding: "6px 10px", borderRadius: 6, border: "none", cursor: "pointer",
+                  fontSize: 12, fontWeight: 500,
+                  background: flags[key] === h ? theme.accent : `${theme.muted}15`,
+                  color: flags[key] === h ? "#fff" : theme.text,
+                  transition: "all 0.2s ease",
+                }}>{h === 12 ? "12pm" : h < 12 ? `${h}am` : `${h - 12}pm`}</button>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Reservations (Toast Tables) */}
