@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 // ── Feature Flags (persisted in localStorage) ─────────────────────
 // Toggle these in the authenticated admin panel (?admin=true → login) or set defaults here
 const DEFAULT_FLAGS = {
-  cocktails_live: false,    // false = "Coming Soon" teaser, true = full live menu
+  cocktails_live: false,    // show the Cocktails tab on the menu page
   instagram_feed: true,     // show/hide Instagram grid
   booking_enabled: true,    // enable/disable reservations
   pm_switch_hour: 14,       // UK hour (24h) when the site switches to evening/dark mode
@@ -312,38 +312,11 @@ const MENU_DATA = {
   },
   cocktails: {
     title: "The Curator",
-    subtitle_teaser: "High-end curated cocktails — Coming Soon",
-    subtitle_live: "High-end curated cocktails",
+    subtitle: "High-end curated cocktails",
     icon: "🍸",
-    sections_teaser: [
-      {
-        name: "Phase 2 Preview",
-        items: [
-          { name: "The Fifth Element", desc: "A signature creation — details to be revealed", price: "TBA", tags: ["COMING SOON"] },
-          { name: "Earth Old Fashioned", desc: "Barrel-aged bourbon, demerara, walnut bitters", price: "TBA", tags: ["COMING SOON"] },
-          { name: "Fire Negroni", desc: "Smoked gin, Campari, sweet vermouth", price: "TBA", tags: ["COMING SOON"] },
-        ]
-      }
-    ],
-    sections_live: [
-      {
-        name: "Signature Cocktails",
-        items: [
-          { name: "The Fifth Element", desc: "Aged rum, cardamom, burnt honey, smoke — our signature", price: "14.00", tags: [] },
-          { name: "Earth Old Fashioned", desc: "Barrel-aged bourbon, demerara, walnut bitters", price: "13.00", tags: [] },
-          { name: "Fire Negroni", desc: "Smoked gin, Campari, sweet vermouth, charred orange", price: "13.50", tags: [] },
-          { name: "Air Spritz", desc: "Elderflower, prosecco, soda, fresh mint", price: "11.00", tags: [] },
-          { name: "Water Martini", desc: "Clarified gin, dry vermouth, saline, lemon oil", price: "14.00", tags: [] },
-        ]
-      },
-      {
-        name: "Low & No Alcohol",
-        items: [
-          { name: "Garden Tonic", desc: "Seedlip, cucumber, tonic, rosemary", price: "8.00", tags: ["0% ABV"] },
-          { name: "Smoke & Honey", desc: "Lyre's dark spirit, lemon, smoked honey", price: "8.50", tags: ["0% ABV"] },
-        ]
-      }
-    ]
+    // Managed entirely from the admin panel — add sections and items there,
+    // then switch the Cocktails tab on to publish it.
+    sections: []
   }
 };
 
@@ -434,8 +407,24 @@ function usePromotions() {
   return { promotions, status, saveState, addPromotion, updatePromotion, deletePromotion, resetPromotions };
 }
 
+// Every category is a plain { title, subtitle, icon, sections } shape.
+// Migrates any legacy teaser/live cocktail data stored in the CMS.
+function normalizeMenu(menu) {
+  const out = {};
+  for (const [key, cat] of Object.entries(menu || {})) {
+    const { sections, sections_live, sections_teaser, subtitle, subtitle_live, subtitle_teaser, ...rest } = cat || {};
+    out[key] = {
+      ...rest,
+      subtitle: subtitle ?? subtitle_live ?? subtitle_teaser ?? "",
+      sections: sections ?? sections_live ?? sections_teaser ?? [],
+    };
+  }
+  return out;
+}
+
 function useMenu() {
-  const [menu, setMenu, status] = useContentKey("menu_data", MENU_DATA);
+  const [raw, setMenu, status] = useContentKey("menu_data", MENU_DATA);
+  const menu = normalizeMenu(raw);
   const [saveState, setSaveState] = useState("idle");
   const persist = (next) => {
     setMenu(next);
@@ -1083,22 +1072,19 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
 
 // ── Menu Page ──────────────────────────────────────────────────────
 function MenuPage({ theme, isAM, flags }) {
+  const { menu } = useMenu();
+  // Cocktails only appears once it's switched on in the admin panel.
   const tabs = [
     { id: "grounded", label: "Brunch", icon: "🌿" },
     { id: "coffee", label: "Coffee & Tea", icon: "☕" },
     { id: "wine", label: "Wine", icon: "🍷" },
-    { id: "cocktails", label: flags.cocktails_live ? "Cocktails" : "Cocktails ✦", icon: "🍸" },
+    ...(flags.cocktails_live ? [{ id: "cocktails", label: "Cocktails", icon: "🍸" }] : []),
   ];
   const [activeTab, setActiveTab] = useState(isAM ? "grounded" : "wine");
-  const { menu } = useMenu();
-  const rawData = menu[activeTab];
-
-  // Resolve cocktail teaser/live based on feature flag
-  const data = activeTab === "cocktails" ? {
-    ...rawData,
-    subtitle: flags.cocktails_live ? rawData.subtitle_live : rawData.subtitle_teaser,
-    sections: flags.cocktails_live ? rawData.sections_live : rawData.sections_teaser,
-  } : rawData;
+  // Fall back to the first tab if the active one is hidden or missing
+  const current = tabs.some(t => t.id === activeTab) && menu[activeTab] ? activeTab : tabs[0].id;
+  const data = menu[current] || { title: "", subtitle: "", icon: "", sections: [] };
+  const sections = data.sections || [];
 
   return (
     <div style={{ paddingTop: 120, minHeight: "100vh" }}>
@@ -1125,8 +1111,8 @@ function MenuPage({ theme, isAM, flags }) {
                 padding: "10px 20px", borderRadius: 30, border: "none", cursor: "pointer",
                 fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 500,
                 letterSpacing: "0.04em",
-                background: activeTab === tab.id ? theme.accent : `${theme.muted}15`,
-                color: activeTab === tab.id ? "#fff" : theme.text,
+                background: current === tab.id ? theme.accent : `${theme.muted}15`,
+                color: current === tab.id ? "#fff" : theme.text,
                 transition: "all 0.3s ease",
               }}>
                 {tab.icon} {tab.label}
@@ -1136,7 +1122,7 @@ function MenuPage({ theme, isAM, flags }) {
         </FadeIn>
 
         {/* Menu Content */}
-        <div key={activeTab}>
+        <div key={current}>
           <FadeIn>
             <div style={{ textAlign: "center", marginBottom: 40 }}>
               <div style={{ fontSize: 32 }}>{data.icon}</div>
@@ -1147,7 +1133,7 @@ function MenuPage({ theme, isAM, flags }) {
             </div>
           </FadeIn>
 
-          {data.sections.map((section, si) => (
+          {sections.map((section, si) => (
             <FadeIn key={section.name} delay={si * 0.1}>
               <div style={{ marginBottom: 48 }}>
                 <h3 style={{
@@ -1193,6 +1179,21 @@ function MenuPage({ theme, isAM, flags }) {
               </div>
             </FadeIn>
           ))}
+
+          {sections.length === 0 && (
+            <FadeIn>
+              <div style={{
+                textAlign: "center", padding: "48px 24px", borderRadius: 16,
+                background: theme.surfaceAlt, border: `1px solid ${theme.muted}15`,
+              }}>
+                <div style={{ fontSize: 28, marginBottom: 10 }}>{data.icon}</div>
+                <div style={{ fontSize: 15, color: theme.heading, fontWeight: 500 }}>Coming soon</div>
+                <div style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginTop: 6 }}>
+                  This menu is being finalised — check back shortly.
+                </div>
+              </div>
+            </FadeIn>
+          )}
         </div>
 
         <FadeIn>
@@ -2049,9 +2050,9 @@ function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, onLogout,
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>Cocktails Section</div>
+            <div style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>Cocktails Tab</div>
             <div style={{ fontSize: 12, color: theme.muted, marginTop: 2 }}>
-              {flags.cocktails_live ? "🟢 LIVE — full menu with prices" : "🟡 TEASER — \"Coming Soon\" mode"}
+              {flags.cocktails_live ? "🟢 VISIBLE on the menu page" : "⚫ HIDDEN — build it in Menu Manager, then switch on"}
             </div>
           </div>
           <button onClick={() => updateFlag("cocktails_live", !flags.cocktails_live)} style={toggleStyle(flags.cocktails_live)}>
@@ -2287,20 +2288,19 @@ function MenuManager({ theme }) {
   }, [menu]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const catKeys = Object.keys(draft);
-  const sectionsKey = draft[cat].sections ? "sections" : "sections_live";
-  const sections = draft[cat][sectionsKey];
+  const sections = draft[cat]?.sections || [];
 
   const mutate = (fn) => {
     setDraft(prev => { const next = JSON.parse(JSON.stringify(prev)); fn(next); return next; });
     setDirty(true);
   };
-  const editItem = (si, ii, field, value) => mutate(d => { d[cat][sectionsKey][si].items[ii][field] = value; });
-  const editTags = (si, ii, value) => mutate(d => { d[cat][sectionsKey][si].items[ii].tags = value.split(",").map(t => t.trim()).filter(Boolean); });
-  const deleteItem = (si, ii) => mutate(d => { d[cat][sectionsKey][si].items.splice(ii, 1); });
-  const addItem = (si) => mutate(d => { d[cat][sectionsKey][si].items.push({ name: "New item", desc: "", price: "0.00", tags: [] }); });
-  const editSection = (si, value) => mutate(d => { d[cat][sectionsKey][si].name = value; });
-  const addSection = () => mutate(d => { d[cat][sectionsKey].push({ name: "New Section", items: [] }); });
-  const deleteSection = (si) => mutate(d => { d[cat][sectionsKey].splice(si, 1); });
+  const editItem = (si, ii, field, value) => mutate(d => { d[cat].sections[si].items[ii][field] = value; });
+  const editTags = (si, ii, value) => mutate(d => { d[cat].sections[si].items[ii].tags = value.split(",").map(t => t.trim()).filter(Boolean); });
+  const deleteItem = (si, ii) => mutate(d => { d[cat].sections[si].items.splice(ii, 1); });
+  const addItem = (si) => mutate(d => { d[cat].sections[si].items.push({ name: "New item", desc: "", price: "0.00", tags: [] }); });
+  const editSection = (si, value) => mutate(d => { d[cat].sections[si].name = value; });
+  const addSection = () => mutate(d => { d[cat].sections.push({ name: "New Section", items: [] }); });
+  const deleteSection = (si) => mutate(d => { d[cat].sections.splice(si, 1); });
 
   const doSave = () => { saveMenu(draft); setDirty(false); };
   const doReset = () => { resetMenu(); setDirty(false); };
@@ -2313,7 +2313,7 @@ function MenuManager({ theme }) {
   return (
     <div>
       <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.6, marginBottom: 12, fontWeight: 300 }}>
-        Edit items, prices and descriptions. For the Cocktails tab you're editing the live menu (shown when Cocktails is enabled above).
+        Edit items, prices and descriptions. Cocktails starts empty — add sections and items here, then switch the Cocktails tab on above to publish it.
       </div>
       {status === "offline" && (
         <div style={{ padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 11, lineHeight: 1.5,
