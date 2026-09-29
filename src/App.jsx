@@ -985,10 +985,10 @@ function MenuPage({ theme, flags }) {
         <FadeIn>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <div style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: theme.muted, marginBottom: 12 }}>
-              The Menu
+              Our Menu
             </div>
             <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(32px, 5vw, 52px)", fontWeight: 400, color: theme.heading }}>
-              Nourish & Flow
+              Day to Night
             </h1>
           </div>
         </FadeIn>
