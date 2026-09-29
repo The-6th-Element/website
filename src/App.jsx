@@ -3,12 +3,10 @@ import { useState, useEffect, useRef, useCallback } from "react";
 // ── Feature Flags (persisted in localStorage) ─────────────────────
 // Toggle these in the authenticated admin panel (?admin=true → login) or set defaults here
 const DEFAULT_FLAGS = {
-  cocktails_live: false,    // show the Cocktails tab on the menu page
   instagram_feed: true,     // show/hide Instagram grid
   booking_enabled: true,    // enable/disable reservations
   pm_switch_hour: 14,       // UK hour (24h) when the site switches to evening/dark mode
-  menu_coffee_hour: 14,     // UK hour when the Menu page defaults to Coffee & Tea
-  menu_wine_hour: 17,       // UK hour when the Menu page defaults to Wine
+  menu_evening_hour: 17,    // UK hour when the Menu page defaults to the Evening menu
 };
 
 // AM (light) between 8am and the configurable evening switch hour, UK time.
@@ -29,16 +27,12 @@ function scrollToTop() {
   root.style.scrollBehavior = prev;
 }
 
-// Which menu tab opens first, based on UK time of day:
-// Brunch → Coffee & Tea → Wine. Overnight/pre-open falls to Brunch
-// (the next service), so the wine list never greets a 3am visitor.
+// Which menu opens first, based on UK time of day: Daytime until the
+// evening hour, then Evening. Overnight falls back to Daytime.
 function defaultMenuTab(flags = {}) {
-  const coffeeFrom = flags.menu_coffee_hour ?? 14;
-  const wineFrom = flags.menu_wine_hour ?? 17;
+  const eveningFrom = flags.menu_evening_hour ?? 17;
   const h = parseInt(new Date().toLocaleString("en-GB", { timeZone: "Europe/London", hour: "numeric", hour12: false }), 10);
-  if (h < coffeeFrom) return "grounded";
-  if (h < wineFrom) return "coffee";
-  return "wine";
+  return h >= eveningFrom ? "evening" : "daytime";
 }
 
 function useFeatureFlags() {
@@ -120,229 +114,102 @@ const PM_THEME = {
 
 // ── Menu Data ──────────────────────────────────────────────────────
 const MENU_DATA = {
-  grounded: {
-    title: "Brunch",
-    subtitle: "Served 8am – 2pm · A balanced morning through the Six Elements",
-    icon: "🌿",
+  daytime: {
+    title: "Daytime",
+    subtitle: "Served 8am – 2pm · Inspired by the five elements",
+    icon: "☀️",
     sections: [
       {
-        name: "Earth · Grounded, Wholesome, Comfort",
+        name: "Brunch",
         items: [
-          { name: "Avocado & Feta Sourdough", desc: "Crushed avocado & feta · seeds · lemon · chilli flakes", price: "12", tags: ["V","GF*"] },
+          { name: "Avocado & Feta Sourdough", desc: "Crushed avocado · feta · seeds · lemon · chilli flakes", price: "12", tags: ["V","GF*"] },
           { name: "Masala Beans on Toast", desc: "Home-made spiced cannellini beans · grilled sourdough", price: "10", tags: ["VE","GF*"] },
-        ]
-      },
-      {
-        name: "Water · Fresh, Light, Hydrating",
-        items: [
-          { name: "Rose Water Fruit Bowl", desc: "Coconut yoghurt · seasonal fruits · basil seeds · rose water · mint", price: "12", tags: ["VE","GF"] },
-          { name: "Greek Yoghurt & Granola", desc: "Local honey · seasonal berries · toasted nuts", price: "9", tags: ["V","GF"] },
-        ]
-      },
-      {
-        name: "Ether · Balance, Calm, Functional",
-        items: [
-          { name: "Wellness Shots", desc: "Turmeric · ginger · greens", price: "6", tags: ["V","VE","GF"] },
-          { name: "Morning Ritual", desc: "Pressed juice · wellness shots · fruit bowl", price: "15", tags: ["V","VE","GF"] },
-        ]
-      },
-      {
-        name: "Air · Light, Indulgent, Uplifting",
-        items: [
-          { name: "Buttermilk Pancakes", desc: "Maple syrup · seasonal berries · whipped cream", price: "14", tags: ["V"] },
-          { name: "Crispy Chicken Waffle", desc: "Buttermilk-fried chicken · chilli honey", price: "16", tags: [] },
-        ]
-      },
-      {
-        name: "Fire · Hearty, Warm, Energising",
-        items: [
-          { name: "House Masala Shakshuka", desc: "Spiced tomatoes · poached eggs · coriander · sourdough", price: "13", tags: ["GF"] },
-          { name: "Green Shakshuka", desc: "Spiced greens · tofu · coriander · sourdough", price: "14", tags: ["VE","GF"] },
-          { name: "Breakfast Wrap", desc: "Scrambled egg · avocado · chilli sauce · coriander", price: "15", tags: ["V","GF*"] },
-        ]
-      },
-      {
-        name: "Signatures · Elevated Classics, Chef-Driven",
-        items: [
           { name: "Mango & Saffron Pot", desc: "Coconut yoghurt · granola · pistachio · toasted coconut", price: "12", tags: ["VE","GF"] },
-          { name: "Gin-Cured Salmon & Scrambled Eggs", desc: "Sourdough · chives · crème fraîche", price: "16", tags: ["GF*"] },
-          { name: "Truffle Mushroom Croissant", desc: "Creamy wild mushrooms · parmesan · truffle oil", price: "15", tags: ["V"] },
+          { name: "House Masala Shakshuka", desc: "Spiced tomatoes · poached eggs · coriander · sourdough · vegan option available", price: "13", tags: ["GF"] },
+          { name: "Buttermilk Pancakes", desc: "Maple syrup · seasonal berries · whipped cream", price: "14", tags: ["V"] },
+          { name: "Crispy Chicken Waffle", desc: "Buttermilk-fried chicken · chilli honey · waffle", price: "16", tags: [] },
+          { name: "Truffle Mushroom Croissant", desc: "Wild mushrooms · parmesan · truffle oil", price: "15", tags: ["V"] },
+          { name: "Gin-Cured Salmon & Eggs", desc: "Sourdough · chives · cream cheese", price: "16", tags: ["GF*"] },
         ]
       },
       {
-        name: "Caviar & Champagne for Two",
+        name: "Larger Plates",
         items: [
-          { name: "Prosecco & Caviar for Two", desc: "Exmoor caviar · blinis · crème fraîche · Fidora Prosecco", price: "50", tags: [] },
-          { name: "Champagne & Caviar for Two", desc: "Exmoor caviar · blinis · crème fraîche · Taittinger NV", price: "90", tags: [] },
-          { name: "Prosecco Brunch for Two", desc: "Caviar prelude · 3 signature dishes · Fidora Biodynamic Prosecco", price: "90", tags: [] },
-          { name: "Champagne Brunch for Two", desc: "Caviar prelude · 3 signature dishes · Taittinger Brut Réserve NV", price: "130", tags: [] },
+          { name: "Chicken Burger", desc: "Two patties · brioche bun · house masala fries · house salad", price: "18", tags: [] },
+          { name: "Plant Burger", desc: "Plant patty · brioche bun · house masala fries · house salad", price: "16", tags: ["VE"] },
+          { name: "Lunch Bowl", desc: "Chef's daily creation — ask your server for today's bowl", price: "12", tags: [] },
+          { name: "The Charcuterie Frank", desc: "Artisan sausage · frank roll · house mustard", price: "12", tags: [] },
         ]
       },
       {
-        name: "Viennoiserie · Freshly Baked Daily",
+        name: "Brunch for Two",
         items: [
-          { name: "Croissant", desc: "Freshly baked daily", price: "3.50", tags: ["V"] },
-          { name: "Pain au Chocolat", desc: "Freshly baked daily", price: "3.50", tags: ["V"] },
-          { name: "Cinnamon Swirl", desc: "Freshly baked daily", price: "3.50", tags: ["V"] },
+          { name: "Prosecco Brunch for Two", desc: "Prosecco + 3 dishes", price: "70", tags: [] },
+          { name: "Champagne Brunch for Two", desc: "Champagne + 3 dishes", price: "110", tags: [] },
         ]
       },
       {
         name: "Sides",
         items: [
-          { name: "Two Eggs", desc: "", price: "3", tags: [] },
-          { name: "Bacon", desc: "", price: "3", tags: [] },
-          { name: "Sausage", desc: "", price: "3", tags: [] },
-          { name: "Avocado", desc: "", price: "3", tags: [] },
-          { name: "Mushrooms", desc: "", price: "3", tags: [] },
-          { name: "Tomatoes", desc: "", price: "3", tags: [] },
-          { name: "Sourdough", desc: "", price: "3", tags: [] },
+          { name: "Eggs Your Way", desc: "Fried or poached", price: "3", tags: [] },
+          { name: "Masala Fries", desc: "", price: "5", tags: [] },
           { name: "Halloumi", desc: "", price: "5", tags: [] },
           { name: "Smoked Salmon", desc: "", price: "5.50", tags: [] },
-        ]
-      },
-      {
-        name: "Charcuterie & Boards · Until 6pm",
-        items: [
-          { name: "Sheen Charcuterie", desc: "Serves 2 · Prosciutto · salami · coppa · bresaola · olives · cornichons · crackers", price: "22", tags: ["GF"] },
-          { name: "Sheen Grazing Board", desc: "Serves 4 · Premium cured meats · pickled vegetables · crackers · chutney", price: "42", tags: ["GF"] },
-          { name: "Bar Nibbles", desc: "Marinated olives · spiced mixed nuts · vegetable crisps", price: "5", tags: ["V","VE","GF"] },
+          { name: "Avocado", desc: "", price: "3", tags: [] },
+          { name: "Sourdough", desc: "", price: "3", tags: [] },
+          { name: "Mushrooms", desc: "", price: "2", tags: [] },
+          { name: "Tomatoes", desc: "", price: "2", tags: [] },
+          { name: "Bar Nibbles", desc: "", price: "5", tags: [] },
         ]
       }
     ]
   },
-  coffee: {
-    title: "Coffee & Tea",
-    subtitle: "Old Spike Roastery · Rare Tea · Crafted with intention",
-    icon: "☕",
+  evening: {
+    title: "Evening",
+    subtitle: "Modern Indian · Served from 5pm",
+    icon: "🌙",
     sections: [
       {
-        name: "Coffee · Old Spike Roastery Specialty",
+        name: "Small Plates · £10–£12 · Perfect for Sharing",
         items: [
-          { name: "Espresso", desc: "", price: "3.80", tags: [] },
-          { name: "Americano", desc: "", price: "4.00", tags: [] },
-          { name: "Long Black", desc: "", price: "4.00", tags: [] },
-          { name: "Cortado", desc: "", price: "4.30", tags: [] },
-          { name: "Flat White", desc: "", price: "4.50", tags: [] },
-          { name: "Latte", desc: "", price: "4.50", tags: [] },
-          { name: "Cappuccino", desc: "", price: "4.50", tags: [] },
-          { name: "Mocha", desc: "", price: "5.20", tags: [] },
-          { name: "Irish Coffee", desc: "", price: "7.00", tags: [] },
+          { name: "Beetroot & Goat's Cheese Tikki", desc: "Tamarind glaze · pistachio crumble", price: "12", tags: ["V","GF"] },
+          { name: "Samphire Pakoras", desc: "Seaweed salt · house dip", price: "10", tags: ["VE"] },
+          { name: "Burrata Chaat", desc: "Heritage tomatoes · crispy papdi · tamarind, mint & coriander chutneys", price: "12", tags: ["V"] },
+          { name: "Bombay Nachos", desc: "Makhani queso · pico de gallo · guacamole & sour cream · jalapeños", price: "10", tags: ["V"] },
+          { name: "Lamb Chops", desc: "Kasundi glaze · pickled shallots & mint chutney", price: "12", tags: ["GF"] },
+          { name: "Paneer Tikka", desc: "Mustard pickle marinade · smoked yoghurt", price: "10", tags: ["V","GF"] },
+          { name: "Chicken Tikka", desc: "Chargrilled chicken tikka · house spices", price: "12", tags: ["GF"] },
+          { name: "Okra Fries", desc: "Crispy spiced okra fries", price: "10", tags: ["VE"] },
+          { name: "Butter Chicken", desc: "Tomatoes, butter, cream, cashews & aromatic spices", price: "12", tags: ["GF"] },
+          { name: "Paneer Lababdar", desc: "Tomato, cashew & aromatic spice gravy", price: "10", tags: ["V","GF"] },
+          { name: "Malabar King Prawn", desc: "King prawn · coconut, curry leaf & Malabar spice sauce", price: "12", tags: ["GF"] },
+          { name: "Dal Makhani", desc: "Slow-cooked 12 hours · cultured butter & truffle oil", price: "10", tags: ["V","GF"] },
+          { name: "Chef Special Chicken Wings", desc: "In-house marinated · slow-cooked · makhani drizzle", price: "12", tags: ["GF"] },
+          { name: "Jaipur Aloo", desc: "Spiced potatoes · mustard oil & fresh herbs", price: "10", tags: ["VE","GF"] },
         ]
       },
       {
-        name: "House & Matcha · Ceremonial, Spiced, Warming",
+        name: "Signatures · The Sixth Element Classics",
         items: [
-          { name: "Masala Chai", desc: "", price: "5.50", tags: [] },
-          { name: "Cardamom Chai", desc: "", price: "5.50", tags: [] },
-          { name: "Dirty Chai", desc: "Chai + espresso", price: "5.30", tags: [] },
-          { name: "Matcha Latte", desc: "Ceremonial grade", price: "6.50", tags: [] },
-          { name: "Hot Chocolate", desc: "", price: "4.50", tags: [] },
+          { name: "Lamb Shank", desc: "12-hour slow-braised lamb shank · Kashmiri reduction · saffron rice · artisan naan", price: "28", tags: ["GF"] },
+          { name: "Lamb Biryani", desc: "Saffron basmati · slow-finished in a copper pot", price: "18", tags: ["GF"] },
+          { name: "Chicken Biryani", desc: "Saffron basmati · slow-finished in a copper pot", price: "16", tags: ["GF"] },
+          { name: "Vegetable Biryani", desc: "Saffron basmati · slow-finished in a copper pot", price: "14", tags: ["V","GF"] },
         ]
       },
       {
-        name: "Rare Tea · Loose Leaf, A Gift to Our Farms",
+        name: "Sides",
         items: [
-          { name: "English Breakfast", desc: "", price: "4.00", tags: [] },
-          { name: "Earl Grey", desc: "", price: "4.00", tags: [] },
-          { name: "Nepali Gunpowder Green", desc: "", price: "5.00", tags: [] },
-          { name: "Peppermint / Fresh Mint", desc: "", price: "5.00", tags: [] },
-          { name: "Ginger & Lemongrass", desc: "", price: "5.00", tags: [] },
-          { name: "Orange Blossom", desc: "", price: "8.00", tags: [] },
-        ]
-      },
-      {
-        name: "Smoothies · Blended Fresh, Dairy-Free",
-        items: [
-          { name: "Detox Zing", desc: "Greens · citrus · ginger", price: "6.50", tags: ["VE"] },
-          { name: "Pash N' Shoot", desc: "Passionfruit · mango", price: "6.50", tags: ["VE"] },
-          { name: "Big 5", desc: "Five fruits · five-a-day", price: "6.50", tags: ["VE"] },
-          { name: "Berry Go Round", desc: "Mixed berries · banana", price: "6.50", tags: ["VE"] },
-        ]
-      },
-      {
-        name: "Fresh Juices · Locally Sourced, Pressed Daily",
-        items: [
-          { name: "Orange", desc: "", price: "6.00", tags: ["VE"] },
-          { name: "Apple", desc: "", price: "6.00", tags: ["VE"] },
-          { name: "Pineapple", desc: "", price: "6.00", tags: ["VE"] },
-        ]
-      },
-      {
-        name: "Little Ones · For Our Younger Guests",
-        items: [
-          { name: "Juice — Orange / Apple", desc: "", price: "2.00", tags: [] },
-          { name: "Soft Drink", desc: "", price: "2.00", tags: [] },
-        ]
-      },
-      {
-        name: "Extras",
-        items: [
-          { name: "Iced", desc: "Any coffee served over ice", price: "0.40", tags: [] },
-          { name: "Extra Shot", desc: "", price: "0.50", tags: [] },
-          { name: "Plant Milk", desc: "Oat · almond · soya · coconut", price: "0.20", tags: ["VE"] },
+          { name: "Bread Basket", desc: "Peshawari naan · aloo kulcha · garlic naan", price: "6", tags: [] },
+          { name: "Mini Naan", desc: "Choice of peshawari, aloo kulcha or garlic", price: "3", tags: [] },
+          { name: "Saffron Rice", desc: "", price: "6", tags: [] },
+          { name: "Poppadoms Basket", desc: "With a selection of chutneys", price: "6", tags: [] },
+          { name: "Chickpea Salad", desc: "", price: "6", tags: [] },
+          { name: "Raita", desc: "", price: "3", tags: [] },
+          { name: "Bar Nibbles", desc: "Marinated olives, spiced nuts & crisps", price: "5", tags: [] },
         ]
       }
     ]
-  },
-  wine: {
-    title: "Wine List",
-    subtitle: "Thoughtfully selected — by the glass (175ml) & bottle",
-    icon: "🍷",
-    sections: [
-      {
-        name: "White",
-        items: [
-          { name: "Muscadet Sèvre et Maine", desc: "Sur Lie · France · Bottle £36", price: "9.50", tags: [] },
-          { name: "Peth Wetz Estate Riesling", desc: "Organic · Germany · Bottle £38", price: "10.00", tags: [] },
-          { name: "Babydoll Sauvignon Blanc", desc: "Marlborough, New Zealand · Bottle £42", price: "11.00", tags: [] },
-          { name: "Trouble White", desc: "Vin de France · Bottle £44", price: "11.50", tags: [] },
-          { name: "Bodegas Castro Martín Albariño", desc: "Rías Baixas, Spain · Bottle £46", price: "12.00", tags: [] },
-          { name: "Gerard Bertrand Orange Gold", desc: "Organic · Occitanie, France · Bottle £52", price: "13.50", tags: [] },
-          { name: "Sancerre Blanc", desc: "Domaine de la Chezatte · France · Bottle £56", price: "14.50", tags: [] },
-        ]
-      },
-      {
-        name: "Red",
-        items: [
-          { name: "Nyala Cabernet Sauvignon", desc: "South Africa · Bottle £32", price: "8.50", tags: [] },
-          { name: "Zensa Primitivo", desc: "Organic · Puglia, Italy · Bottle £38", price: "10.00", tags: [] },
-          { name: "Zuccardi Serie A Malbec", desc: "Uco Valley, Argentina · Bottle £48", price: "12.50", tags: [] },
-          { name: "Journey's End V5 Shiraz", desc: "South Africa · Bottle £50", price: "13.00", tags: [] },
-          { name: "Château La Croix Ferrandat", desc: "St-Émilion 2019 · France · Bottle only", price: "52", tags: [] },
-        ]
-      },
-      {
-        name: "Sparkling & Champagne",
-        items: [
-          { name: "Santa Fosca Prosecco DOC", desc: "Extra Dry · Italy · Bottle £34", price: "9.00", tags: [] },
-          { name: "Fidora Prosecco Brut", desc: "Biodynamic · Italy · Bottle £42", price: "11.00", tags: [] },
-          { name: "Taittinger Brut Réserve NV", desc: "Champagne · France · Bottle only", price: "99", tags: [] },
-        ]
-      },
-      {
-        name: "Rosé",
-        items: [
-          { name: "Zensa Rosato", desc: "Organic · Puglia, Italy · Bottle £36", price: "9.50", tags: [] },
-          { name: "Château St Baillon", desc: "Côtes de Provence · France · Bottle £48", price: "12.50", tags: [] },
-        ]
-      },
-      {
-        name: "Brunch Pours",
-        items: [
-          { name: "Mimosa", desc: "Prosecco · fresh orange", price: "9.00", tags: [] },
-          { name: "Aperol Spritz", desc: "Aperol · Prosecco · soda", price: "10.00", tags: [] },
-          { name: "Bellini", desc: "Prosecco · peach", price: "9.50", tags: [] },
-        ]
-      }
-    ]
-  },
-  cocktails: {
-    title: "The Curator",
-    subtitle: "High-end curated cocktails",
-    icon: "🍸",
-    // Managed entirely from the admin panel — add sections and items there,
-    // then switch the Cocktails tab on to publish it.
-    sections: []
   }
 };
 
@@ -651,7 +518,7 @@ export default function TheSixthElement() {
       <Navbar theme={theme} isAM={isAM} setIsAM={setIsAM} menuOpen={menuOpen} setMenuOpen={setMenuOpen} navigate={navigate} currentPage={currentPage} topOffset={barVisible ? ANNOUNCEMENT_BAR_H : 0} />
 
       {currentPage === "home" && <HomePage theme={theme} isAM={isAM} navigate={navigate} setBookingOpen={setBookingOpen} flags={flags} />}
-      {currentPage === "menu" && <MenuPage theme={theme} isAM={isAM} flags={flags} />}
+      {currentPage === "menu" && <MenuPage theme={theme} flags={flags} />}
       {currentPage === "impact" && <SocialImpactPage theme={theme} />}
       {currentPage === "about" && <AboutPage theme={theme} />}
       {currentPage === "contact" && <ContactPage theme={theme} />}
@@ -1102,18 +969,13 @@ function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
 }
 
 // ── Menu Page ──────────────────────────────────────────────────────
-function MenuPage({ theme, isAM, flags }) {
+function MenuPage({ theme, flags }) {
   const { menu } = useMenu();
-  // Cocktails only appears once it's switched on in the admin panel.
-  const tabs = [
-    { id: "grounded", label: "Brunch", icon: "🌿" },
-    { id: "coffee", label: "Coffee & Tea", icon: "☕" },
-    { id: "wine", label: "Wine", icon: "🍷" },
-    ...(flags.cocktails_live ? [{ id: "cocktails", label: "Cocktails", icon: "🍸" }] : []),
-  ];
+  // Tabs follow the menu categories (Daytime, Evening) straight from the data.
+  const tabs = Object.keys(menu).map(id => ({ id, label: menu[id].title || id, icon: menu[id].icon || "" }));
   const [activeTab, setActiveTab] = useState(() => defaultMenuTab(flags));
-  // Fall back to the first tab if the active one is hidden or missing
-  const current = tabs.some(t => t.id === activeTab) && menu[activeTab] ? activeTab : tabs[0].id;
+  // Fall back to the first tab if the active one is missing
+  const current = tabs.some(t => t.id === activeTab) && menu[activeTab] ? activeTab : (tabs[0]?.id || "");
   const data = menu[current] || { title: "", subtitle: "", icon: "", sections: [] };
   const sections = data.sections || [];
 
@@ -2074,21 +1936,10 @@ function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, onLogout,
         </button>
       </div>
 
-      {/* Toggle: Cocktails */}
+      {/* Toggles */}
       <div style={{ marginBottom: 28 }}>
         <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 16 }}>
-          Menu Sections
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>Cocktails Tab</div>
-            <div style={{ fontSize: 12, color: theme.muted, marginTop: 2 }}>
-              {flags.cocktails_live ? "🟢 VISIBLE on the menu page" : "⚫ HIDDEN — build it in Menu Manager, then switch on"}
-            </div>
-          </div>
-          <button onClick={() => updateFlag("cocktails_live", !flags.cocktails_live)} style={toggleStyle(flags.cocktails_live)}>
-            <div style={dotStyle(flags.cocktails_live)} />
-          </button>
+          Features
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
           <div>
@@ -2141,27 +1992,20 @@ function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, onLogout,
           Menu Default Tab
         </div>
         <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300, marginBottom: 14, lineHeight: 1.5 }}>
-          Which menu opens first, by UK time: <strong style={{ color: theme.heading }}>Brunch</strong> → <strong style={{ color: theme.heading }}>Coffee &amp; Tea</strong> → <strong style={{ color: theme.heading }}>Wine</strong>. Overnight falls back to Brunch.
+          The Menu page opens on <strong style={{ color: theme.heading }}>Daytime</strong>, then switches to <strong style={{ color: theme.heading }}>Evening</strong> at the time below (UK). Overnight falls back to Daytime.
         </div>
-        {[
-          { key: "menu_coffee_hour", label: "Coffee & Tea from", hours: [10, 11, 12, 13, 14, 15, 16] },
-          { key: "menu_wine_hour", label: "Wine from", hours: [15, 16, 17, 18, 19, 20, 21] },
-        ].map(({ key, label, hours }) => (
-          <div key={key} style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 13, color: theme.heading, marginBottom: 6 }}>{label}</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {hours.map(h => (
-                <button key={h} onClick={() => updateFlag(key, h)} style={{
-                  padding: "6px 10px", borderRadius: 6, border: "none", cursor: "pointer",
-                  fontSize: 12, fontWeight: 500,
-                  background: flags[key] === h ? theme.accent : `${theme.muted}15`,
-                  color: flags[key] === h ? "#fff" : theme.text,
-                  transition: "all 0.2s ease",
-                }}>{h === 12 ? "12pm" : h < 12 ? `${h}am` : `${h - 12}pm`}</button>
-              ))}
-            </div>
-          </div>
-        ))}
+        <div style={{ fontSize: 13, color: theme.heading, marginBottom: 6 }}>Evening menu from</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {[15, 16, 17, 18, 19, 20].map(h => (
+            <button key={h} onClick={() => updateFlag("menu_evening_hour", h)} style={{
+              padding: "6px 10px", borderRadius: 6, border: "none", cursor: "pointer",
+              fontSize: 12, fontWeight: 500,
+              background: flags.menu_evening_hour === h ? theme.accent : `${theme.muted}15`,
+              color: flags.menu_evening_hour === h ? "#fff" : theme.text,
+              transition: "all 0.2s ease",
+            }}>{h === 12 ? "12pm" : h < 12 ? `${h}am` : `${h - 12}pm`}</button>
+          ))}
+        </div>
       </div>
 
       {/* Reservations (Toast Tables) */}
@@ -2338,7 +2182,7 @@ function ContentEditor({ theme }) {
 function MenuManager({ theme }) {
   const { menu, status, saveState, saveMenu, resetMenu } = useMenu();
   const [draft, setDraft] = useState(() => JSON.parse(JSON.stringify(menu)));
-  const [cat, setCat] = useState("grounded");
+  const [cat, setCat] = useState(() => Object.keys(menu)[0]);
   const [dirty, setDirty] = useState(false);
 
   // When the menu loads from Supabase (or resets), sync the editor — but
@@ -2373,7 +2217,7 @@ function MenuManager({ theme }) {
   return (
     <div>
       <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.6, marginBottom: 12, fontWeight: 300 }}>
-        Edit items, prices and descriptions. Cocktails starts empty — add sections and items here, then switch the Cocktails tab on above to publish it.
+        Edit items, prices and descriptions across the Daytime and Evening menus. Changes save to Supabase and show to all visitors.
       </div>
       {status === "offline" && (
         <div style={{ padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 11, lineHeight: 1.5,
