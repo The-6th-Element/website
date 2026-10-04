@@ -32,6 +32,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
   const [targetBranch, setTargetBranch] = useState("dev");
   const [customCommitMsg, setCustomCommitMsg] = useState("");
   const [publishStatus, setPublishStatus] = useState(null);
+  const [tokenError, setTokenError] = useState("");
 
   useEffect(() => {
     if (githubToken && !tokenUser) {
@@ -51,6 +52,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
     const clean = tok.trim();
     if (!clean) return;
     setValidatingToken(true);
+    setTokenError("");
     try {
       const u = await validateGithubToken(clean);
       setStoredGithubToken(clean);
@@ -58,7 +60,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
       setTokenUser(u.username);
       setTokenInput("");
     } catch (err) {
-      alert(err.message || "Invalid GitHub token");
+      setTokenError(err.message || "Invalid GitHub token");
     } finally {
       setValidatingToken(false);
     }
@@ -1261,6 +1263,11 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                   <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.5 }}>
                     Enter a GitHub Personal Access Token (PAT) with <code style={{ color: COLORS.warmAmber }}>repo</code> permission or fine-grained write access to <code style={{ color: COLORS.warmAmber }}>The-6th-Element/website</code>. Stored safely in your browser only.
                   </div>
+                  {tokenError && (
+                    <div style={{ fontSize: 11, color: "#EF4444", marginTop: 2, fontWeight: 500 }}>
+                      ⚠️ {tokenError}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

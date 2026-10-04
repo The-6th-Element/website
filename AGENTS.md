@@ -1,87 +1,55 @@
-# The Sixth Element — Anti Gravity Project Guide
+# The Sixth Element — Agent Architecture & Engineering Guide
 
 ## Overview
-**The Sixth Element** is a high-end hospitality website and web application for an artisan café and evening wine bar in Richmond-upon-Thames, London ("Specialty coffee by day, natural wine by night").
+**The Sixth Element** is a modern hospitality web application for an artisan specialty café and evening natural wine bar in Richmond-upon-Thames, London (*"Specialty coffee by day, natural wine by night"*).
 
 - **Repository**: [The-6th-Element/website](https://github.com/The-6th-Element/website)
-- **Local Path**: `C:\Users\deepa\.gemini\antigravity-ide\scratch\the-sixth-element-website`
-- **Tech Stack**: React 18, Vite 6, Vercel Serverless Functions, Supabase (PostgreSQL & Storage), Toast Tables (Reservations).
+- **Primary Domain**: `https://the6thelement.co.uk`
+- **Tech Stack**: React 18, Vite 6, GitHub Pages, GitHub Actions CI/CD, Toast Tables.
+- **Operating Model**: 100% serverless, zero database fees, zero dedicated server costs.
 
 ---
 
-## Architecture & File Structure
+## Architectural Rules & Conventions
 
-```
-the-sixth-element-website/
-├── index.html              # HTML shell with Google Fonts, metadata, and JSON-LD baseline
-├── package.json            # Scripts and dependencies (React 18, Vite 6)
-├── vite.config.js          # Vite config (dev server port 3000)
-├── api/                    # Vercel Serverless Functions (Node.js)
-│   ├── admin-auth.js       # Admin authentication & JWT token signing/verification
-│   └── content.js          # Supabase REST client for CMS (menu, offers, content, gallery)
-├── public/                 # Static brand assets (SVG logomarks, food/drink imagery)
-├── src/
-│   ├── main.jsx            # React root mount
-│   └── App.jsx             # Main application (routing, theme engine, pages, admin panel)
-└── CMS_SETUP.md            # Supabase schema definitions and Vercel setup instructions
-```
+### 1. Branch Strategy
+- **`dev` branch**: All new features, bug fixes, and experiments MUST be written, tested, and committed to `dev`.
+- **`main` branch**: Clean production branch mapped directly to GitHub Pages deployment. Only merge `dev` into `main` after full review and verification.
 
----
+### 2. Dual-Personality Theming
+- The site automatically computes AM (Daylight) vs PM (Evening lounge) based on London local time (`Europe/London`).
+- The switch hour defaults to 14:00 UK time, configurable in real time via the Staff Portal (`flags.pm_switch_hour`).
+- Global color tokens live in `src/theme/tokens.js`. Never introduce ad-hoc hex values where standard design tokens exist.
 
-## Key Workflows & Conventions
+### 3. Staff & User Management (RBAC)
+- Multi-user authentication is managed by `src/utils/userManager.js`.
+- Passwords are hashed with SHA-256 (Web Crypto API with pure JS fallback for non-secure local IP testing).
+- Five roles: `owner`, `admin`, `manager`, `lead`, `chef`.
+- **CRITICAL**: Only `owner` and `admin` roles have `canPublishLive: true`. Staff roles can edit menus and save drafts locally for admin review.
 
-### 1. Theme Engine (AM / PM Dual Personality)
-- **AM Mode**: Morning/afternoon theme (Ivory `#F6F4E3`, Cream `#FAF8F0`, Earth Brown `#4B3621`, Warm Amber `#BF8A2F`).
-- **PM Mode**: Evening lounge theme (Warm Black `#0F0D0A`, Dark Bg `#1A1410`, Sand `#D4C5A9`, Warm Amber `#BF8A2F`).
-- Switches automatically based on Europe/London local hour (`h >= 8 && h < pm_switch_hour`, configurable in admin panel, default 14:00).
-- Users can manually toggle via the Sun/Moon icon in the navbar.
+### 4. In-Browser Menu Studio
+- Located at `/studio` or via the Staff Portal banner.
+- Allows live spreadsheet editing of daytime & evening menu items, dietary tags (`V`, `VE`, `GF`, `GF*`), and prices.
+- Supports 1-click CSV download and drag-and-drop CSV upload via `src/utils/csvMenuParser.js`.
+- Direct publishing to GitHub repository branches via in-browser GitHub REST API (`src/utils/githubPublisher.js`).
 
-### 2. Navigation & Pages
-- Controlled via `currentPage` state in `TheSixthElement` (`App.jsx`):
-  - `'home'`: Hero, dual experience showcase, concept highlights, reviews, Instagram/gallery, booking CTA.
-  - `'menu'`: Tabbed Daytime (Brunch, Coffee, Tea) vs Evening (Plates, Cocktails, Wine, Beer).
-  - `'impact'`: Ethical coffee bean sourcing, community focus, and environmental initiatives.
-  - `'about'`: The story behind the brand and philosophy of the six elements.
-  - `'contact'`: Physical address (210 Upper Richmond Road West, SW14 8AH), telephone, opening hours, contact form.
-- Smooth scrolling is managed via `scrollToTop()` on route switches.
-
-### 3. CMS & Admin Panel
-- Access: Add `?admin=true` to any URL.
-- Auth: Serverless endpoint `api/admin-auth.js` verifies credentials and signs a 12-hour JWT stored in `sessionStorage`.
-- Features: Content editing, live menu management, promotions manager with badge styling, image gallery uploads.
-- Supabase Integration: Public GET requests fetch live data with graceful offline fallbacks to local defaults if Supabase is unconfigured.
-
-### 4. Toast Tables Integration
-- Reservation booking opens Toast Tables modal using `TOAST_CONFIG.reservationUrl` (`https://tables.toasttab.com/restaurants/5503e03f-b188-421c-aa8f-5a2c8e27fd59/findTime`).
+### 5. Persistent State & Storage
+- Custom operational settings (promotions, announcement bar, switch hour) are persisted in `localStorage` under `tse_*` keys.
+- Real-time synchronization across browser tabs is achieved using `window.dispatchEvent(new Event(...))`.
 
 ---
 
-## Local Development Commands (Windows)
+## Local Development (Windows / PowerShell)
 
-> On Windows PowerShell where script execution policy may restrict `.ps1` files, use `npm.cmd`:
+Always use `npm.cmd` when executing npm scripts on Windows:
 
 ```powershell
-# Install dependencies
-npm.cmd install
-
-# Start local development server (http://localhost:3000)
-npm.cmd run dev
-
-# Production build
-npm.cmd run build
-
-# Preview build locally
-npm.cmd run preview
+npm.cmd run dev       # Starts Vite dev server (host: 0.0.0.0 for LAN/mobile testing)
+npm.cmd run build     # Compiles production bundle to dist/
+npm.cmd run preview   # Previews production dist/ locally
 ```
 
 ---
 
-## Planned / Recommended Enhancements
-1. **Modularizing `App.jsx`**: Split the single 2,650-line file into dedicated directories:
-   - `src/components/` (Navbar, Footer, AnnouncementBar, ToastModal, etc.)
-   - `src/pages/` (Home, Menu, Impact, About, Contact)
-   - `src/admin/` (AdminPanel, ContentEditor, MenuManager, etc.)
-   - `src/theme/` (Colors, Theme tokens, AM/PM logic)
-   - `src/data/` (Default menu items, static fallback copy)
-2. **Environment Variable Integration**: Ensure local `.env` and Vercel environment variables are aligned for Supabase and Admin secrets.
-3. **Menu & Visual Assets**: Update any placeholder photography, verify opening hours, and connect live forms.
+## Feature Backlog Maintenance
+All project feature requests and status updates are tracked in [FEATURE_BACKLOG.md](FEATURE_BACKLOG.md). Keep this document updated on every milestone.

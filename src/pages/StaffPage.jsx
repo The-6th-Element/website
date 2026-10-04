@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { COLORS } from "../theme/tokens";
 import { ROLES, hasPermission } from "../utils/userManager";
 import { UserManager } from "../components/admin/UserManager";
-import { PromotionsManager } from "../components/admin/AdminComponents";
+import { PromotionsManager } from "../components/admin/PromotionsManager";
 import { FadeIn } from "../components/ui/FadeIn";
 import { Logomark } from "../components/ui/Logomark";
 
