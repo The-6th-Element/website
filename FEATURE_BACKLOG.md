@@ -102,6 +102,11 @@ The following features have been scoped or requested for future exploration once
 | **BK-12** | **Menu Item Availability / 86 Toggle** | Quick-action switch in Staff Portal allowing staff to mark individual dishes as "Sold Out for Today" without deleting them. | High |
 | **BK-13** | **Audit Log of Menu Changes** | Visual timestamped history in Staff Portal recording which user made what price or item modification. | Medium |
 
+### 3.5 Quality Assurance & Automated Testing
+| ID | Feature | Description | Priority |
+|---|---|---|---|
+| **BK-14** | **Full Automated Regression Test Pack** | Build and maintain a comprehensive automated regression test pack (unit, component, and end-to-end browser tests) covering all critical user journeys: navigation routing, daylight/evening theme switching, Toast Tables reservation opening, Menu Studio spreadsheet editing and CSV import/export, role-based access control (RBAC) permissions, and mobile touch viewports. Integrated into GitHub Actions CI/CD to run automatically on every future change before merging/deployment. | High |
+
 ---
 
 ## 📝 4. How to Add New Backlog Requests
