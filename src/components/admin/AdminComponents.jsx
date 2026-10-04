@@ -323,12 +323,7 @@ export function MenuManager({ theme, onOpenStudio }) {
       <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.6, marginBottom: 12, fontWeight: 300 }}>
         Quick-edit items and prices below, or use the Studio above to download/upload the CSV spreadsheet.
       </div>
-      {status === "offline" && (
-        <div style={{ padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 11, lineHeight: 1.5,
-          background: "#F59E0B18", border: "1px solid #F59E0B40", color: theme.heading }}>
-          <strong>Supabase not connected.</strong> You can preview edits, but Save won't persist until the CMS is configured.
-        </div>
-      )}
+
 
       {/* Category tabs */}
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
@@ -423,12 +418,7 @@ export function PromotionsManager({ theme }) {
         {saveState === "saved" && <span style={{ color: COLORS.mossGreen }}> · Saved ✓</span>}
         {saveState === "error" && <span style={{ color: "#EF4444" }}> · Save failed</span>}
       </div>
-      {status === "offline" && (
-        <div style={{ padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 11, lineHeight: 1.5,
-          background: "#F59E0B18", border: "1px solid #F59E0B40", color: theme.heading }}>
-          <strong>Supabase not connected.</strong> Edits won't persist until the CMS is configured.
-        </div>
-      )}
+
 
       {promotions.length === 0 && !showForm && (
         <div style={{ fontSize: 13, color: theme.muted, marginBottom: 12, fontWeight: 300 }}>No promotions yet.</div>
@@ -844,15 +834,7 @@ export function AdminPanel({
             </div>
           </div>
 
-          {/* CMS: Content Editor */}
-          <AdminSection theme={theme} title="Content Editor" icon="✏️">
-            <ContentEditor theme={theme} />
-          </AdminSection>
 
-          {/* CMS: Gallery Manager */}
-          <AdminSection theme={theme} title="Gallery Images" icon="🖼️">
-            <GalleryManager theme={theme} />
-          </AdminSection>
 
           {/* Reset */}
           <div style={{ paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>

@@ -54,24 +54,61 @@ export function useContentKey(key, fallback) {
   return [value, setValue, status];
 }
 
+// ── Promotions Hook (browser-persisted with instant real-time sync) ──
 export function usePromotions() {
-  const [promotions, setPromotions, status] = useContentKey("promotions", DEFAULT_PROMOTIONS);
+  const [promotions, setPromotions] = useState(() => {
+    try {
+      const saved = localStorage.getItem("tse_promotions");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return DEFAULT_PROMOTIONS;
+  });
   const [saveState, setSaveState] = useState("idle"); // idle | saving | saved | error
+
+  useEffect(() => {
+    const handleSync = () => {
+      try {
+        const saved = localStorage.getItem("tse_promotions");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) setPromotions(parsed);
+        } else {
+          setPromotions(DEFAULT_PROMOTIONS);
+        }
+      } catch {}
+    };
+    window.addEventListener("tse_promotions_updated", handleSync);
+    return () => window.removeEventListener("tse_promotions_updated", handleSync);
+  }, []);
 
   const persist = (next) => {
     setPromotions(next);
     setSaveState("saving");
-    saveContentKey("promotions", next)
-      .then(() => setSaveState("saved"))
-      .catch(() => setSaveState("error"));
+    try {
+      localStorage.setItem("tse_promotions", JSON.stringify(next));
+      window.dispatchEvent(new Event("tse_promotions_updated"));
+      setSaveState("saved");
+      setTimeout(() => setSaveState("idle"), 2500);
+    } catch {
+      setSaveState("error");
+    }
   };
 
   const addPromotion = (promo) => persist([...promotions, { ...promo, id: `promo-${Date.now()}` }]);
   const updatePromotion = (id, patch) => persist(promotions.map((p) => (p.id === id ? { ...p, ...patch } : p)));
   const deletePromotion = (id) => persist(promotions.filter((p) => p.id !== id));
-  const resetPromotions = () => persist(DEFAULT_PROMOTIONS);
+  const resetPromotions = () => {
+    try {
+      localStorage.removeItem("tse_promotions");
+    } catch {}
+    window.dispatchEvent(new Event("tse_promotions_updated"));
+    persist(DEFAULT_PROMOTIONS);
+  };
 
-  return { promotions, status, saveState, addPromotion, updatePromotion, deletePromotion, resetPromotions };
+  return { promotions, status: "connected", saveState, addPromotion, updatePromotion, deletePromotion, resetPromotions };
 }
 
 // Normalizes menu categories into a consistent { title, subtitle, icon, sections } shape
@@ -98,8 +135,7 @@ export function useMenu() {
     }
   });
 
-  const [raw, setMenu, status] = useContentKey("menu_data", localCustom || MENU_DATA);
-  const activeRaw = localCustom || raw || MENU_DATA;
+  const activeRaw = localCustom || MENU_DATA;
   const menu = normalizeMenu(activeRaw);
   const [saveState, setSaveState] = useState("idle");
 
@@ -116,24 +152,23 @@ export function useMenu() {
 
   const persist = (next) => {
     setLocalCustom(next);
+    setSaveState("saving");
     try {
       if (next) {
         localStorage.setItem("tse_custom_menu", JSON.stringify(next));
       } else {
         localStorage.removeItem("tse_custom_menu");
       }
-    } catch {}
-    window.dispatchEvent(new Event("tse_menu_updated"));
-
-    setMenu(next || MENU_DATA);
-    setSaveState("saving");
-    saveContentKey("menu_data", next || MENU_DATA)
-      .then(() => setSaveState("saved"))
-      .catch(() => setSaveState("saved"));
+      window.dispatchEvent(new Event("tse_menu_updated"));
+      setSaveState("saved");
+      setTimeout(() => setSaveState("idle"), 2500);
+    } catch {
+      setSaveState("error");
+    }
   };
 
   const saveMenu = (next) => persist(next);
   const resetMenu = () => persist(null);
 
-  return { menu, status, saveState, saveMenu, resetMenu, isCustom: Boolean(localCustom) };
+  return { menu, status: "connected", saveState, saveMenu, resetMenu, isCustom: Boolean(localCustom) };
 }
