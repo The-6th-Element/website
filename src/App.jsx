@@ -20,7 +20,15 @@ import { authenticateAdmin, verifyAdminSession } from "./utils/auth";
 
 // ── Main App ───────────────────────────────────────────────────────
 export default function TheSixthElement() {
-  const [currentPage, setCurrentPage] = useState("home");
+  const [currentPage, setCurrentPage] = useState(() => {
+    try {
+      const path = window.location.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
+      if (["home", "menu", "impact", "about", "contact"].includes(path)) {
+        return path;
+      }
+    } catch {}
+    return "home";
+  });
   const [isAM, setIsAM] = useState(() => {
     let pm = 14;
     try {
@@ -91,12 +99,26 @@ export default function TheSixthElement() {
   const navigate = useCallback((page) => {
     setCurrentPage(page);
     setMenuOpen(false);
+    try {
+      const targetUrl = page === "home" ? "/" : `/${page}`;
+      if (window.location.pathname !== targetUrl) {
+        window.history.pushState(null, null, targetUrl);
+      }
+    } catch {}
     scrollToTop();
   }, []);
 
-  // Also reset scroll *after* the new page commits. On mobile Safari a scroll
-  // started before the content swap gets cancelled as the document height
-  // changes, leaving you stranded at the old footer.
+  // Listen for browser back / forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
+      setCurrentPage(["home", "menu", "impact", "about", "contact"].includes(path) ? path : "home");
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  // Also reset scroll *after* the new page commits.
   useEffect(() => { scrollToTop(); }, [currentPage]);
 
   return (
