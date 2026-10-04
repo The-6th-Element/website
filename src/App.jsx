@@ -15,6 +15,7 @@ import { SocialImpactPage } from "./pages/SocialImpactPage";
 import { AboutPage } from "./pages/AboutPage";
 import { ContactPage } from "./pages/ContactPage";
 import { AdminLogin, AdminPanel } from "./components/admin/AdminComponents";
+import { MenuStudio } from "./components/admin/MenuStudio";
 
 // ── Main App ───────────────────────────────────────────────────────
 export default function TheSixthElement() {
@@ -32,8 +33,17 @@ export default function TheSixthElement() {
   const [barVisible, setBarVisible] = useState(false);
   const { flags, updateFlag, resetFlags } = useFeatureFlags();
   const [showAdmin, setShowAdmin] = useState(false);
+  const [showStudio, setShowStudio] = useState(false);
   const [adminAuth, setAdminAuth] = useState({ authenticated: false, user: null, token: null, loading: true });
   const [showLogin, setShowLogin] = useState(false);
+
+  // Studio direct access: ?studio=menu or ?admin=menu
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("studio") === "menu" || params.get("admin") === "menu") {
+      setShowStudio(true);
+    }
+  }, []);
 
   // Admin auth: ?admin=true opens login gate, verifies existing session
   useEffect(() => {
@@ -176,7 +186,13 @@ export default function TheSixthElement() {
           flags={flags}
         />
       )}
-      {currentPage === "menu" && <MenuPage theme={theme} flags={flags} />}
+      {currentPage === "menu" && (
+        <MenuPage
+          theme={theme}
+          flags={flags}
+          onOpenStudio={() => setShowStudio(true)}
+        />
+      )}
       {currentPage === "impact" && <SocialImpactPage theme={theme} />}
       {currentPage === "about" && <AboutPage theme={theme} />}
       {currentPage === "contact" && <ContactPage theme={theme} />}
@@ -193,6 +209,13 @@ export default function TheSixthElement() {
           adminUser={adminAuth.user}
           onLogout={handleAdminLogout}
           onClose={() => setShowAdmin(false)}
+          onOpenStudio={() => setShowStudio(true)}
+        />
+      )}
+      {showStudio && (
+        <MenuStudio
+          theme={theme}
+          onClose={() => setShowStudio(false)}
         />
       )}
       <StructuredData />

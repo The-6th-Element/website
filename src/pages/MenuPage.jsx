@@ -5,7 +5,7 @@ import { defaultMenuTab } from "../utils/time";
 import { useMenu } from "../hooks/useContent";
 import { FadeIn } from "../components/ui/FadeIn";
 
-export function MenuPage({ theme, flags }) {
+export function MenuPage({ theme, flags, onOpenStudio }) {
   const { menu } = useMenu();
   const tabs = Object.keys(menu).map((id) => ({ id, label: menu[id].title || id, icon: menu[id].icon || "" }));
   const [activeTab, setActiveTab] = useState(() => defaultMenuTab(flags));
@@ -210,6 +210,38 @@ export function MenuPage({ theme, flags }) {
           >
             <p>(V) Vegetarian · (VE) Vegan · (GF) Gluten Free · (*) available on request</p>
             <p style={{ marginTop: 8 }}>Please inform our team of any allergies or dietary requirements. All prices include VAT.</p>
+            {onOpenStudio && (
+              <div style={{ marginTop: 24 }}>
+                <button
+                  onClick={onOpenStudio}
+                  style={{
+                    background: "none",
+                    border: `1px dashed ${theme.muted}40`,
+                    borderRadius: 20,
+                    padding: "8px 18px",
+                    fontSize: 12,
+                    color: theme.muted,
+                    cursor: "pointer",
+                    fontFamily: "'Outfit', sans-serif",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = COLORS.warmAmber;
+                    e.currentTarget.style.color = COLORS.warmAmber;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = `${theme.muted}40`;
+                    e.currentTarget.style.color = theme.muted;
+                  }}
+                >
+                  <span>📊</span>
+                  <span>Open Menu Studio (Edit on Screen or CSV Spreadsheet)</span>
+                </button>
+              </div>
+            )}
           </div>
         </FadeIn>
       </div>

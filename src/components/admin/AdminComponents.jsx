@@ -256,7 +256,7 @@ export function ContentEditor({ theme }) {
 }
 
 // ── Menu Manager (browser/localStorage) ───────────────────────────
-export function MenuManager({ theme }) {
+export function MenuManager({ theme, onOpenStudio }) {
   const { menu, status, saveState, saveMenu, resetMenu } = useMenu();
   const [draft, setDraft] = useState(() => JSON.parse(JSON.stringify(menu)));
   const [cat, setCat] = useState(() => Object.keys(menu)[0]);
@@ -291,8 +291,35 @@ export function MenuManager({ theme }) {
 
   return (
     <div>
+      {onOpenStudio && (
+        <button
+          onClick={onOpenStudio}
+          style={{
+            width: "100%",
+            padding: "10px 14px",
+            borderRadius: 8,
+            border: `1.5px solid ${COLORS.warmAmber}`,
+            background: `${COLORS.warmAmber}18`,
+            color: theme.heading,
+            cursor: "pointer",
+            fontSize: 12,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            marginBottom: 16,
+            fontFamily: "'Outfit', sans-serif",
+            boxShadow: "0 2px 8px rgba(191,138,47,0.15)",
+          }}
+        >
+          <span>📊</span>
+          <span>Open Full Menu Studio &amp; CSV Importer</span>
+        </button>
+      )}
+
       <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.6, marginBottom: 12, fontWeight: 300 }}>
-        Edit items, prices and descriptions across the Daytime and Evening menus.
+        Quick-edit items and prices below, or use the Studio above to download/upload the CSV spreadsheet.
       </div>
       {status === "offline" && (
         <div style={{ padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 11, lineHeight: 1.5,
@@ -601,7 +628,7 @@ export function GalleryManager({ theme }) {
 }
 
 // ── Admin Panel (authenticated) ────────────────────────────────────
-export function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, onLogout, onClose }) {
+export function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, onLogout, onClose, onOpenStudio }) {
   const toggleStyle = (active) => ({
     position: "relative", width: 44, height: 24, borderRadius: 12, cursor: "pointer",
     background: active ? COLORS.mossGreen : `${theme.muted}30`,
@@ -755,7 +782,7 @@ export function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, on
 
       {/* Menu Manager */}
       <AdminSection theme={theme} title="Menu Manager" icon="📋">
-        <MenuManager theme={theme} />
+        <MenuManager theme={theme} onOpenStudio={onOpenStudio} />
       </AdminSection>
 
       {/* Promotions */}

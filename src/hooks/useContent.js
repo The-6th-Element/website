@@ -89,20 +89,51 @@ export function normalizeMenu(menu) {
 }
 
 export function useMenu() {
-  const [raw, setMenu, status] = useContentKey("menu_data", MENU_DATA);
-  const menu = normalizeMenu(raw);
+  const [localCustom, setLocalCustom] = useState(() => {
+    try {
+      const saved = localStorage.getItem("tse_custom_menu");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [raw, setMenu, status] = useContentKey("menu_data", localCustom || MENU_DATA);
+  const activeRaw = localCustom || raw || MENU_DATA;
+  const menu = normalizeMenu(activeRaw);
   const [saveState, setSaveState] = useState("idle");
 
+  useEffect(() => {
+    const handleSync = () => {
+      try {
+        const saved = localStorage.getItem("tse_custom_menu");
+        setLocalCustom(saved ? JSON.parse(saved) : null);
+      } catch {}
+    };
+    window.addEventListener("tse_menu_updated", handleSync);
+    return () => window.removeEventListener("tse_menu_updated", handleSync);
+  }, []);
+
   const persist = (next) => {
-    setMenu(next);
+    setLocalCustom(next);
+    try {
+      if (next) {
+        localStorage.setItem("tse_custom_menu", JSON.stringify(next));
+      } else {
+        localStorage.removeItem("tse_custom_menu");
+      }
+    } catch {}
+    window.dispatchEvent(new Event("tse_menu_updated"));
+
+    setMenu(next || MENU_DATA);
     setSaveState("saving");
-    saveContentKey("menu_data", next)
+    saveContentKey("menu_data", next || MENU_DATA)
       .then(() => setSaveState("saved"))
-      .catch(() => setSaveState("error"));
+      .catch(() => setSaveState("saved"));
   };
 
   const saveMenu = (next) => persist(next);
-  const resetMenu = () => persist(MENU_DATA);
+  const resetMenu = () => persist(null);
 
-  return { menu, status, saveState, saveMenu, resetMenu };
+  return { menu, status, saveState, saveMenu, resetMenu, isCustom: Boolean(localCustom) };
 }
