@@ -137,8 +137,7 @@ export function AdminLogin({ theme, onLogin, onClose }) {
           marginTop: 20, fontSize: 11, color: theme.muted, textAlign: "center",
           lineHeight: 1.6, fontWeight: 300,
         }}>
-          Session expires after 12 hours.<br />
-          Owner: <strong style={{ color: theme.heading }}>Pooja Somani</strong> &middot; Co-Admin: <strong style={{ color: theme.heading }}>Deepak</strong>
+          Session expires after 12 hours.
         </div>
       </div>
     </div>

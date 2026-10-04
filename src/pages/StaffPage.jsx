@@ -257,8 +257,7 @@ export function StaffPage({
                   fontWeight: 300,
                 }}
               >
-                Session remains active for 12 hours.<br />
-                Owner: <strong>Pooja Somani</strong> · Co-Admin: <strong>Deepak</strong>
+                Session remains active for 12 hours.
               </div>
             </div>
           </FadeIn>

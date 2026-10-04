@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Logomark } from "../ui/Logomark";
 
-export function Navbar({ theme, isAM, setIsAM, menuOpen, setMenuOpen, navigate, currentPage, topOffset = 0 }) {
+export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, topOffset = 0 }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -104,27 +104,6 @@ export function Navbar({ theme, isAM, setIsAM, menuOpen, setMenuOpen, navigate, 
               {l.label}
             </button>
           ))}
-          {/* AM/PM Toggle */}
-          <button
-            onClick={() => setIsAM(!isAM)}
-            style={{
-              background: `${theme.accent}18`,
-              border: `1px solid ${theme.accent}40`,
-              borderRadius: 20,
-              padding: "6px 14px",
-              cursor: "pointer",
-              fontSize: 12,
-              color: theme.accent,
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 500,
-              letterSpacing: "0.05em",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            {isAM ? "☀️" : "🌙"} {isAM ? "AM" : "PM"}
-          </button>
         </div>
 
         {/* Mobile Hamburger */}
@@ -207,22 +186,6 @@ export function Navbar({ theme, isAM, setIsAM, menuOpen, setMenuOpen, navigate, 
               {l.label}
             </button>
           ))}
-          <button
-            onClick={() => setIsAM(!isAM)}
-            style={{
-              marginTop: 12,
-              background: `${theme.accent}18`,
-              border: `1px solid ${theme.accent}40`,
-              borderRadius: 20,
-              padding: "8px 16px",
-              cursor: "pointer",
-              fontSize: 13,
-              color: theme.accent,
-              fontFamily: "'Outfit', sans-serif",
-            }}
-          >
-            Switch to {isAM ? "PM 🌙" : "AM ☀️"} mode
-          </button>
         </div>
       )}
     </nav>

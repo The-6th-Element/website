@@ -218,8 +218,6 @@ export default function TheSixthElement() {
       <AnnouncementBar theme={theme} onToggle={setBarVisible} />
       <Navbar
         theme={theme}
-        isAM={isAM}
-        setIsAM={setIsAM}
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
         navigate={navigate}
