@@ -80,7 +80,7 @@ export function UserManager({ theme, currentUser }) {
   return (
     <div>
       <div style={{ fontSize: 12, color: theme.muted, lineHeight: 1.6, marginBottom: 14, fontWeight: 300 }}>
-        Manage team access and permissions. <strong style={{ color: COLORS.warmAmber }}>Only Admins (Pooja Somani &amp; Deepak)</strong> can publish changes to the live site.
+        Manage team access and permissions. <strong style={{ color: COLORS.warmAmber }}>Only Admins</strong> can publish changes to the live site.
       </div>
 
       {feedback && (

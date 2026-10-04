@@ -74,7 +74,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
     if (!canPublishLive) {
       setPublishStatus({
         state: "error",
-        message: "Permission denied: Only Admin accounts (Pooja Somani & Deepak) can publish live changes.",
+        message: "Permission denied: Only Admin accounts can publish live changes.",
       });
       return;
     }
@@ -503,7 +503,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                 gap: 6,
                 cursor: "not-allowed",
               }}
-              title="Live publishing is restricted to Admins (Pooja Somani & Deepak). Use 'Apply Locally' to save a draft for Admin review."
+              title="Live publishing is restricted to Admins. Use 'Apply Locally' to save a draft for Admin review."
             >
               <span>🔒</span>
               <span>Publishing Locked (Admin Only)</span>

@@ -403,7 +403,7 @@ export function StaffPage({
                 marginBottom: 28,
               }}
             >
-              🔒 <strong>Staff Access Mode:</strong> You are logged in as <strong>{roleDef.label}</strong>. You can update menu items, prices, dietary tags, and promotional drafts. Publishing changes to the live worldwide website is reserved for <strong>Pooja Somani</strong> (Owner) &amp; <strong>Deepak</strong>.
+              🔒 <strong>Staff Access Mode:</strong> You are logged in as <strong>{roleDef.label}</strong>. You can update menu items, prices, dietary tags, and promotional drafts. Publishing changes to the live worldwide website is reserved for <strong>Admins</strong>.
             </div>
           </FadeIn>
         )}
@@ -541,7 +541,7 @@ export function StaffPage({
                     Staff &amp; User Accounts
                   </h2>
                   <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginTop: 4 }}>
-                    Manage team member credentials and assigned roles. Only Pooja Somani and Deepak have Admin privileges.
+                    Manage team member credentials and assigned roles.
                   </p>
                 </div>
                 <UserManager theme={theme} currentUser={adminAuth.username || adminAuth.user} />

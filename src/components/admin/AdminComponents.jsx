@@ -536,11 +536,11 @@ export function AdminPanel({
           lineHeight: 1.5,
           marginBottom: 20,
         }}>
-          🔒 <strong>Staff Access Mode:</strong> You are logged in as <strong>{roleDef.label}</strong>. You can update menu items, prices, and drafts. Live worldwide publishing is reserved for <strong>Pooja Somani</strong> &amp; <strong>Deepak</strong>.
+          🔒 <strong>Staff Access Mode:</strong> You are logged in as <strong>{roleDef.label}</strong>. You can update menu items, prices, and drafts. Live worldwide publishing is reserved for <strong>Admins</strong>.
         </div>
       )}
 
-      {/* Staff & User Management (Admins only: Pooja Somani & Deepak) */}
+      {/* Staff & User Management (Admins only) */}
       {canManageUsers && (
         <AdminSection theme={theme} title="Staff & User Management" icon="👥">
           <UserManager theme={theme} currentUser={username || adminUser} />
