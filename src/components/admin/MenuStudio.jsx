@@ -10,8 +10,10 @@ import {
   validateGithubToken,
   clearStoredGithubToken
 } from "../../utils/githubPublisher.js";
+import { hasPermission } from "../../utils/userManager.js";
 
-export function MenuStudio({ theme, onClose }) {
+export function MenuStudio({ theme, onClose, userRole, userName }) {
+  const canPublishLive = hasPermission(userRole, "canPublishLive");
   const { menu, saveMenu, resetMenu, isCustom } = useMenu();
   const [draft, setDraft] = useState(() => JSON.parse(JSON.stringify(menu)));
   const [activeCat, setActiveCat] = useState("daytime");
@@ -69,6 +71,13 @@ export function MenuStudio({ theme, onClose }) {
   };
 
   const handlePublish = async () => {
+    if (!canPublishLive) {
+      setPublishStatus({
+        state: "error",
+        message: "Permission denied: Only Admin accounts (Pooja Somani & Deepak) can publish live changes.",
+      });
+      return;
+    }
     if (!githubToken) {
       setPublishStatus({ state: "error", message: "Please save a GitHub Personal Access Token first." });
       return;
@@ -424,32 +433,54 @@ export function MenuStudio({ theme, onClose }) {
             {dirty ? "✓ Apply Locally" : "Saved Locally ✓"}
           </button>
 
-          {/* Publish Live Button (GitHub) */}
-          <button
-            onClick={() => {
-              if (dirty) handleSave();
-              setShowPublishModal(true);
-            }}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 8,
-              border: "none",
-              background: "linear-gradient(135deg, #BF8A2F 0%, #D4A346 100%)",
-              color: "#fff",
-              cursor: "pointer",
-              fontSize: 13,
-              fontWeight: 700,
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              boxShadow: "0 4px 14px rgba(191,138,47,0.35)",
-              transition: "all 0.2s ease",
-            }}
-            title="Publish this menu live to the website worldwide via GitHub"
-          >
-            <span>🚀</span>
-            <span>Publish Live</span>
-          </button>
+          {/* Publish Live Button (GitHub) - Admin Only */}
+          {canPublishLive ? (
+            <button
+              onClick={() => {
+                if (dirty) handleSave();
+                setShowPublishModal(true);
+              }}
+              style={{
+                padding: "8px 16px",
+                borderRadius: 8,
+                border: "none",
+                background: "linear-gradient(135deg, #BF8A2F 0%, #D4A346 100%)",
+                color: "#fff",
+                cursor: "pointer",
+                fontSize: 13,
+                fontWeight: 700,
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                boxShadow: "0 4px 14px rgba(191,138,47,0.35)",
+                transition: "all 0.2s ease",
+              }}
+              title="Publish this menu live to the website worldwide via GitHub"
+            >
+              <span>🚀</span>
+              <span>Publish Live</span>
+            </button>
+          ) : (
+            <div
+              style={{
+                padding: "8px 14px",
+                borderRadius: 8,
+                border: `1px solid ${theme.muted}30`,
+                background: `${theme.muted}15`,
+                color: theme.muted,
+                fontSize: 12,
+                fontWeight: 600,
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                cursor: "not-allowed",
+              }}
+              title="Live publishing is restricted to Admins (Pooja Somani & Deepak). Use 'Apply Locally' to save a draft for Admin review."
+            >
+              <span>🔒</span>
+              <span>Publishing Locked (Admin Only)</span>
+            </div>
+          )}
 
           {/* Close Studio */}
           {onClose && (

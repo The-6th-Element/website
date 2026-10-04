@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { COLORS } from "../../theme/tokens";
 import { useMenu, usePromotions, isPromoLive } from "../../hooks/useContent";
 import { TOAST_CONFIG } from "../../data/config";
+import { UserManager } from "./UserManager.jsx";
+import { ROLES, hasPermission } from "../../utils/userManager.js";
 
 // ── Admin Login ────────────────────────────────────────────────────
 export function AdminLogin({ theme, onLogin, onClose }) {
@@ -61,10 +63,10 @@ export function AdminLogin({ theme, onLogin, onClose }) {
             fontFamily: "'Cormorant Garamond', serif", fontSize: 26,
             fontWeight: 400, color: theme.heading,
           }}>
-            Site Admin
+            Staff Portal
           </h2>
           <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginTop: 6 }}>
-            Sign in to manage your site
+            The Sixth Element &middot; Richmond
           </p>
         </div>
 
@@ -81,7 +83,7 @@ export function AdminLogin({ theme, onLogin, onClose }) {
               onKeyDown={handleKeyDown}
               autoFocus
               autoComplete="username"
-              placeholder="Enter username"
+              placeholder="pooja, deepak, manager, chef..."
               style={inputStyle}
             />
           </div>
@@ -134,7 +136,7 @@ export function AdminLogin({ theme, onLogin, onClose }) {
           lineHeight: 1.6, fontWeight: 300,
         }}>
           Session expires after 12 hours.<br />
-          Credentials are set in your environment variables.
+          Owner: <strong style={{ color: theme.heading }}>Pooja Somani</strong> &middot; Co-Admin: <strong style={{ color: theme.heading }}>Deepak</strong>
         </div>
       </div>
     </div>
@@ -628,7 +630,25 @@ export function GalleryManager({ theme }) {
 }
 
 // ── Admin Panel (authenticated) ────────────────────────────────────
-export function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, onLogout, onClose, onOpenStudio }) {
+export function AdminPanel({
+  theme,
+  flags,
+  updateFlag,
+  resetFlags,
+  adminUser,
+  username,
+  userRole = "admin",
+  userTitle = "",
+  onLogout,
+  onClose,
+  onOpenStudio,
+}) {
+  const roleDef = ROLES[userRole] || ROLES.staff;
+  const canManageUsers = hasPermission(userRole, "canManageUsers");
+  const canEditSettings = hasPermission(userRole, "canEditSettings");
+  const canEditMenu = hasPermission(userRole, "canEditMenu");
+  const canManagePromos = hasPermission(userRole, "canManagePromos");
+
   const toggleStyle = (active) => ({
     position: "relative", width: 44, height: 24, borderRadius: 12, cursor: "pointer",
     background: active ? COLORS.mossGreen : `${theme.muted}30`,
@@ -642,18 +662,18 @@ export function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, on
 
   return (
     <div style={{
-      position: "fixed", top: 0, right: 0, bottom: 0, width: 360, maxWidth: "90vw",
+      position: "fixed", top: 0, right: 0, bottom: 0, width: 380, maxWidth: "92vw",
       zIndex: 3000, background: theme.bg, borderLeft: `1px solid ${theme.muted}20`,
       boxShadow: "-4px 0 30px rgba(0,0,0,0.15)", overflowY: "auto", padding: 24,
       animation: "slideDown 0.3s ease",
     }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <div>
           <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 24, fontWeight: 500, color: theme.heading }}>
-            Site Admin
+            Staff &amp; Admin Panel
           </h2>
-          <div style={{ fontSize: 11, color: theme.muted, letterSpacing: "0.1em", marginTop: 4 }}>
-            Feature flags & settings
+          <div style={{ fontSize: 11, color: theme.muted, letterSpacing: "0.08em", marginTop: 2 }}>
+            The Sixth Element &middot; Richmond
           </div>
         </div>
         <button onClick={onClose} style={{
@@ -661,29 +681,33 @@ export function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, on
         }}>×</button>
       </div>
 
-      {/* Authenticated user bar */}
+      {/* Authenticated user card */}
       <div style={{
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "10px 14px", borderRadius: 10, marginBottom: 28,
-        background: `${COLORS.mossGreen}10`, border: `1px solid ${COLORS.mossGreen}25`,
+        padding: "12px 14px", borderRadius: 10, marginBottom: 24,
+        background: `${roleDef.color}12`, border: `1px solid ${roleDef.color}35`,
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{
-            width: 28, height: 28, borderRadius: "50%",
-            background: COLORS.mossGreen, color: "#fff",
+            width: 36, height: 36, borderRadius: "50%",
+            background: roleDef.color, color: "#fff",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 12, fontWeight: 600,
+            fontSize: 14, fontWeight: 700,
           }}>
             {(adminUser || "A").charAt(0).toUpperCase()}
           </div>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 500, color: theme.heading }}>{adminUser}</div>
-            <div style={{ fontSize: 10, color: COLORS.mossGreen, fontWeight: 500 }}>● Authenticated</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: theme.heading }}>
+              {adminUser}
+            </div>
+            <div style={{ fontSize: 10, color: roleDef.color, fontWeight: 700, marginTop: 2 }}>
+              {roleDef.label} {userTitle ? `· ${userTitle}` : ""}
+            </div>
           </div>
         </div>
         <button onClick={onLogout} style={{
           background: "none", border: `1px solid ${theme.muted}25`,
-          borderRadius: 6, padding: "4px 10px", cursor: "pointer",
+          borderRadius: 6, padding: "5px 10px", cursor: "pointer",
           fontSize: 11, color: theme.muted, fontFamily: "'Outfit', sans-serif", fontWeight: 500,
           transition: "all 0.2s ease",
         }}
@@ -694,127 +718,159 @@ export function AdminPanel({ theme, flags, updateFlag, resetFlags, adminUser, on
         </button>
       </div>
 
-      {/* Toggles */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 16 }}>
-          Features
+      {/* Role notice if non-admin */}
+      {!canEditSettings && (
+        <div style={{
+          padding: "10px 12px",
+          borderRadius: 8,
+          background: `${COLORS.warmAmber}15`,
+          border: `1px solid ${COLORS.warmAmber}35`,
+          fontSize: 11,
+          color: theme.heading,
+          lineHeight: 1.5,
+          marginBottom: 20,
+        }}>
+          🔒 <strong>Staff Access Mode:</strong> You are logged in as <strong>{roleDef.label}</strong>. You can update menu items, prices, and drafts. Live worldwide publishing is reserved for <strong>Pooja Somani</strong> &amp; <strong>Deepak</strong>.
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>Instagram Feed</div>
-            <div style={{ fontSize: 12, color: theme.muted, marginTop: 2 }}>Show feed on homepage</div>
-          </div>
-          <button onClick={() => updateFlag("instagram_feed", !flags.instagram_feed)} style={toggleStyle(flags.instagram_feed)}>
-            <div style={dotStyle(flags.instagram_feed)} />
-          </button>
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>Reservations</div>
-            <div style={{ fontSize: 12, color: theme.muted, marginTop: 2 }}>Enable booking system</div>
-          </div>
-          <button onClick={() => updateFlag("booking_enabled", !flags.booking_enabled)} style={toggleStyle(flags.booking_enabled)}>
-            <div style={dotStyle(flags.booking_enabled)} />
-          </button>
-        </div>
-      </div>
+      )}
 
-      {/* Display Mode */}
-      <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
-        <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 8 }}>
-          Display Mode
-        </div>
-        <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300, marginBottom: 12, lineHeight: 1.5 }}>
-          The site shows the light "AM" look from 8am, then switches to the dark "evening" look at the time below (UK time).
-        </div>
-        <div style={{ fontSize: 13, color: theme.heading, marginBottom: 8 }}>Evening mode starts at</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-          {[11, 12, 13, 14, 15, 16, 17, 18, 19].map(h => {
-            const label = h === 12 ? "12pm" : h < 12 ? `${h}am` : `${h - 12}pm`;
-            return (
-              <button key={h} onClick={() => updateFlag("pm_switch_hour", h)} style={{
-                padding: "6px 10px", borderRadius: 6, border: "none", cursor: "pointer",
-                fontSize: 12, fontWeight: 500,
-                background: flags.pm_switch_hour === h ? theme.accent : `${theme.muted}15`,
-                color: flags.pm_switch_hour === h ? "#fff" : theme.text,
-                transition: "all 0.2s ease",
-              }}>{label}</button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Menu default tab */}
-      <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
-        <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 8 }}>
-          Menu Default Tab
-        </div>
-        <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300, marginBottom: 14, lineHeight: 1.5 }}>
-          The Menu page opens on <strong style={{ color: theme.heading }}>Daytime</strong>, then switches to <strong style={{ color: theme.heading }}>Evening</strong> at the time below (UK).
-        </div>
-        <div style={{ fontSize: 13, color: theme.heading, marginBottom: 6 }}>Evening menu from</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-          {[15, 16, 17, 18, 19, 20].map(h => (
-            <button key={h} onClick={() => updateFlag("menu_evening_hour", h)} style={{
-              padding: "6px 10px", borderRadius: 6, border: "none", cursor: "pointer",
-              fontSize: 12, fontWeight: 500,
-              background: flags.menu_evening_hour === h ? theme.accent : `${theme.muted}15`,
-              color: flags.menu_evening_hour === h ? "#fff" : theme.text,
-              transition: "all 0.2s ease",
-            }}>{h === 12 ? "12pm" : h < 12 ? `${h}am` : `${h - 12}pm`}</button>
-          ))}
-        </div>
-      </div>
-
-      {/* Reservations (Toast Tables) */}
-      <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
-        <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 16 }}>
-          Reservations (Toast Tables)
-        </div>
-        <div style={{ fontSize: 13, color: theme.muted, lineHeight: 1.7, fontWeight: 300 }}>
-          Table bookings are handled by Toast Tables and open inside the
-          "Reserve a Table" popup. To change the booking page, update{" "}
-          <code style={{ background: `${theme.muted}15`, padding: "2px 6px", borderRadius: 4 }}>TOAST_CONFIG.reservationUrl</code>.
-          <br /><br />
-          Find your link in Toast Web → <strong style={{ color: theme.heading }}>Waitlist &amp; Reservations → Settings → Reservations → Online access → "Copy online reservation link"</strong>.
-        </div>
-      </div>
+      {/* Staff & User Management (Admins only: Pooja Somani & Deepak) */}
+      {canManageUsers && (
+        <AdminSection theme={theme} title="Staff & User Management" icon="👥">
+          <UserManager theme={theme} currentUser={username || adminUser} />
+        </AdminSection>
+      )}
 
       {/* Menu Manager */}
-      <AdminSection theme={theme} title="Menu Manager" icon="📋">
-        <MenuManager theme={theme} onOpenStudio={onOpenStudio} />
-      </AdminSection>
+      {canEditMenu && (
+        <AdminSection theme={theme} title="Menu Manager" icon="📋">
+          <MenuManager theme={theme} onOpenStudio={onOpenStudio} />
+        </AdminSection>
+      )}
 
       {/* Promotions */}
-      <AdminSection theme={theme} title="Offers & Promotions" icon="🎁">
-        <PromotionsManager theme={theme} />
-      </AdminSection>
+      {canManagePromos && (
+        <AdminSection theme={theme} title="Offers & Promotions" icon="🎁">
+          <PromotionsManager theme={theme} />
+        </AdminSection>
+      )}
 
-      {/* CMS: Content Editor */}
-      <AdminSection theme={theme} title="Content Editor" icon="✏️">
-        <ContentEditor theme={theme} />
-      </AdminSection>
+      {/* Settings & Feature Flags (Admins Only) */}
+      {canEditSettings && (
+        <>
+          {/* Toggles */}
+          <div style={{ marginBottom: 28, paddingTop: 16, borderTop: `1px solid ${theme.muted}15` }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 16 }}>
+              Features
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>Instagram Feed</div>
+                <div style={{ fontSize: 12, color: theme.muted, marginTop: 2 }}>Show feed on homepage</div>
+              </div>
+              <button onClick={() => updateFlag("instagram_feed", !flags.instagram_feed)} style={toggleStyle(flags.instagram_feed)}>
+                <div style={dotStyle(flags.instagram_feed)} />
+              </button>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: theme.heading }}>Reservations</div>
+                <div style={{ fontSize: 12, color: theme.muted, marginTop: 2 }}>Enable booking system</div>
+              </div>
+              <button onClick={() => updateFlag("booking_enabled", !flags.booking_enabled)} style={toggleStyle(flags.booking_enabled)}>
+                <div style={dotStyle(flags.booking_enabled)} />
+              </button>
+            </div>
+          </div>
 
-      {/* CMS: Gallery Manager */}
-      <AdminSection theme={theme} title="Gallery Images" icon="🖼️">
-        <GalleryManager theme={theme} />
-      </AdminSection>
+          {/* Display Mode */}
+          <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 8 }}>
+              Display Mode
+            </div>
+            <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300, marginBottom: 12, lineHeight: 1.5 }}>
+              The site shows the light "AM" look from 8am, then switches to the dark "evening" look at the time below (UK time).
+            </div>
+            <div style={{ fontSize: 13, color: theme.heading, marginBottom: 8 }}>Evening mode starts at</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {[11, 12, 13, 14, 15, 16, 17, 18, 19].map(h => {
+                const label = h === 12 ? "12pm" : h < 12 ? `${h}am` : `${h - 12}pm`;
+                return (
+                  <button key={h} onClick={() => updateFlag("pm_switch_hour", h)} style={{
+                    padding: "6px 10px", borderRadius: 6, border: "none", cursor: "pointer",
+                    fontSize: 12, fontWeight: 500,
+                    background: flags.pm_switch_hour === h ? theme.accent : `${theme.muted}15`,
+                    color: flags.pm_switch_hour === h ? "#fff" : theme.text,
+                    transition: "all 0.2s ease",
+                  }}>{label}</button>
+                );
+              })}
+            </div>
+          </div>
 
-      {/* Reset */}
-      <div style={{ paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
-        <button onClick={resetFlags} style={{
-          width: "100%", padding: "10px", borderRadius: 8,
-          border: `1px solid #EF444440`, background: "#EF444410",
-          color: "#EF4444", cursor: "pointer", fontSize: 13, fontWeight: 500,
-          fontFamily: "'Outfit', sans-serif",
-        }}>
-          Reset All to Defaults
-        </button>
-        <div style={{ fontSize: 11, color: theme.muted, marginTop: 12, lineHeight: 1.6 }}>
-          Access this panel at <code style={{ background: `${theme.muted}15`, padding: "2px 6px", borderRadius: 4 }}>yoursite.com?admin=true</code>
-          <br />Settings are saved in your browser.
-        </div>
-      </div>
+          {/* Menu default tab */}
+          <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 8 }}>
+              Menu Default Tab
+            </div>
+            <div style={{ fontSize: 12, color: theme.muted, fontWeight: 300, marginBottom: 14, lineHeight: 1.5 }}>
+              The Menu page opens on <strong style={{ color: theme.heading }}>Daytime</strong>, then switches to <strong style={{ color: theme.heading }}>Evening</strong> at the time below (UK).
+            </div>
+            <div style={{ fontSize: 13, color: theme.heading, marginBottom: 6 }}>Evening menu from</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {[15, 16, 17, 18, 19, 20].map(h => (
+                <button key={h} onClick={() => updateFlag("menu_evening_hour", h)} style={{
+                  padding: "6px 10px", borderRadius: 6, border: "none", cursor: "pointer",
+                  fontSize: 12, fontWeight: 500,
+                  background: flags.menu_evening_hour === h ? theme.accent : `${theme.muted}15`,
+                  color: flags.menu_evening_hour === h ? "#fff" : theme.text,
+                  transition: "all 0.2s ease",
+                }}>{h === 12 ? "12pm" : h < 12 ? `${h}am` : `${h - 12}pm`}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Reservations (Toast Tables) */}
+          <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 16 }}>
+              Reservations (Toast Tables)
+            </div>
+            <div style={{ fontSize: 13, color: theme.muted, lineHeight: 1.7, fontWeight: 300 }}>
+              Table bookings are handled by Toast Tables and open inside the
+              "Reserve a Table" popup. To change the booking page, update{" "}
+              <code style={{ background: `${theme.muted}15`, padding: "2px 6px", borderRadius: 4 }}>TOAST_CONFIG.reservationUrl</code>.
+              <br /><br />
+              Find your link in Toast Web → <strong style={{ color: theme.heading }}>Waitlist &amp; Reservations → Settings → Reservations → Online access → "Copy online reservation link"</strong>.
+            </div>
+          </div>
+
+          {/* CMS: Content Editor */}
+          <AdminSection theme={theme} title="Content Editor" icon="✏️">
+            <ContentEditor theme={theme} />
+          </AdminSection>
+
+          {/* CMS: Gallery Manager */}
+          <AdminSection theme={theme} title="Gallery Images" icon="🖼️">
+            <GalleryManager theme={theme} />
+          </AdminSection>
+
+          {/* Reset */}
+          <div style={{ paddingTop: 20, borderTop: `1px solid ${theme.muted}15` }}>
+            <button onClick={resetFlags} style={{
+              width: "100%", padding: "10px", borderRadius: 8,
+              border: `1px solid #EF444440`, background: "#EF444410",
+              color: "#EF4444", cursor: "pointer", fontSize: 13, fontWeight: 500,
+              fontFamily: "'Outfit', sans-serif",
+            }}>
+              Reset All to Defaults
+            </button>
+            <div style={{ fontSize: 11, color: theme.muted, marginTop: 12, lineHeight: 1.6 }}>
+              Access this panel at <code style={{ background: `${theme.muted}15`, padding: "2px 6px", borderRadius: 4 }}>yoursite.com?admin=true</code>
+              <br />Settings are saved in your browser.
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

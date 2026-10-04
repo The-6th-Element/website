@@ -16,7 +16,7 @@ import { AboutPage } from "./pages/AboutPage";
 import { ContactPage } from "./pages/ContactPage";
 import { AdminLogin, AdminPanel } from "./components/admin/AdminComponents";
 import { MenuStudio } from "./components/admin/MenuStudio";
-import { authenticateAdmin, verifyAdminSession } from "./utils/auth";
+import { authenticateStaff, verifyStaffSession } from "./utils/userManager";
 
 // ── Main App ───────────────────────────────────────────────────────
 export default function TheSixthElement() {
@@ -43,7 +43,15 @@ export default function TheSixthElement() {
   const { flags, updateFlag, resetFlags } = useFeatureFlags();
   const [showAdmin, setShowAdmin] = useState(false);
   const [showStudio, setShowStudio] = useState(false);
-  const [adminAuth, setAdminAuth] = useState({ authenticated: false, user: null, token: null, loading: true });
+  const [adminAuth, setAdminAuth] = useState({
+    authenticated: false,
+    user: null,
+    username: null,
+    role: null,
+    title: null,
+    token: null,
+    loading: true,
+  });
   const [showLogin, setShowLogin] = useState(false);
 
   // Studio direct access: ?studio=menu or ?admin=menu
@@ -54,34 +62,60 @@ export default function TheSixthElement() {
     }
   }, []);
 
-  // Admin auth: ?admin=true opens login gate, verifies existing session
+  // Staff auth: ?admin=true opens login gate, verifies existing session
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("admin") !== "true") {
-      setAdminAuth(a => ({ ...a, loading: false }));
-      return;
-    }
     const savedToken = sessionStorage.getItem("tse_admin_token");
-    if (savedToken && verifyAdminSession(savedToken)) {
-      setAdminAuth({ authenticated: true, user: "Deepak", token: savedToken, loading: false });
-      setShowAdmin(true);
+    const session = verifyStaffSession(savedToken);
+
+    if (session) {
+      setAdminAuth({
+        authenticated: true,
+        user: session.user,
+        username: session.username,
+        role: session.role,
+        title: session.title,
+        token: savedToken,
+        loading: false,
+      });
+      if (params.get("admin") === "true") {
+        setShowAdmin(true);
+      }
     } else {
       setAdminAuth(a => ({ ...a, loading: false }));
-      setShowLogin(true);
+      if (params.get("admin") === "true") {
+        setShowLogin(true);
+      }
     }
   }, []);
 
   const handleAdminLogin = async (username, password) => {
-    const result = await authenticateAdmin(username, password);
+    const result = await authenticateStaff(username, password);
     sessionStorage.setItem("tse_admin_token", result.token);
-    setAdminAuth({ authenticated: true, user: result.user, token: result.token, loading: false });
+    setAdminAuth({
+      authenticated: true,
+      user: result.user,
+      username: result.username,
+      role: result.role,
+      title: result.title,
+      token: result.token,
+      loading: false,
+    });
     setShowLogin(false);
     setShowAdmin(true);
   };
 
   const handleAdminLogout = () => {
     sessionStorage.removeItem("tse_admin_token");
-    setAdminAuth({ authenticated: false, user: null, token: null, loading: false });
+    setAdminAuth({
+      authenticated: false,
+      user: null,
+      username: null,
+      role: null,
+      title: null,
+      token: null,
+      loading: false,
+    });
     setShowAdmin(false);
   };
 
@@ -206,6 +240,9 @@ export default function TheSixthElement() {
           updateFlag={updateFlag}
           resetFlags={resetFlags}
           adminUser={adminAuth.user}
+          username={adminAuth.username}
+          userRole={adminAuth.role}
+          userTitle={adminAuth.title}
           onLogout={handleAdminLogout}
           onClose={() => setShowAdmin(false)}
           onOpenStudio={() => setShowStudio(true)}
@@ -214,6 +251,8 @@ export default function TheSixthElement() {
       {showStudio && (
         <MenuStudio
           theme={theme}
+          userRole={adminAuth.role}
+          userName={adminAuth.user}
           onClose={() => setShowStudio(false)}
         />
       )}
