@@ -29,9 +29,12 @@ export function Navbar({ theme, isAM, setIsAM, menuOpen, setMenuOpen, navigate, 
         zIndex: 1000,
         background: scrolled ? theme.navBg : "transparent",
         backdropFilter: scrolled ? "blur(20px)" : "none",
+        WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
         borderBottom: scrolled ? `1px solid ${theme.muted}20` : "none",
         transition: "all 0.4s ease",
-        padding: scrolled ? "12px 0" : "20px 0",
+        padding: scrolled
+          ? "calc(12px + env(safe-area-inset-top, 0px)) 0 12px 0"
+          : "calc(20px + env(safe-area-inset-top, 0px)) 0 20px 0",
       }}
     >
       <div
@@ -128,14 +131,20 @@ export function Navbar({ theme, isAM, setIsAM, menuOpen, setMenuOpen, navigate, 
         <button
           className="mobile-trigger"
           onClick={() => setMenuOpen(!menuOpen)}
+          aria-label={menuOpen ? "Close menu" : "Open navigation menu"}
           style={{
             display: "none",
             background: "none",
             border: "none",
             cursor: "pointer",
             flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
             gap: 5,
             padding: 8,
+            width: 44,
+            height: 44,
+            WebkitTapHighlightColor: "transparent",
           }}
         >
           {[0, 1, 2].map((i) => (
@@ -170,8 +179,9 @@ export function Navbar({ theme, isAM, setIsAM, menuOpen, setMenuOpen, navigate, 
             right: 0,
             background: theme.navBg,
             backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
             borderBottom: `1px solid ${theme.muted}20`,
-            padding: "16px 24px",
+            padding: "16px 24px calc(24px + env(safe-area-inset-bottom, 0px))",
             animation: "slideDown 0.3s ease",
           }}
         >

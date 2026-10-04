@@ -55,6 +55,8 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           alt=""
           aria-hidden="true"
           className="rotate-emblem"
+          loading="eager"
+          decoding="async"
           style={{
             position: "absolute",
             top: "50%",
@@ -97,6 +99,8 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
                 src="/elements-mark.png"
                 alt="The Sixth Element — five elements emblem"
                 className="rotate-emblem"
+                loading="eager"
+                decoding="async"
                 style={{
                   width: "100%",
                   height: "100%",
@@ -331,7 +335,7 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
               </h2>
             </div>
           </FadeIn>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 32 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: 32 }}>
             <FadeIn delay={0.1}>
               <div
                 className="hover-lift"

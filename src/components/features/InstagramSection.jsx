@@ -63,15 +63,7 @@ export function InstagramSection({ theme }) {
         <div id={`curator-feed-${INSTAGRAM_CONFIG.curatorFeedId}`} ref={embedRef} />
       ) : (
         /* Styled placeholders — replaced by live feed once connected */
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(6, 1fr)",
-            gap: 4,
-            maxWidth: 1000,
-            margin: "0 auto",
-          }}
-        >
+        <div className="insta-grid">
           {[
             { emoji: "☕", bg: "#D4C5A9" },
             { emoji: "🍳", bg: "#C8B896" },

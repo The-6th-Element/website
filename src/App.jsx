@@ -160,16 +160,17 @@ export default function TheSixthElement() {
       fontFamily: "'Outfit', sans-serif",
       background: theme.bg,
       color: theme.text,
-      minHeight: "100vh",
+      minHeight: "100dvh",
       transition: "background 1.2s ease, color 1.2s ease",
       position: "relative",
       overflow: "hidden",
     }}>
       {/* Global Styles */}
       <style>{`
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         ::selection { background: ${COLORS.warmAmber}40; color: ${COLORS.earthBrown}; }
         html { scroll-behavior: smooth; }
+        button, a, input, select, textarea { touch-action: manipulation; }
         @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
@@ -185,7 +186,10 @@ export default function TheSixthElement() {
         .hover-lift:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
         .menu-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; margin-left: 6px; }
         input:focus, textarea:focus, select:focus { outline: 2px solid ${COLORS.warmAmber}; outline-offset: 2px; }
-        @media (max-width: 768px) {
+        
+        /* Prevent iOS Safari automatic zoom on focus while maintaining design on desktop */
+        @media screen and (max-width: 768px) {
+          input, select, textarea { font-size: 16px !important; }
           .desktop-nav { display: none !important; }
           .mobile-trigger { display: flex !important; }
           .hero-copy { text-align: center; }
@@ -195,6 +199,21 @@ export default function TheSixthElement() {
         @media (min-width: 769px) {
           .mobile-trigger { display: none !important; }
           .desktop-nav { display: flex !important; }
+        }
+
+        /* Instagram Responsive Grid */
+        .insta-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 6px;
+          max-width: 1000px;
+          margin: 0 auto;
+        }
+        @media (min-width: 640px) {
+          .insta-grid {
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+          }
         }
       `}</style>
 

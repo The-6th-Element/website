@@ -40,8 +40,10 @@ export function AdminLogin({ theme, onLogin, onClose }) {
     <div style={{
       position: "fixed", inset: 0, zIndex: 3000,
       background: "rgba(0,0,0,0.7)", backdropFilter: "blur(12px)",
+      WebkitBackdropFilter: "blur(12px)",
       display: "flex", alignItems: "center", justifyContent: "center",
-      padding: 24, animation: "slideDown 0.3s ease",
+      padding: "calc(16px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px))",
+      animation: "slideDown 0.3s ease",
     }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{
         width: "100%", maxWidth: 380,
@@ -467,7 +469,9 @@ export function AdminPanel({
     <div style={{
       position: "fixed", top: 0, right: 0, bottom: 0, width: 380, maxWidth: "92vw",
       zIndex: 3000, background: theme.bg, borderLeft: `1px solid ${theme.muted}20`,
-      boxShadow: "-4px 0 30px rgba(0,0,0,0.15)", overflowY: "auto", padding: 24,
+      boxShadow: "-4px 0 30px rgba(0,0,0,0.15)", overflowY: "auto",
+      WebkitOverflowScrolling: "touch",
+      padding: `calc(20px + env(safe-area-inset-top, 0px)) 24px calc(24px + env(safe-area-inset-bottom, 0px))`,
       animation: "slideDown 0.3s ease",
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>

@@ -16,8 +16,8 @@ export function PersistentCTA({ theme, flags = {}, setBookingOpen }) {
     <div
       style={{
         position: "fixed",
-        bottom: 24,
-        right: 24,
+        bottom: "calc(20px + env(safe-area-inset-bottom, 0px))",
+        right: "calc(20px + env(safe-area-inset-right, 0px))",
         zIndex: 1500,
         display: "flex",
         gap: 10,
@@ -28,6 +28,7 @@ export function PersistentCTA({ theme, flags = {}, setBookingOpen }) {
         onClick={() => setBookingOpen(true)}
         style={{
           padding: "12px 24px",
+          minHeight: 44,
           borderRadius: 30,
           border: "none",
           background: theme.accent,
@@ -38,6 +39,7 @@ export function PersistentCTA({ theme, flags = {}, setBookingOpen }) {
           fontWeight: 500,
           boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
           transition: "transform 0.3s ease",
+          WebkitTapHighlightColor: "transparent",
         }}
         onMouseEnter={(e) => (e.target.style.transform = "translateY(-2px)")}
         onMouseLeave={(e) => (e.target.style.transform = "none")}

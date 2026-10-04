@@ -1044,10 +1044,11 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
             zIndex: 3500,
             background: "rgba(0,0,0,0.75)",
             backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: 24,
+            padding: "calc(16px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px))",
             animation: "slideDown 0.3s ease",
           }}
         >

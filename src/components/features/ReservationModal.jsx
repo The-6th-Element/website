@@ -14,10 +14,11 @@ export function ReservationModal({ theme, onClose }) {
         zIndex: 2000,
         background: "rgba(0,0,0,0.7)",
         backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "16px",
+        padding: "calc(12px + env(safe-area-inset-top, 0px)) calc(12px + env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) calc(12px + env(safe-area-inset-left, 0px))",
         animation: "slideDown 0.3s ease",
       }}
       onClick={onClose}
@@ -27,7 +28,7 @@ export function ReservationModal({ theme, onClose }) {
         style={{
           width: "100%",
           maxWidth: "min(980px, 95vw)",
-          maxHeight: "92vh",
+          maxHeight: "min(92vh, 92dvh)",
           display: "flex",
           flexDirection: "column",
           background: theme.bg,
@@ -43,7 +44,7 @@ export function ReservationModal({ theme, onClose }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "18px 28px",
+            padding: "16px 22px",
             borderBottom: `1px solid ${theme.muted}15`,
             background: theme.surface,
           }}
@@ -52,7 +53,7 @@ export function ReservationModal({ theme, onClose }) {
             <h2
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 26,
+                fontSize: 24,
                 fontWeight: 500,
                 color: theme.heading,
                 lineHeight: 1.1,
@@ -60,7 +61,7 @@ export function ReservationModal({ theme, onClose }) {
             >
               Reserve a Table
             </h2>
-            <div style={{ fontSize: 12, color: theme.muted, marginTop: 2, fontWeight: 300 }}>
+            <div style={{ fontSize: 11, color: theme.muted, marginTop: 2, fontWeight: 300 }}>
               The Sixth Element &middot; Richmond-upon-Thames &middot; Powered by Toast Tables
             </div>
           </div>
@@ -75,12 +76,14 @@ export function ReservationModal({ theme, onClose }) {
               padding: 4,
               lineHeight: 1,
               borderRadius: "50%",
-              width: 36,
-              height: 36,
+              width: 38,
+              height: 38,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               transition: "all 0.2s ease",
+              WebkitTapHighlightColor: "transparent",
+              touchAction: "manipulation",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = theme.heading;
@@ -103,16 +106,18 @@ export function ReservationModal({ theme, onClose }) {
               title="Book a table with Toast"
               style={{
                 width: "100%",
-                height: "72vh",
-                minHeight: 540,
+                height: "68vh",
+                maxHeight: "calc(88dvh - 110px)",
+                minHeight: "min(520px, 55vh)",
                 border: "none",
                 background: "#fff",
+                WebkitOverflowScrolling: "touch",
               }}
               allow="payment"
             />
             <div
               style={{
-                padding: "12px 28px",
+                padding: "12px 20px",
                 borderTop: `1px solid ${theme.muted}15`,
                 display: "flex",
                 justifyContent: "space-between",
