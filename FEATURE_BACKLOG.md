@@ -108,6 +108,11 @@ The following features have been scoped or requested for future exploration once
 |---|---|---|---|
 | **BK-14** | **Full Automated Regression Test Pack** | Build and maintain a comprehensive automated regression test pack (unit, component, and end-to-end browser tests) covering all critical user journeys: navigation routing, daylight/evening theme switching, Toast Tables reservation opening, Menu Studio spreadsheet editing and CSV import/export, role-based access control (RBAC) permissions, and mobile touch viewports. Integrated into GitHub Actions CI/CD to run automatically on every future change before merging/deployment. | High |
 
+### 3.6 Search Engine Optimization (SEO) & Local Discoverability
+| ID | Feature | Description | Priority |
+|---|---|---|---|
+| **BK-16** | **Full SEO Analysis & Google Search Enhancement** | Perform a comprehensive technical and content SEO audit to boost Google search rankings and local pack visibility for Richmond and London dining searches. Includes: generating `sitemap.xml` & `robots.txt`, route-specific dynamic OpenGraph/meta tags, expanding Schema.org JSON-LD (Restaurant, Menu, ReserveAction, GeoCoordinates), optimizing Core Web Vitals (LCP, CLS, INP), and aligning high-intent local search keywords (*"specialty coffee Richmond"*, *"brunch East Sheen"*, *"wine bar Upper Richmond Road"*, *"artisan coffee shop SW14"*). | High |
+
 ---
 
 ## 📝 4. How to Add New Backlog Requests
