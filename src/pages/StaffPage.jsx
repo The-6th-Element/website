@@ -408,119 +408,69 @@ export function StaffPage({
           </FadeIn>
         )}
 
-        {/* Quick Action Cards: Menu Studio & Live Publishing */}
+        {/* Quick Action Banner: Menu Studio */}
         <FadeIn delay={0.1}>
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
+              padding: "24px 28px",
+              borderRadius: 18,
+              background: theme.surface,
+              border: `1.5px solid ${COLORS.warmAmber}40`,
+              boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
               gap: 20,
               marginBottom: 32,
             }}
           >
-            {/* Card 1: Menu Studio */}
-            <div
-              style={{
-                padding: "24px 28px",
-                borderRadius: 18,
-                background: theme.surface,
-                border: `1.5px solid ${COLORS.warmAmber}40`,
-                boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                gap: 16,
-              }}
-            >
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                  <span style={{ fontSize: 24 }}>📊</span>
-                  <h3
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: 22,
-                      fontWeight: 600,
-                      color: theme.heading,
-                    }}
-                  >
-                    Menu Studio &amp; CSV Spreadsheet
-                  </h3>
-                </div>
-                <p style={{ fontSize: 13, color: theme.muted, lineHeight: 1.6, fontWeight: 300 }}>
-                  Launch the full interactive spreadsheet to batch-edit daytime &amp; evening menus, dietary tags (V, VE, GF), categories, or download and upload CSV files.
-                </p>
-              </div>
-              <button
-                onClick={onOpenStudio}
-                style={{
-                  alignSelf: "flex-start",
-                  padding: "10px 22px",
-                  borderRadius: 30,
-                  border: "none",
-                  background: theme.accent,
-                  color: "#fff",
-                  cursor: "pointer",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  letterSpacing: "0.03em",
-                  boxShadow: "0 2px 10px rgba(191,138,47,0.3)",
-                  transition: "transform 0.2s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-1px)")}
-                onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-              >
-                Open Menu Studio →
-              </button>
-            </div>
-
-            {/* Card 2: Live Publishing / Deploy Status */}
-            <div
-              style={{
-                padding: "24px 28px",
-                borderRadius: 18,
-                background: theme.surface,
-                border: `1px solid ${theme.muted}20`,
-                boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                gap: 16,
-              }}
-            >
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                  <span style={{ fontSize: 24 }}>🚀</span>
-                  <h3
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: 22,
-                      fontWeight: 600,
-                      color: theme.heading,
-                    }}
-                  >
-                    Live Website Publishing
-                  </h3>
-                </div>
-                <p style={{ fontSize: 13, color: theme.muted, lineHeight: 1.6, fontWeight: 300 }}>
-                  {canManageUsers
-                    ? "Publish approved menu and operations updates directly to the live website."
-                    : "Drafts are saved locally in browser storage. Contact an Owner or Admin to push live changes."}
-                </p>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, color: theme.muted }}>
-                <span
+            <div style={{ flex: "1 1 500px", minWidth: 280 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                <span style={{ fontSize: 24 }}>📊</span>
+                <h3
                   style={{
-                    display: "inline-block",
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    background: COLORS.mossGreen,
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: 22,
+                    fontWeight: 600,
+                    color: theme.heading,
                   }}
-                />
-                <span>System Status: Ready to publish</span>
+                >
+                  Menu Studio &amp; CSV Spreadsheet
+                </h3>
               </div>
+              <p style={{ fontSize: 13, color: theme.muted, lineHeight: 1.6, fontWeight: 300 }}>
+                Launch the full interactive spreadsheet to batch-edit daytime &amp; evening menus, dietary tags (V, VE, GF), categories, or download and upload CSV files.
+              </p>
             </div>
+            <button
+              onClick={onOpenStudio}
+              style={{
+                padding: "12px 26px",
+                borderRadius: 30,
+                border: "none",
+                background: theme.accent,
+                color: "#fff",
+                cursor: "pointer",
+                fontFamily: "'Outfit', sans-serif",
+                fontSize: 14,
+                fontWeight: 600,
+                letterSpacing: "0.03em",
+                boxShadow: "0 2px 10px rgba(191,138,47,0.3)",
+                transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                whiteSpace: "nowrap",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = "0 4px 14px rgba(191,138,47,0.4)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "none";
+                e.currentTarget.style.boxShadow = "0 2px 10px rgba(191,138,47,0.3)";
+              }}
+            >
+              Open Menu Studio →
+            </button>
           </div>
         </FadeIn>
 
