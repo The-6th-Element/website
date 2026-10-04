@@ -94,6 +94,7 @@ The following features have been scoped or requested for future exploration once
 | **BK-08** | **VIP Club / Newsletter Signup** | Elegant footer and popup modal to capture guest emails (e.g. Mailchimp / Klaviyo / Resend) with automated welcome offer. | Medium |
 | **BK-09** | **Live Google Reviews Sync** | Automatic periodic sync with Google Places API to showcase fresh 5-star customer testimonials dynamically. | Low |
 | **BK-10** | **Community / Local Events Calendar** | Lightweight events calendar for live music evenings, coffee cupping sessions, and Richmond community collaborations. | Low |
+| **BK-15** | **Scrolling Promotional Top Ticker (Marquee)** | Upgrade the top announcement bar into an elegant, continuously scrolling ticker (marquee) showcasing live promotions, happy hour timings, and special offers with hover-to-pause, smooth GPU-accelerated animation, and configurable scroll speed. | Medium |
 
 ### 3.4 Operational & Admin Tooling
 | ID | Feature | Description | Priority |
