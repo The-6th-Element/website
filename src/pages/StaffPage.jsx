@@ -157,7 +157,7 @@ export function StaffPage({
                     onChange={(e) => setUsername(e.target.value)}
                     autoFocus
                     autoComplete="username"
-                    placeholder="pooja, deepak, manager, chef..."
+                    placeholder="Enter username..."
                     style={{
                       width: "100%",
                       padding: "14px 16px",

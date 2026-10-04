@@ -250,7 +250,7 @@ export function deleteStaffUser(username) {
 
   if (!target) throw new Error("User not found.");
   if (target.isProtected || target.username === "pooja") {
-    throw new Error("The Owner account (Pooja Somani) cannot be deleted.");
+    throw new Error("The Owner account cannot be deleted.");
   }
 
   const filtered = users.filter(u => u.username.toLowerCase() !== cleanUsername);

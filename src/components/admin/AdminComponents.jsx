@@ -85,7 +85,7 @@ export function AdminLogin({ theme, onLogin, onClose }) {
               onKeyDown={handleKeyDown}
               autoFocus
               autoComplete="username"
-              placeholder="pooja, deepak, manager, chef..."
+              placeholder="Enter username..."
               style={inputStyle}
             />
           </div>
