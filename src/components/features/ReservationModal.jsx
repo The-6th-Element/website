@@ -12,12 +12,12 @@ export function ReservationModal({ theme, onClose }) {
         position: "fixed",
         inset: 0,
         zIndex: 2000,
-        background: "rgba(0,0,0,0.6)",
-        backdropFilter: "blur(8px)",
+        background: "rgba(0,0,0,0.7)",
+        backdropFilter: "blur(10px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: 24,
+        padding: "16px",
         animation: "slideDown 0.3s ease",
       }}
       onClick={onClose}
@@ -26,14 +26,15 @@ export function ReservationModal({ theme, onClose }) {
         onClick={(e) => e.stopPropagation()}
         style={{
           width: "100%",
-          maxWidth: 560,
-          maxHeight: "90vh",
+          maxWidth: "min(980px, 95vw)",
+          maxHeight: "92vh",
           display: "flex",
           flexDirection: "column",
           background: theme.bg,
           borderRadius: 20,
           overflow: "hidden",
-          border: `1px solid ${theme.muted}20`,
+          border: `1px solid ${theme.muted}25`,
+          boxShadow: "0 25px 60px rgba(0,0,0,0.35)",
         }}
       >
         {/* Header */}
@@ -42,31 +43,54 @@ export function ReservationModal({ theme, onClose }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "20px 24px",
+            padding: "18px 28px",
             borderBottom: `1px solid ${theme.muted}15`,
+            background: theme.surface,
           }}
         >
-          <h2
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 26,
-              fontWeight: 400,
-              color: theme.heading,
-            }}
-          >
-            Reserve a Table
-          </h2>
+          <div>
+            <h2
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 26,
+                fontWeight: 500,
+                color: theme.heading,
+                lineHeight: 1.1,
+              }}
+            >
+              Reserve a Table
+            </h2>
+            <div style={{ fontSize: 12, color: theme.muted, marginTop: 2, fontWeight: 300 }}>
+              The Sixth Element &middot; Richmond-upon-Thames &middot; Powered by Toast Tables
+            </div>
+          </div>
           <button
             onClick={onClose}
             style={{
               background: "none",
               border: "none",
-              fontSize: 24,
+              fontSize: 26,
               color: theme.muted,
               cursor: "pointer",
               padding: 4,
               lineHeight: 1,
+              borderRadius: "50%",
+              width: 36,
+              height: 36,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.2s ease",
             }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = theme.heading;
+              e.currentTarget.style.background = `${theme.muted}15`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = theme.muted;
+              e.currentTarget.style.background = "none";
+            }}
+            title="Close"
           >
             ×
           </button>
@@ -77,27 +101,46 @@ export function ReservationModal({ theme, onClose }) {
             <iframe
               src={url}
               title="Book a table with Toast"
-              style={{ width: "100%", height: "70vh", border: "none", background: "#fff" }}
+              style={{
+                width: "100%",
+                height: "72vh",
+                minHeight: 540,
+                border: "none",
+                background: "#fff",
+              }}
               allow="payment"
             />
             <div
               style={{
-                padding: "12px 24px",
+                padding: "12px 28px",
                 borderTop: `1px solid ${theme.muted}15`,
-                textAlign: "center",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: 8,
                 fontSize: 12,
                 color: theme.muted,
                 fontWeight: 300,
+                background: theme.surface,
               }}
             >
-              Trouble loading?{" "}
+              <span>Walk-ins are always warmly welcomed during all daytime and evening hours.</span>
               <a
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: theme.accent, fontWeight: 500, textDecoration: "none" }}
+                style={{
+                  color: theme.accent,
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                }}
               >
-                Open the booking page in a new tab →
+                <span>Open booking page in full tab</span>
+                <span>↗</span>
               </a>
             </div>
           </>
