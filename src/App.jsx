@@ -230,7 +230,7 @@ export default function TheSixthElement() {
       {currentPage === "about" && <AboutPage theme={theme} />}
       {currentPage === "contact" && <ContactPage theme={theme} />}
 
-      <PersistentCTA theme={theme} setBookingOpen={setBookingOpen} />
+      <PersistentCTA theme={theme} flags={flags} setBookingOpen={setBookingOpen} />
       {bookingOpen && <ReservationModal theme={theme} onClose={() => setBookingOpen(false)} />}
       {showLogin && <AdminLogin theme={theme} onLogin={handleAdminLogin} onClose={() => setShowLogin(false)} />}
       {showAdmin && adminAuth.authenticated && (

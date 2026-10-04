@@ -165,97 +165,7 @@ export function AdminSection({ theme, title, icon, children }) {
   );
 }
 
-// ── CMS: Content Editor ───────────────────────────────────────────
-export function ContentEditor({ theme }) {
-  const [content, setContent] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [cmsConnected, setCmsConnected] = useState(null);
 
-  useEffect(() => {
-    fetch("/api/content?resource=content")
-      .then(r => r.json())
-      .then(data => { setContent(data); setCmsConnected(true); })
-      .catch(() => setCmsConnected(false));
-  }, []);
-
-  const saveField = async (key, value) => {
-    const token = sessionStorage.getItem("tse_admin_token");
-    setLoading(true);
-    try {
-      await fetch("/api/content?resource=content", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify({ key, value }),
-      });
-      setContent(prev => ({ ...prev, [key]: value }));
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    } catch (err) {
-      console.error("Save failed:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (cmsConnected === false) {
-    return (
-      <div style={{ padding: 16, borderRadius: 10, background: `${theme.accent}08`, border: `1px solid ${theme.accent}20`, fontSize: 12, color: theme.muted, lineHeight: 1.6 }}>
-        <strong style={{ color: theme.heading }}>CMS not connected</strong><br/>
-        Set <code style={{ background: `${theme.muted}15`, padding: "1px 4px", borderRadius: 3 }}>SUPABASE_URL</code> and <code style={{ background: `${theme.muted}15`, padding: "1px 4px", borderRadius: 3 }}>SUPABASE_SERVICE_KEY</code> to enable content editing.
-      </div>
-    );
-  }
-
-  const fields = [
-    { key: "hero_title", label: "Hero Title", type: "text" },
-    { key: "hero_subtitle", label: "Hero Subtitle", type: "text" },
-    { key: "hero_description", label: "Hero Description", type: "textarea" },
-    { key: "about_quote", label: "About Page Quote", type: "textarea" },
-    { key: "phone", label: "Phone Number", type: "text" },
-    { key: "email", label: "Email Address", type: "text" },
-    { key: "address", label: "Address", type: "textarea" },
-    { key: "hours_weekday", label: "Weekday Hours", type: "text" },
-    { key: "hours_weekend", label: "Weekend Hours", type: "text" },
-  ];
-
-  const inputStyle = {
-    width: "100%", padding: "8px 10px", borderRadius: 6, marginTop: 4,
-    border: `1px solid ${theme.muted}20`, background: theme.surfaceAlt,
-    color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 12,
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {saved && <div style={{ padding: "6px 12px", borderRadius: 6, background: `${COLORS.mossGreen}15`, color: COLORS.mossGreen, fontSize: 12, fontWeight: 500 }}>✓ Saved</div>}
-      {fields.map(f => (
-        <div key={f.key}>
-          <label style={{ fontSize: 10, color: theme.muted, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600 }}>{f.label}</label>
-          {f.type === "textarea" ? (
-            <textarea
-              value={typeof content[f.key] === "string" ? content[f.key] : JSON.stringify(content[f.key] || "")}
-              onChange={e => setContent(prev => ({ ...prev, [f.key]: e.target.value }))}
-              onBlur={e => saveField(f.key, e.target.value)}
-              rows={2}
-              style={{ ...inputStyle, resize: "vertical" }}
-            />
-          ) : (
-            <input
-              type="text"
-              value={typeof content[f.key] === "string" ? content[f.key] : JSON.stringify(content[f.key] || "")}
-              onChange={e => setContent(prev => ({ ...prev, [f.key]: e.target.value }))}
-              onBlur={e => saveField(f.key, e.target.value)}
-              style={inputStyle}
-            />
-          )}
-        </div>
-      ))}
-      <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.5 }}>
-        Changes auto-save when you leave each field.
-      </div>
-    </div>
-  );
-}
 
 // ── Menu Manager (browser/localStorage) ───────────────────────────
 export function MenuManager({ theme, onOpenStudio }) {
@@ -385,7 +295,7 @@ export function MenuManager({ theme, onOpenStudio }) {
   );
 }
 
-// ── Promotions Manager (Supabase-backed) ──────────────────────────
+// ── Promotions Manager (Browser-persisted with instant real-time sync) ────
 export function PromotionsManager({ theme }) {
   const { promotions, status, saveState, addPromotion, updatePromotion, deletePromotion, resetPromotions } = usePromotions();
   const [showForm, setShowForm] = useState(false);
@@ -520,104 +430,7 @@ export function PromotionsManager({ theme }) {
   );
 }
 
-// ── CMS: Gallery Manager ──────────────────────────────────────────
-export function GalleryManager({ theme }) {
-  const [images, setImages] = useState([]);
-  const [uploading, setUploading] = useState(false);
-  const [cmsConnected, setCmsConnected] = useState(null);
 
-  useEffect(() => {
-    fetch("/api/content?resource=gallery")
-      .then(r => r.json())
-      .then(data => { setImages(Array.isArray(data) ? data : []); setCmsConnected(true); })
-      .catch(() => setCmsConnected(false));
-  }, []);
-
-  const handleUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploading(true);
-    const token = sessionStorage.getItem("tse_admin_token");
-
-    try {
-      const base64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(",")[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
-      const uploadResp = await fetch("/api/content?resource=upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify({ filename: file.name, base64Data: base64, contentType: file.type, folder: "gallery" }),
-      });
-      const { url } = await uploadResp.json();
-
-      const galleryResp = await fetch("/api/content?resource=gallery", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify({ image_url: url, alt_text: file.name, is_visible: true, sort_order: images.length }),
-      });
-      const newImage = await galleryResp.json();
-      setImages(prev => [...prev, newImage]);
-    } catch (err) { console.error("Upload failed:", err); }
-    finally { setUploading(false); }
-  };
-
-  const deleteImage = async (id) => {
-    const token = sessionStorage.getItem("tse_admin_token");
-    try {
-      await fetch("/api/content?resource=gallery", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify({ id }),
-      });
-      setImages(prev => prev.filter(img => img.id !== id));
-    } catch (err) { console.error("Delete failed:", err); }
-  };
-
-  if (cmsConnected === false) {
-    return (
-      <div style={{ padding: 16, borderRadius: 10, background: `${theme.accent}08`, border: `1px solid ${theme.accent}20`, fontSize: 12, color: theme.muted, lineHeight: 1.6 }}>
-        <strong style={{ color: theme.heading }}>CMS not connected</strong><br/>
-        Connect Supabase to manage gallery images.
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <div style={{
-        display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6, marginBottom: 12,
-      }}>
-        {images.map(img => (
-          <div key={img.id} style={{ position: "relative", aspectRatio: "1", borderRadius: 8, overflow: "hidden", background: `${theme.muted}10` }}>
-            <img src={img.image_url} alt={img.alt_text || ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            <button onClick={() => deleteImage(img.id)} style={{
-              position: "absolute", top: 4, right: 4, width: 20, height: 20,
-              borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.6)",
-              color: "#fff", fontSize: 12, cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>×</button>
-          </div>
-        ))}
-      </div>
-      <label style={{
-        display: "block", width: "100%", padding: "12px", borderRadius: 8, textAlign: "center",
-        border: `1px dashed ${theme.muted}30`, background: "transparent",
-        color: uploading ? theme.muted : theme.accent, cursor: uploading ? "wait" : "pointer",
-        fontSize: 12, fontWeight: 500, fontFamily: "'Outfit', sans-serif",
-      }}>
-        {uploading ? "Uploading..." : "+ Upload Image"}
-        <input type="file" accept="image/*" onChange={handleUpload} style={{ display: "none" }} />
-      </label>
-      <div style={{ fontSize: 11, color: theme.muted, marginTop: 8, lineHeight: 1.5 }}>
-        Images appear in the homepage gallery grid.
-      </div>
-    </div>
-  );
-}
 
 // ── Admin Panel (authenticated) ────────────────────────────────────
 export function AdminPanel({

@@ -1,5 +1,5 @@
 // src/pages/MenuPage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { COLORS } from "../theme/tokens";
 import { defaultMenuTab } from "../utils/time";
 import { useMenu } from "../hooks/useContent";
@@ -9,6 +9,10 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
   const { menu } = useMenu();
   const tabs = Object.keys(menu).map((id) => ({ id, label: menu[id].title || id, icon: menu[id].icon || "" }));
   const [activeTab, setActiveTab] = useState(() => defaultMenuTab(flags));
+
+  useEffect(() => {
+    setActiveTab(defaultMenuTab(flags));
+  }, [flags?.menu_evening_hour]);
   const current = tabs.some((t) => t.id === activeTab) && menu[activeTab] ? activeTab : tabs[0]?.id || "";
   const data = menu[current] || { title: "", subtitle: "", icon: "", sections: [] };
   const sections = data.sections || [];

@@ -1,6 +1,6 @@
 // src/data/config.js
 // Global site configuration and static metadata for The Sixth Element
-import { COLORS } from "../theme/tokens";
+import { COLORS } from "../theme/tokens.js";
 
 // ── Toast Tables Reservation Config ───────────────────────────────
 export const TOAST_CONFIG = {

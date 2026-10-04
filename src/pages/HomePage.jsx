@@ -200,7 +200,11 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             </FadeIn>
             <FadeIn delay={0.6}>
               <div className="hero-cta" style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={theme} />
+                {flags?.booking_enabled !== false ? (
+                  <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={theme} />
+                ) : (
+                  <CTAButton label="Explore Menu" onClick={() => navigate("menu")} primary theme={theme} />
+                )}
               </div>
             </FadeIn>
           </div>

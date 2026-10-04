@@ -1,7 +1,7 @@
 // src/components/ui/PersistentCTA.jsx
 import React, { useState, useEffect } from "react";
 
-export function PersistentCTA({ theme, setBookingOpen }) {
+export function PersistentCTA({ theme, flags = {}, setBookingOpen }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -10,7 +10,7 @@ export function PersistentCTA({ theme, setBookingOpen }) {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  if (!visible) return null;
+  if (!visible || flags.booking_enabled === false) return null;
 
   return (
     <div

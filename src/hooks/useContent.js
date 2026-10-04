@@ -12,47 +12,7 @@ export function isPromoLive(p) {
   );
 }
 
-export async function saveContentKey(key, value) {
-  const token = sessionStorage.getItem("tse_admin_token");
-  const resp = await fetch("/api/content?resource=content", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({ key, value }),
-  });
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({}));
-    throw new Error(err.error || "Save failed");
-  }
-  return resp.json();
-}
 
-// Loads one site_content key. status: "loading" | "connected" | "offline".
-export function useContentKey(key, fallback) {
-  const [value, setValue] = useState(fallback);
-  const [status, setStatus] = useState("loading");
-
-  useEffect(() => {
-    let alive = true;
-    fetch("/api/content?resource=content")
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("cms"))))
-      .then((map) => {
-        if (!alive) return;
-        if (map && map[key] != null) setValue(map[key]);
-        setStatus("connected");
-      })
-      .catch(() => {
-        if (alive) setStatus("offline");
-      });
-    return () => {
-      alive = false;
-    };
-  }, [key]);
-
-  return [value, setValue, status];
-}
 
 // ── Promotions Hook (browser-persisted with instant real-time sync) ──
 export function usePromotions() {

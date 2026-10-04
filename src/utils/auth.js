@@ -28,19 +28,6 @@ export async function authenticateAdmin(username, password) {
   const passwordHash = await sha256(password.trim());
 
   if (cleanUser !== AUTHORIZED_USER || passwordHash !== MASTER_HASH) {
-    // If an external api exists, try as fallback (e.g. during legacy migration)
-    try {
-      const resp = await fetch("/api/admin-auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "login", username, password }),
-      });
-      if (resp.ok) {
-        const data = await resp.json();
-        return { user: username, token: data.token };
-      }
-    } catch {}
-
     throw new Error("Invalid username or password. Please try again.");
   }
 
