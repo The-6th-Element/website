@@ -78,9 +78,10 @@ The following features have been scoped or requested for future exploration once
 |---|---|---|---|
 | **BK-01** | **Ambient Video Background Loop** | Subdued, high-aesthetic background video loop of the café/lounge (morning steam, evening pour) with battery-saving auto-pause on mobile. | Medium |
 | **BK-02** | **Photo & Video Reels Lightbox** | Interactive gallery showcasing interior architecture, latte art, cocktails, and seasonal dishes with touch-swipe on mobile devices. | Medium |
-| **BK-03** | **Instagram Graph API Live Feed** | Replace static curated grid with real-time feed fetching the latest posts and reels from `@thesixthelementrichmond`. | Low |
+| **BK-03** | **Automated Live Instagram Feed Sync** | Replace static placeholder photos with an automated periodic sync fetching the latest posts and reels from `@the.sixth.element.210` via Meta Graph API / GitHub Actions cron, caching thumbnails locally with zero ongoing monthly widget subscription fees. | High |
 | **BK-17** | **Interactive Day-to-Night Vibe Slider** | An interactive time-scrubber on the homepage allowing visitors to slide from 8:00am Morning Coffee to 12:30pm Brunch to 5:30pm Golden Hour to 9:00pm Candlelit Lounge, watching the atmosphere, lighting, and dishes morph dynamically. | High |
 | **BK-18** | **"Sounds of The Sixth Element" Curated Spotify Audio Integration** | Lifestyle music widget linking to curated daytime acoustic/lo-fi and evening vinyl/jazz playlists to immerse guests in the venue's audio identity. | Low |
+| **BK-25** | **Instagram Story Circles & Mobile Highlights** | Tappable story bubbles on the mobile homepage inspired by Instagram stories (*Today's Bakes*, *Wine of the Week*, *Old Spike Coffee*, *Dogs of Sixth Element*), providing quick video reel previews without leaving the site. | Medium |
 
 ### 3.2 Guest Operations & Hospitality
 | ID | Feature | Description | Priority |
@@ -91,7 +92,7 @@ The following features have been scoped or requested for future exploration once
 | **BK-07** | **Interactive Dietary & Allergen Matrix** | Filterable menu view allowing guests to highlight all items suitable for specific allergen profiles (Nut-Free, Celery, Sesame, Dairy-Free, Egg-Free). | Medium |
 | **BK-19** | **Live Walk-in & Table Availability Indicator** | Real-time 1-tap status switch in Staff Portal allowing staff to signal 🟢 Walk-ins Welcome / 🟡 Short Wait / 🔴 Bookings Only to eliminate customer hesitation and drive spontaneous visits. | Medium |
 | **BK-20** | **"Dog-Friendly & Richmond Park Walkers" Guide** | Dedicated emblem and micro-section highlighting dog-friendly indoor seating, heated terrace, complimentary organic treats, water bowls, and takeaway coffee hatch for park walkers. | High |
-| **BK-24** | **Direct WhatsApp Hospitality Concierge Button** | Discreet, high-touch floating contact button for instant guest inquiries regarding large groups of 8+, private hire, outdoor heating, or allergen questions. | Medium |
+| **BK-24** | **Context-Aware WhatsApp Hospitality Concierge** | Floating WhatsApp button with pre-populated contextual messages based on user intent (e.g. large parties of 6+ on Reservations, daily dietary queries on Menu, dog-friendly or table walk-in queries on Contact). | High |
 
 ### 3.3 Marketing & Community Growth
 | ID | Feature | Description | Priority |
@@ -102,6 +103,8 @@ The following features have been scoped or requested for future exploration once
 | **BK-15** | **Scrolling Promotional Top Ticker (Marquee)** | Upgrade the top announcement bar into an elegant, continuously scrolling ticker (marquee) showcasing live promotions, happy hour timings, and special offers with hover-to-pause, smooth GPU-accelerated animation, and configurable scroll speed. | Medium |
 | **BK-21** | **Ticketed Tasting Masterclasses & Workshops** | Prepaid ticketing system for intimate, limited-seat natural wine tastings, coffee cupping sessions with Old Spike, and live acoustic music nights. | Medium |
 | **BK-22** | **Interactive Provenance & Producers Map ("Story of the Soil")** | Visual interactive story showcasing supplier origins: Old Spike social impact coffee in Peckham, artisan sourdough bakeries, British charcuterie, and biodynamic natural vineyards across Europe/UK. | Medium |
+| **BK-26** | **"VIP Tasting & Secret Drops" WhatsApp Channel** | Opt-in community broadcast channel for Richmond locals receiving rare natural wine uncorking drops, acoustic night invites, and exclusive seasonal perks with ~95% open rates. | Medium |
+| **BK-27** | **OpenGraph Rich Social Sharing Cards (Facebook & WhatsApp)** | High-resolution OpenGraph and Twitter/X card metadata ensuring links shared in local Richmond/East Sheen Facebook groups, WhatsApp chats, and iMessage display stunning branded imagery and compelling venue copy. | High |
 
 ### 3.4 Operational & Admin Tooling
 | ID | Feature | Description | Priority |
