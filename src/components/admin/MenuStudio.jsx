@@ -2,7 +2,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { COLORS } from "../../theme/tokens";
 import { useMenu } from "../../hooks/useContent";
-import { downloadMenuCsv, csvToMenu } from "../../utils/csvMenuParser";
+import { downloadMenuCsv, csvToMenu } from "../../utils/csvMenuParser.js";
+import {
+  publishMenuToGithub,
+  getStoredGithubToken,
+  setStoredGithubToken,
+  validateGithubToken,
+  clearStoredGithubToken
+} from "../../utils/githubPublisher.js";
 
 export function MenuStudio({ theme, onClose }) {
   const { menu, saveMenu, resetMenu, isCustom } = useMenu();
@@ -14,11 +21,84 @@ export function MenuStudio({ theme, onClose }) {
   const fileInputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
 
+  // GitHub 1-Click Publishing State
+  const [showPublishModal, setShowPublishModal] = useState(false);
+  const [githubToken, setGithubToken] = useState(() => getStoredGithubToken());
+  const [tokenInput, setTokenInput] = useState("");
+  const [tokenUser, setTokenUser] = useState(null);
+  const [validatingToken, setValidatingToken] = useState(false);
+  const [targetBranch, setTargetBranch] = useState("dev");
+  const [customCommitMsg, setCustomCommitMsg] = useState("");
+  const [publishStatus, setPublishStatus] = useState(null);
+
+  useEffect(() => {
+    if (githubToken && !tokenUser) {
+      validateGithubToken(githubToken)
+        .then(u => setTokenUser(u.username))
+        .catch(() => {});
+    }
+  }, [githubToken, tokenUser]);
+
   useEffect(() => {
     if (!dirty) {
       setDraft(JSON.parse(JSON.stringify(menu)));
     }
   }, [menu, dirty]);
+
+  const handleSaveToken = async (tok) => {
+    const clean = tok.trim();
+    if (!clean) return;
+    setValidatingToken(true);
+    try {
+      const u = await validateGithubToken(clean);
+      setStoredGithubToken(clean);
+      setGithubToken(clean);
+      setTokenUser(u.username);
+      setTokenInput("");
+    } catch (err) {
+      alert(err.message || "Invalid GitHub token");
+    } finally {
+      setValidatingToken(false);
+    }
+  };
+
+  const handleClearToken = () => {
+    clearStoredGithubToken();
+    setGithubToken("");
+    setTokenUser(null);
+  };
+
+  const handlePublish = async () => {
+    if (!githubToken) {
+      setPublishStatus({ state: "error", message: "Please save a GitHub Personal Access Token first." });
+      return;
+    }
+    setPublishStatus({ state: "publishing", step: "init", message: "Connecting to GitHub..." });
+    try {
+      const res = await publishMenuToGithub({
+        menuData: draft,
+        token: githubToken,
+        branch: targetBranch,
+        commitMessage: customCommitMsg.trim() || undefined,
+        onProgress: (p) => {
+          setPublishStatus({ state: "publishing", step: p.step, message: p.label });
+        }
+      });
+      setPublishStatus({
+        state: "success",
+        message: `Successfully published to '${res.branch}' branch!`,
+        commitSha: res.commitSha,
+        commitUrl: res.commitUrl,
+      });
+      saveMenu(draft);
+      setDirty(false);
+    } catch (err) {
+      setPublishStatus({
+        state: "error",
+        message: err.message || "Failed to publish to GitHub.",
+      });
+    }
+  };
 
   const mutate = (fn) => {
     setDraft(prev => {
@@ -324,7 +404,7 @@ export function MenuStudio({ theme, onClose }) {
             📤 Upload CSV
           </button>
 
-          {/* Save button */}
+          {/* Save button (In-Browser) */}
           <button
             onClick={handleSave}
             disabled={!dirty}
@@ -341,7 +421,34 @@ export function MenuStudio({ theme, onClose }) {
               transition: "all 0.2s ease",
             }}
           >
-            {dirty ? "✓ Apply Changes" : "Saved ✓"}
+            {dirty ? "✓ Apply Locally" : "Saved Locally ✓"}
+          </button>
+
+          {/* Publish Live Button (GitHub) */}
+          <button
+            onClick={() => {
+              if (dirty) handleSave();
+              setShowPublishModal(true);
+            }}
+            style={{
+              padding: "8px 16px",
+              borderRadius: 8,
+              border: "none",
+              background: "linear-gradient(135deg, #BF8A2F 0%, #D4A346 100%)",
+              color: "#fff",
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 700,
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              boxShadow: "0 4px 14px rgba(191,138,47,0.35)",
+              transition: "all 0.2s ease",
+            }}
+            title="Publish this menu live to the website worldwide via GitHub"
+          >
+            <span>🚀</span>
+            <span>Publish Live</span>
           </button>
 
           {/* Close Studio */}
@@ -893,6 +1000,332 @@ export function MenuStudio({ theme, onClose }) {
           </div>
         )}
       </div>
+
+      {/* ── GitHub Direct 1-Click Publish Modal ──────────────────────── */}
+      {showPublishModal && (
+        <div
+          onClick={() => {
+            if (publishStatus?.state !== "publishing") setShowPublishModal(false);
+          }}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 3500,
+            background: "rgba(0,0,0,0.75)",
+            backdropFilter: "blur(10px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 24,
+            animation: "slideDown 0.3s ease",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: 500,
+              background: theme.bg,
+              borderRadius: 16,
+              padding: 28,
+              border: `1px solid ${theme.muted}25`,
+              boxShadow: "0 24px 70px rgba(0,0,0,0.4)",
+              color: theme.text,
+              display: "flex",
+              flexDirection: "column",
+              gap: 18,
+            }}
+          >
+            {/* Modal Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 24 }}>🚀</span>
+                <div>
+                  <h3 style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: 22,
+                    fontWeight: 500,
+                    color: theme.heading,
+                    margin: 0,
+                  }}>
+                    Publish Menu Live
+                  </h3>
+                  <p style={{ fontSize: 12, color: theme.muted, marginTop: 2 }}>
+                    Direct 1-click update via GitHub. No manual files needed.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowPublishModal(false)}
+                disabled={publishStatus?.state === "publishing"}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: 20,
+                  color: theme.muted,
+                  cursor: publishStatus?.state === "publishing" ? "not-allowed" : "pointer",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Target Branch Selector */}
+            <div>
+              <label style={{
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: theme.muted,
+                display: "block",
+                marginBottom: 6,
+              }}>
+                Target Branch
+              </label>
+              <div style={{ display: "flex", gap: 8 }}>
+                {[
+                  { id: "dev", label: "dev (Staging / Safe Preview)", color: COLORS.warmAmber },
+                  { id: "main", label: "main (Live Production)", color: COLORS.mossGreen },
+                ].map((b) => (
+                  <button
+                    key={b.id}
+                    onClick={() => setTargetBranch(b.id)}
+                    style={{
+                      flex: 1,
+                      padding: "8px 12px",
+                      borderRadius: 8,
+                      border: targetBranch === b.id ? `2px solid ${b.color}` : `1px solid ${theme.muted}25`,
+                      background: targetBranch === b.id ? `${b.color}15` : theme.surfaceAlt,
+                      color: targetBranch === b.id ? theme.heading : theme.muted,
+                      cursor: "pointer",
+                      fontSize: 12,
+                      fontWeight: targetBranch === b.id ? 700 : 500,
+                      fontFamily: "'Outfit', sans-serif",
+                      textAlign: "center",
+                    }}
+                  >
+                    {b.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* GitHub Token Section */}
+            <div>
+              <label style={{
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: theme.muted,
+                display: "block",
+                marginBottom: 6,
+              }}>
+                GitHub Authorization
+              </label>
+
+              {githubToken && tokenUser ? (
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                  background: `${COLORS.mossGreen}15`,
+                  border: `1px solid ${COLORS.mossGreen}30`,
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 16 }}>✓</span>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: theme.heading }}>
+                        Connected as @{tokenUser}
+                      </div>
+                      <div style={{ fontSize: 10, color: COLORS.mossGreen }}>
+                        Repo write access enabled
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleClearToken}
+                    style={{
+                      background: "none",
+                      border: `1px solid ${theme.muted}30`,
+                      borderRadius: 6,
+                      padding: "4px 8px",
+                      fontSize: 11,
+                      color: theme.muted,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Change
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <input
+                      type="password"
+                      value={tokenInput}
+                      onChange={(e) => setTokenInput(e.target.value)}
+                      placeholder="Paste Personal Access Token (ghp_...)"
+                      style={{
+                        flex: 1,
+                        padding: "8px 12px",
+                        borderRadius: 8,
+                        border: `1px solid ${theme.muted}25`,
+                        background: theme.surfaceAlt,
+                        color: theme.text,
+                        fontSize: 12,
+                        fontFamily: "monospace",
+                      }}
+                    />
+                    <button
+                      onClick={() => handleSaveToken(tokenInput)}
+                      disabled={!tokenInput || validatingToken}
+                      style={{
+                        padding: "8px 14px",
+                        borderRadius: 8,
+                        border: "none",
+                        background: theme.accent,
+                        color: "#fff",
+                        cursor: tokenInput && !validatingToken ? "pointer" : "default",
+                        fontSize: 12,
+                        fontWeight: 600,
+                        opacity: tokenInput && !validatingToken ? 1 : 0.6,
+                      }}
+                    >
+                      {validatingToken ? "Checking..." : "Connect"}
+                    </button>
+                  </div>
+                  <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.5 }}>
+                    Enter a GitHub Personal Access Token (PAT) with <code style={{ color: COLORS.warmAmber }}>repo</code> permission or fine-grained write access to <code style={{ color: COLORS.warmAmber }}>The-6th-Element/website</code>. Stored safely in your browser only.
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Custom Commit Message (Optional) */}
+            <div>
+              <label style={{
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: theme.muted,
+                display: "block",
+                marginBottom: 6,
+              }}>
+                Change Note (Optional)
+              </label>
+              <input
+                type="text"
+                value={customCommitMsg}
+                onChange={(e) => setCustomCommitMsg(e.target.value)}
+                placeholder="e.g., Update spring cocktails & brunch prices"
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  borderRadius: 8,
+                  border: `1px solid ${theme.muted}25`,
+                  background: theme.surfaceAlt,
+                  color: theme.text,
+                  fontSize: 12,
+                }}
+              />
+            </div>
+
+            {/* Progress / Status Display */}
+            {publishStatus && (
+              <div style={{
+                padding: "12px 14px",
+                borderRadius: 8,
+                background:
+                  publishStatus.state === "success"
+                    ? "#D1FAE5"
+                    : publishStatus.state === "error"
+                    ? "#FEE2E2"
+                    : "#FEF3C7",
+                color:
+                  publishStatus.state === "success"
+                    ? "#065F46"
+                    : publishStatus.state === "error"
+                    ? "#991B1B"
+                    : "#92400E",
+                fontSize: 12,
+                lineHeight: 1.5,
+              }}>
+                <div style={{ fontWeight: 600, marginBottom: 2 }}>
+                  {publishStatus.state === "publishing" && "⏳ Publishing in progress..."}
+                  {publishStatus.state === "success" && "🎉 Published to GitHub!"}
+                  {publishStatus.state === "error" && "⚠ Publishing failed"}
+                </div>
+                <div>{publishStatus.message}</div>
+                {publishStatus.commitUrl && (
+                  <div style={{ marginTop: 6 }}>
+                    <a
+                      href={publishStatus.commitUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "inherit", fontWeight: 700, textDecoration: "underline" }}
+                    >
+                      View commit on GitHub ({publishStatus.commitSha}) ↗
+                    </a>
+                  </div>
+                )}
+                {publishStatus.state === "success" && (
+                  <div style={{ fontSize: 11, marginTop: 4, opacity: 0.9 }}>
+                    GitHub Actions is automatically building and deploying this update. It will be live globally in ~30 seconds!
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+              <button
+                onClick={() => setShowPublishModal(false)}
+                disabled={publishStatus?.state === "publishing"}
+                style={{
+                  flex: 1,
+                  padding: "10px",
+                  borderRadius: 8,
+                  border: `1px solid ${theme.muted}30`,
+                  background: "transparent",
+                  color: theme.text,
+                  cursor: "pointer",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  fontFamily: "'Outfit', sans-serif",
+                }}
+              >
+                {publishStatus?.state === "success" ? "Done" : "Cancel"}
+              </button>
+
+              <button
+                onClick={handlePublish}
+                disabled={!githubToken || publishStatus?.state === "publishing"}
+                style={{
+                  flex: 2,
+                  padding: "10px",
+                  borderRadius: 8,
+                  border: "none",
+                  background: "linear-gradient(135deg, #BF8A2F 0%, #D4A346 100%)",
+                  color: "#fff",
+                  cursor: githubToken && publishStatus?.state !== "publishing" ? "pointer" : "default",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  fontFamily: "'Outfit', sans-serif",
+                  boxShadow: "0 4px 14px rgba(191,138,47,0.35)",
+                  opacity: githubToken && publishStatus?.state !== "publishing" ? 1 : 0.6,
+                }}
+              >
+                {publishStatus?.state === "publishing" ? "Publishing..." : "Confirm & Publish Now 🚀"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 import React from "react";
 import { Logomark } from "../ui/Logomark";
 
-export function Footer({ theme, navigate }) {
+export function Footer({ theme, navigate, onOpenAdmin }) {
   return (
     <footer
       style={{
@@ -138,6 +138,23 @@ export function Footer({ theme, navigate }) {
             <span style={{ cursor: "pointer" }}>Privacy</span>
             <span style={{ cursor: "pointer" }}>Terms</span>
             <span style={{ cursor: "pointer" }}>Accessibility</span>
+            {onOpenAdmin && (
+              <span
+                onClick={onOpenAdmin}
+                style={{
+                  cursor: "pointer",
+                  opacity: 0.7,
+                  transition: "opacity 0.2s ease",
+                  borderLeft: `1px solid ${theme.muted}30`,
+                  paddingLeft: 12,
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = 0.7)}
+                title="Staff Portal & Admin Sign-in"
+              >
+                🔒 Staff
+              </span>
+            )}
           </div>
         </div>
       </div>

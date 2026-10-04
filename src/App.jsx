@@ -16,6 +16,7 @@ import { AboutPage } from "./pages/AboutPage";
 import { ContactPage } from "./pages/ContactPage";
 import { AdminLogin, AdminPanel } from "./components/admin/AdminComponents";
 import { MenuStudio } from "./components/admin/MenuStudio";
+import { authenticateAdmin, verifyAdminSession } from "./utils/auth";
 
 // ── Main App ───────────────────────────────────────────────────────
 export default function TheSixthElement() {
@@ -53,27 +54,9 @@ export default function TheSixthElement() {
       return;
     }
     const savedToken = sessionStorage.getItem("tse_admin_token");
-    if (savedToken) {
-      fetch("/api/admin-auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "verify", token: savedToken }),
-      })
-        .then(r => r.json())
-        .then(data => {
-          if (data.valid) {
-            setAdminAuth({ authenticated: true, user: data.user, token: savedToken, loading: false });
-            setShowAdmin(true);
-          } else {
-            sessionStorage.removeItem("tse_admin_token");
-            setAdminAuth({ authenticated: false, user: null, token: null, loading: false });
-            setShowLogin(true);
-          }
-        })
-        .catch(() => {
-          setAdminAuth(a => ({ ...a, loading: false }));
-          setShowLogin(true);
-        });
+    if (savedToken && verifyAdminSession(savedToken)) {
+      setAdminAuth({ authenticated: true, user: "Deepak", token: savedToken, loading: false });
+      setShowAdmin(true);
     } else {
       setAdminAuth(a => ({ ...a, loading: false }));
       setShowLogin(true);
@@ -81,15 +64,9 @@ export default function TheSixthElement() {
   }, []);
 
   const handleAdminLogin = async (username, password) => {
-    const resp = await fetch("/api/admin-auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "login", username, password }),
-    });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || "Login failed");
-    sessionStorage.setItem("tse_admin_token", data.token);
-    setAdminAuth({ authenticated: true, user: username, token: data.token, loading: false });
+    const result = await authenticateAdmin(username, password);
+    sessionStorage.setItem("tse_admin_token", result.token);
+    setAdminAuth({ authenticated: true, user: result.user, token: result.token, loading: false });
     setShowLogin(false);
     setShowAdmin(true);
   };
@@ -219,7 +196,11 @@ export default function TheSixthElement() {
         />
       )}
       <StructuredData />
-      <Footer theme={theme} navigate={navigate} />
+      <Footer
+        theme={theme}
+        navigate={navigate}
+        onOpenAdmin={() => (adminAuth.authenticated ? setShowAdmin(true) : setShowLogin(true))}
+      />
     </div>
   );
 }
