@@ -504,7 +504,7 @@ export function StaffPage({
                 </div>
                 <p style={{ fontSize: 13, color: theme.muted, lineHeight: 1.6, fontWeight: 300 }}>
                   {canManageUsers
-                    ? "Publish approved menu and operations updates directly to GitHub Pages. Instant deployment with 0 server costs."
+                    ? "Publish approved menu and operations updates directly to the live website."
                     : "Drafts are saved locally in browser storage. Contact an Owner or Admin to push live changes."}
                 </p>
               </div>
@@ -518,7 +518,7 @@ export function StaffPage({
                     background: COLORS.mossGreen,
                   }}
                 />
-                <span>Storage: Local sync active (Zero database fees)</span>
+                <span>System Status: Ready to publish</span>
               </div>
             </div>
           </div>
