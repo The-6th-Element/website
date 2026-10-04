@@ -1,127 +1,82 @@
-# The Sixth Element — Website
+# The Sixth Element — Official Website
 
-Specialty coffee by day, natural wine by night. Richmond-upon-Thames.
+> **Specialty coffee by day, natural wine by night.**  
+> 210 Upper Richmond Road West, Richmond-upon-Thames, London SW14 8AH
 
-## Local Development
+A modern, high-performance web application engineered with modular React 18, Vite 6, and zero-cost automated hosting on GitHub Pages via GitHub Actions CI/CD.
 
-```bash
-npm install
-npm run dev        # starts dev server on http://localhost:3000
-```
+---
 
-## Build for Production
+## 🚀 Key Features
 
-```bash
-npm run build      # outputs static files to dist/
-npm run preview    # preview the production build locally
-```
+- **Automated Dual-Personality Theming**: Seamless transitions between daytime artisan café styling and evening ambient wine lounge based on London local time (`Europe/London`), configurable via the Admin Console.
+- **In-Browser Menu Studio & CSV Spreadsheet**: Dedicated full-page spreadsheet (`/studio`) allowing staff to batch-edit dishes, prices, descriptions, and dietary tags (`V`, `VE`, `GF`, `GF*`), with 1-click CSV export/import and direct in-browser GitHub API publishing.
+- **Staff & User Management (RBAC)**: Role-based access control with 5 distinct permission tiers: Owner, Admin, Manager, Shift Lead, and Chef/Kitchen. Live publishing capabilities are restricted strictly to authorized Admins.
+- **Spacious Toast Tables Reservations**: Custom-engineered wide modal (`min(980px, 95vw)`) providing a comfortable calendar and seating-time reservation experience powered by Toast Tables.
+- **Cross-Device & Mobile Optimization**: Native mobile gestures, `100dvh` dynamic viewport handling, edge-to-edge iOS safe area insets, and zero tap delay.
+- **Zero Ongoing Infrastructure Cost**: 100% serverless static deployment with persistent client-side storage for operational promotions and real-time tab synchronization.
 
-## Deploy
+---
 
-### Option A: Vercel (recommended — 2 minutes)
-
-```bash
-# Install Vercel CLI (one-time)
-npm i -g vercel
-
-# Deploy
-vercel
-
-# Follow the prompts — done. You'll get a live URL.
-# For production: vercel --prod
-```
-
-### Option B: Netlify
-
-```bash
-npm run build
-# Drag the dist/ folder onto https://app.netlify.com/drop
-# Or: npm i -g netlify-cli && netlify deploy --prod --dir=dist
-```
-
-### Option C: GitHub Pages
-
-```bash
-npm run build
-
-# Push dist/ to gh-pages branch:
-npx gh-pages -d dist
-```
-
-Add this to `vite.config.js` if your repo name isn't the root:
-```js
-base: '/your-repo-name/',
-```
-
-### Option D: AWS EC2 Micro (free tier)
-
-```bash
-# On your instance:
-sudo apt update && sudo apt install -y nginx
-# Upload the dist/ folder contents to /var/www/html/
-sudo systemctl restart nginx
-```
-
-## Project Structure
+## 📁 Project Architecture
 
 ```
-sixth-element/
-├── index.html          # Root HTML with SEO meta tags & structured data
-├── package.json
-├── vite.config.js
-├── api/
-│   ├── book.js         # Booking serverless function (email + Google Sheet)
-│   └── admin-auth.js   # Admin authentication (login + JWT tokens)
+the-sixth-element-website/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml          # GitHub Actions CI/CD: Automated build & GitHub Pages deploy
 ├── public/
-│   └── favicon.svg     # Brand favicon
-└── src/
-    ├── main.jsx        # React entry point
-    └── App.jsx         # Full application (all pages & components)
+│   ├── CNAME                   # Custom domain mapping (the6thelement.co.uk)
+│   ├── 404.html                # Single-Page Application (SPA) routing fallback
+│   ├── data/
+│   │   └── menu_template.csv   # Standardized menu CSV schema & starter template
+│   └── media/                  # Optimized brand photography and imagery
+├── src/
+│   ├── components/
+│   │   ├── admin/              # MenuStudio, UserManager, PromotionsManager
+│   │   ├── features/           # ReservationModal, StructuredData (Schema.org)
+│   │   ├── layout/             # Navbar, Footer, AnnouncementBar
+│   │   └── ui/                 # Logomark, FadeIn, CTAButton, PersistentCTA
+│   ├── data/                   # Menu dataset, customer reviews, site configuration
+│   ├── hooks/                  # useFeatureFlags, useContent
+│   ├── pages/                  # HomePage, MenuPage, SocialImpactPage, AboutPage, ContactPage, StaffPage
+│   ├── theme/                  # Color tokens, daylight/evening design system
+│   ├── utils/                  # auth (SHA-256), csvMenuParser, githubPublisher, userManager, time
+│   ├── App.jsx                 # Core application shell & routing
+│   └── main.jsx                # Application mount point
+├── FEATURE_BACKLOG.md          # Living product roadmap and feature backlog
+└── vite.config.js              # Vite configuration
 ```
 
-## Admin Panel Setup
+---
 
-The admin panel is accessed at `yoursite.com?admin=true` and requires authentication.
+## 🛠️ Local Development
 
-### 1. Set environment variables in Vercel
+```powershell
+# Install dependencies
+npm.cmd install
 
-```bash
-# Admin credentials
-vercel env add ADMIN_USERNAME      # e.g. "owner"
-vercel env add ADMIN_PASSWORD      # a strong passphrase
+# Start development server
+npm.cmd run dev
 
-# Token signing secret (generate one with this command):
-# node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-vercel env add ADMIN_SECRET
+# Build production bundle
+npm.cmd run build
+
+# Preview production build locally
+npm.cmd run preview
 ```
 
-### 2. Access the panel
+---
 
-1. Navigate to `https://yoursite.com?admin=true`
-2. Enter the username and password you set above
-3. Session lasts 12 hours (stored in browser sessionStorage)
-4. Click "Sign Out" or close the browser to end the session
+## 🌐 Deployment & CI/CD
 
-### 3. What the admin panel controls
+Deployment is fully automated:
+1. Every push to the `main` branch triggers `.github/workflows/deploy.yml`.
+2. The workflow installs dependencies, compiles the Vite production bundle, and deploys directly to **GitHub Pages**.
+3. Custom domain `the6thelement.co.uk` is bound via `public/CNAME`.
 
-- **Cocktails section** — toggle between "Coming Soon" teaser and full live menu
-- **Instagram feed** — show/hide on homepage
-- **Reservations** — enable/disable the booking system
-- **Seating durations** — brunch and evening table time limits
-- **Delivery platforms** — set status (Live/Coming Soon/Hidden), URLs, and taglines for Deliveroo, Uber Eats, and Just Eat
+---
 
-## Customisation Checklist
+## 📋 Product Backlog
 
-Before going live, replace these placeholders:
-
-- [ ] `public/og-image.jpg` — add a 1200×630 social share image
-- [ ] Update the address in the Contact page with the real address
-- [ ] Update the phone number
-- [ ] Set delivery platform URLs in admin panel once onboarded
-- [ ] Add Google Maps embed API key for the map placeholder
-- [ ] Connect the Instagram feed (set Elfsight or Curator.io widget ID in App.jsx)
-- [ ] Configure booking emails (see BOOKING_SETUP.md)
-- [ ] Wire up the contact form to an email service (e.g. Formspree, Resend)
-- [ ] Set admin credentials (see Admin Panel Setup above)
-- [ ] Add real food/drink photography
-- [ ] Upload actual logo SVG files
+To see completed milestones and upcoming features (such as ambient video loops, click & collect, and gift cards), refer to [FEATURE_BACKLOG.md](FEATURE_BACKLOG.md).
