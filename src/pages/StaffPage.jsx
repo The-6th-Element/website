@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { COLORS } from "../theme/tokens";
 import { ROLES, hasPermission } from "../utils/userManager";
 import { UserManager } from "../components/admin/UserManager";
-import { MenuManager, PromotionsManager } from "../components/admin/AdminComponents";
+import { PromotionsManager } from "../components/admin/AdminComponents";
 import { FadeIn } from "../components/ui/FadeIn";
 import { Logomark } from "../components/ui/Logomark";
 
@@ -33,12 +33,11 @@ export function StaffPage({
   // Determine available tabs based on permissions
   const availableTabs = [
     canManageUsers && { id: "users", label: "Staff & Users", icon: "👥" },
-    canEditMenu && { id: "menu", label: "Menu Editor", icon: "📋" },
     canManagePromos && { id: "promos", label: "Offers & Promos", icon: "🎁" },
     canEditSettings && { id: "settings", label: "Operations & Display", icon: "⚙️" },
   ].filter(Boolean);
 
-  const [activeTab, setActiveTab] = useState(() => (canManageUsers ? "users" : availableTabs[0]?.id || "menu"));
+  const [activeTab, setActiveTab] = useState(() => (canManageUsers ? "users" : availableTabs[0]?.id || "promos"));
 
   const handleLoginSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -600,29 +599,7 @@ export function StaffPage({
               </div>
             )}
 
-            {/* TAB 2: Menu Editor */}
-            {activeTab === "menu" && canEditMenu && (
-              <div>
-                <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: `1px solid ${theme.muted}15` }}>
-                  <h2
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: 26,
-                      fontWeight: 500,
-                      color: theme.heading,
-                    }}
-                  >
-                    Quick Menu Editor
-                  </h2>
-                  <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginTop: 4 }}>
-                    Update item names, pricing, dietary tags, and descriptions. For spreadsheet view or CSV upload, use the Menu Studio above.
-                  </p>
-                </div>
-                <MenuManager theme={theme} onOpenStudio={onOpenStudio} />
-              </div>
-            )}
-
-            {/* TAB 3: Offers & Promotions */}
+            {/* TAB: Offers & Promotions */}
             {activeTab === "promos" && canManagePromos && (
               <div>
                 <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: `1px solid ${theme.muted}15` }}>
@@ -836,26 +813,6 @@ export function StaffPage({
                     Table reservations are powered by Toast Tables. The booking page loads in a spacious modal window directly on your site.
                     To modify the Toast link, update <code style={{ background: `${theme.muted}15`, padding: "2px 6px", borderRadius: 4 }}>TOAST_CONFIG.reservationUrl</code>.
                   </p>
-                </div>
-
-                {/* Reset to defaults */}
-                <div style={{ paddingTop: 24, borderTop: `1px solid ${theme.muted}15` }}>
-                  <button
-                    onClick={resetFlags}
-                    style={{
-                      padding: "10px 20px",
-                      borderRadius: 8,
-                      border: "1px solid #EF444440",
-                      background: "#EF444410",
-                      color: "#EF4444",
-                      cursor: "pointer",
-                      fontSize: 13,
-                      fontWeight: 500,
-                      fontFamily: "'Outfit', sans-serif",
-                    }}
-                  >
-                    Reset All Flags to Defaults
-                  </button>
                 </div>
               </div>
             )}

@@ -271,15 +271,14 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
 
   return (
     <div style={{
-      position: "fixed",
-      inset: 0,
-      zIndex: 2500,
+      paddingTop: 100,
+      minHeight: "100dvh",
       background: theme.bg,
       color: theme.text,
       display: "flex",
       flexDirection: "column",
       fontFamily: "'Outfit', sans-serif",
-      overflow: "hidden",
+      position: "relative",
     }}>
       {/* Studio Header Bar */}
       <header style={{
@@ -293,6 +292,35 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
         gap: 12,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          {onClose && (
+            <button
+              onClick={onClose}
+              style={{
+                background: "none",
+                border: `1px solid ${theme.muted}30`,
+                borderRadius: 20,
+                padding: "6px 14px",
+                cursor: "pointer",
+                color: theme.muted,
+                fontSize: 12,
+                fontFamily: "'Outfit', sans-serif",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = theme.accent;
+                e.currentTarget.style.color = theme.accent;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = `${theme.muted}30`;
+                e.currentTarget.style.color = theme.muted;
+              }}
+            >
+              ← Back to Staff Portal
+            </button>
+          )}
           <div style={{
             width: 36, height: 36, borderRadius: "50%",
             background: `${COLORS.warmAmber}20`,
@@ -538,8 +566,8 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
       <div style={{
         flex: 1,
         display: "grid",
-        gridTemplateColumns: viewMode === "split" ? "1fr 1fr" : "1fr",
-        overflow: "hidden",
+        gridTemplateColumns: viewMode === "split" ? "repeat(auto-fit, minmax(min(450px, 100%), 1fr))" : "1fr",
+        minHeight: "calc(100dvh - 180px)",
       }}>
         {/* LEFT COLUMN: Screen Form Editor + CSV Dropzone */}
         {viewMode !== "preview" && (

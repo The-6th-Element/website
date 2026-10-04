@@ -24,6 +24,7 @@ export default function TheSixthElement() {
     try {
       const path = window.location.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
       if (path === "admin" || path === "staff") return "staff";
+      if (path === "studio") return "studio";
       if (["home", "menu", "impact", "about", "contact"].includes(path)) {
         return path;
       }
@@ -42,7 +43,6 @@ export default function TheSixthElement() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [barVisible, setBarVisible] = useState(false);
   const { flags, updateFlag, resetFlags } = useFeatureFlags();
-  const [showStudio, setShowStudio] = useState(false);
   const [adminAuth, setAdminAuth] = useState({
     authenticated: false,
     user: null,
@@ -56,8 +56,8 @@ export default function TheSixthElement() {
   // Query parameter handlers: ?studio=menu or ?admin=true / ?staff=true
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("studio") === "menu") {
-      setShowStudio(true);
+    if (params.get("studio") === "menu" || params.get("studio") === "true") {
+      setCurrentPage("studio");
     }
     if (params.get("admin") === "true" || params.get("staff") === "true") {
       setCurrentPage("staff");
@@ -140,6 +140,8 @@ export default function TheSixthElement() {
       const path = window.location.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
       if (path === "admin" || path === "staff") {
         setCurrentPage("staff");
+      } else if (path === "studio") {
+        setCurrentPage("studio");
       } else {
         setCurrentPage(["home", "menu", "impact", "about", "contact"].includes(path) ? path : "home");
       }
@@ -238,7 +240,7 @@ export default function TheSixthElement() {
         <MenuPage
           theme={theme}
           flags={flags}
-          onOpenStudio={() => setShowStudio(true)}
+          onOpenStudio={() => navigate("studio")}
         />
       )}
       {currentPage === "impact" && <SocialImpactPage theme={theme} />}
@@ -249,25 +251,24 @@ export default function TheSixthElement() {
           theme={theme}
           flags={flags}
           updateFlag={updateFlag}
-          resetFlags={resetFlags}
           adminAuth={adminAuth}
           onLogin={handleAdminLogin}
           onLogout={handleAdminLogout}
-          onOpenStudio={() => setShowStudio(true)}
+          onOpenStudio={() => navigate("studio")}
           navigate={navigate}
+        />
+      )}
+      {currentPage === "studio" && (
+        <MenuStudio
+          theme={theme}
+          userRole={adminAuth.role}
+          userName={adminAuth.user}
+          onClose={() => navigate("staff")}
         />
       )}
 
       <PersistentCTA theme={theme} flags={flags} setBookingOpen={setBookingOpen} />
       {bookingOpen && <ReservationModal theme={theme} onClose={() => setBookingOpen(false)} />}
-      {showStudio && (
-        <MenuStudio
-          theme={theme}
-          userRole={adminAuth.role}
-          userName={adminAuth.user}
-          onClose={() => setShowStudio(false)}
-        />
-      )}
       <StructuredData />
       <Footer theme={theme} navigate={navigate} />
     </div>
