@@ -14,7 +14,7 @@ import { MenuPage } from "./pages/MenuPage";
 import { SocialImpactPage } from "./pages/SocialImpactPage";
 import { AboutPage } from "./pages/AboutPage";
 import { ContactPage } from "./pages/ContactPage";
-import { AdminLogin, AdminPanel } from "./components/admin/AdminComponents";
+import { StaffPage } from "./pages/StaffPage";
 import { MenuStudio } from "./components/admin/MenuStudio";
 import { authenticateStaff, verifyStaffSession } from "./utils/userManager";
 
@@ -23,6 +23,7 @@ export default function TheSixthElement() {
   const [currentPage, setCurrentPage] = useState(() => {
     try {
       const path = window.location.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
+      if (path === "admin" || path === "staff") return "staff";
       if (["home", "menu", "impact", "about", "contact"].includes(path)) {
         return path;
       }
@@ -41,7 +42,6 @@ export default function TheSixthElement() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [barVisible, setBarVisible] = useState(false);
   const { flags, updateFlag, resetFlags } = useFeatureFlags();
-  const [showAdmin, setShowAdmin] = useState(false);
   const [showStudio, setShowStudio] = useState(false);
   const [adminAuth, setAdminAuth] = useState({
     authenticated: false,
@@ -52,19 +52,20 @@ export default function TheSixthElement() {
     token: null,
     loading: true,
   });
-  const [showLogin, setShowLogin] = useState(false);
 
-  // Studio direct access: ?studio=menu or ?admin=menu
+  // Query parameter handlers: ?studio=menu or ?admin=true / ?staff=true
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("studio") === "menu" || params.get("admin") === "menu") {
+    if (params.get("studio") === "menu") {
       setShowStudio(true);
+    }
+    if (params.get("admin") === "true" || params.get("staff") === "true") {
+      setCurrentPage("staff");
     }
   }, []);
 
-  // Staff auth: ?admin=true opens login gate, verifies existing session
+  // Staff auth: restore existing session if token is saved in sessionStorage
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
     const savedToken = sessionStorage.getItem("tse_admin_token");
     const session = verifyStaffSession(savedToken);
 
@@ -78,14 +79,8 @@ export default function TheSixthElement() {
         token: savedToken,
         loading: false,
       });
-      if (params.get("admin") === "true") {
-        setShowAdmin(true);
-      }
     } else {
       setAdminAuth(a => ({ ...a, loading: false }));
-      if (params.get("admin") === "true") {
-        setShowLogin(true);
-      }
     }
   }, []);
 
@@ -101,8 +96,6 @@ export default function TheSixthElement() {
       token: result.token,
       loading: false,
     });
-    setShowLogin(false);
-    setShowAdmin(true);
   };
 
   const handleAdminLogout = () => {
@@ -116,7 +109,6 @@ export default function TheSixthElement() {
       token: null,
       loading: false,
     });
-    setShowAdmin(false);
   };
 
   // Auto-detect AM/PM based on UK time (Europe/London handles BST/GMT automatically).
@@ -146,7 +138,11 @@ export default function TheSixthElement() {
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
-      setCurrentPage(["home", "menu", "impact", "about", "contact"].includes(path) ? path : "home");
+      if (path === "admin" || path === "staff") {
+        setCurrentPage("staff");
+      } else {
+        setCurrentPage(["home", "menu", "impact", "about", "contact"].includes(path) ? path : "home");
+      }
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
@@ -248,25 +244,22 @@ export default function TheSixthElement() {
       {currentPage === "impact" && <SocialImpactPage theme={theme} />}
       {currentPage === "about" && <AboutPage theme={theme} />}
       {currentPage === "contact" && <ContactPage theme={theme} />}
-
-      <PersistentCTA theme={theme} flags={flags} setBookingOpen={setBookingOpen} />
-      {bookingOpen && <ReservationModal theme={theme} onClose={() => setBookingOpen(false)} />}
-      {showLogin && <AdminLogin theme={theme} onLogin={handleAdminLogin} onClose={() => setShowLogin(false)} />}
-      {showAdmin && adminAuth.authenticated && (
-        <AdminPanel
+      {currentPage === "staff" && (
+        <StaffPage
           theme={theme}
           flags={flags}
           updateFlag={updateFlag}
           resetFlags={resetFlags}
-          adminUser={adminAuth.user}
-          username={adminAuth.username}
-          userRole={adminAuth.role}
-          userTitle={adminAuth.title}
+          adminAuth={adminAuth}
+          onLogin={handleAdminLogin}
           onLogout={handleAdminLogout}
-          onClose={() => setShowAdmin(false)}
           onOpenStudio={() => setShowStudio(true)}
+          navigate={navigate}
         />
       )}
+
+      <PersistentCTA theme={theme} flags={flags} setBookingOpen={setBookingOpen} />
+      {bookingOpen && <ReservationModal theme={theme} onClose={() => setBookingOpen(false)} />}
       {showStudio && (
         <MenuStudio
           theme={theme}
@@ -276,11 +269,7 @@ export default function TheSixthElement() {
         />
       )}
       <StructuredData />
-      <Footer
-        theme={theme}
-        navigate={navigate}
-        onOpenAdmin={() => (adminAuth.authenticated ? setShowAdmin(true) : setShowLogin(true))}
-      />
+      <Footer theme={theme} navigate={navigate} />
     </div>
   );
 }
