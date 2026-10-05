@@ -251,23 +251,6 @@ export function StaffPage({
                   </div>
                 )}
 
-                {resetMsg && (
-                  <div
-                    style={{
-                      padding: "12px 16px",
-                      borderRadius: 10,
-                      background: `${COLORS.mossGreen}18`,
-                      color: COLORS.mossGreen,
-                      border: `1px solid ${COLORS.mossGreen}40`,
-                      fontSize: 13,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
-                  >
-                    <span>✓</span> {resetMsg}
-                  </div>
-                )}
 
                 <button
                   type="submit"
