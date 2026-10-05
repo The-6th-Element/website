@@ -37,6 +37,7 @@ export const INSTAGRAM_CONFIG = {
   handle: "the.sixth.element.210",
   profileUrl: "https://www.instagram.com/the.sixth.element.210",
   feedJsonUrl: "/data/instagram_feed.json",
+  beholdFeedUrl: "https://feeds.behold.so/ujJfSNtQnyj153fUHfi4",
   elfsightWidgetId: null,
   curatorFeedId: null,
 };
