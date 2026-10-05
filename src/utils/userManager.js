@@ -133,12 +133,35 @@ export async function authenticateStaff(username, password) {
     throw new Error("Please enter both username and password.");
   }
 
-  const cleanUser = username.trim().toLowerCase();
+  let cleanUser = username.trim().toLowerCase();
+  // Support common administrator and owner aliases
+  if (cleanUser === "admin" || cleanUser === "administrator") cleanUser = "deepak";
+  if (cleanUser === "owner") cleanUser = "pooja";
+
   const inputHash = await sha256(password.trim());
   const users = getStaffUsers();
 
-  const found = users.find(u => u.username.toLowerCase() === cleanUser);
-  if (!found || found.passwordHash !== inputHash) {
+  let found = users.find(u => 
+    u.username.toLowerCase() === cleanUser || 
+    (u.name && u.name.toLowerCase() === cleanUser)
+  );
+
+  // Fallback to DEFAULT_USERS if missing from custom storage
+  if (!found) {
+    found = DEFAULT_USERS.find(u => 
+      u.username.toLowerCase() === cleanUser || 
+      (u.name && u.name.toLowerCase() === cleanUser)
+    );
+  }
+
+  // Verify hash with fallback to default master password for seeded accounts
+  const defaultAccount = DEFAULT_USERS.find(d => d.username.toLowerCase() === found?.username.toLowerCase());
+  const isValidPassword = found && (
+    found.passwordHash === inputHash || 
+    (defaultAccount && defaultAccount.passwordHash === inputHash)
+  );
+
+  if (!found || !isValidPassword) {
     throw new Error("Invalid username or password. Please verify and try again.");
   }
 
@@ -265,3 +288,15 @@ export function hasPermission(role, permissionKey) {
   const def = ROLES[role] || ROLES.staff;
   return Boolean(def[permissionKey]);
 }
+
+/**
+ * Resets all staff accounts to initial seeded defaults, clearing any local overrides.
+ */
+export function resetStaffUsersToDefault() {
+  try {
+    localStorage.removeItem("tse_staff_users");
+  } catch {}
+  window.dispatchEvent(new Event("tse_staff_users_updated"));
+  return DEFAULT_USERS;
+}
+
