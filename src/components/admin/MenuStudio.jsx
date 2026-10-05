@@ -11,6 +11,7 @@ import {
   clearStoredGithubToken
 } from "../../utils/githubPublisher.js";
 import { hasPermission } from "../../utils/userManager.js";
+import { PrintMenuModal } from "./PrintMenuModal.jsx";
 
 export function MenuStudio({ theme, onClose, userRole, userName }) {
   const canPublishLive = hasPermission(userRole, "canPublishLive");
@@ -25,6 +26,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
 
   // GitHub 1-Click Publishing State
   const [showPublishModal, setShowPublishModal] = useState(false);
+  const [showPrintModal, setShowPrintModal] = useState(false);
   const [githubToken, setGithubToken] = useState(() => getStoredGithubToken());
   const [tokenInput, setTokenInput] = useState("");
   const [tokenUser, setTokenUser] = useState(null);
@@ -393,6 +395,29 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
               Live Preview
             </button>
           </div>
+
+          {/* Print / Export PDF Menu button (BK-23) */}
+          <button
+            onClick={() => setShowPrintModal(true)}
+            style={{
+              padding: "8px 14px",
+              borderRadius: 8,
+              border: `1.5px solid ${COLORS.warmAmber}`,
+              background: `${COLORS.warmAmber}22`,
+              color: theme.heading,
+              cursor: "pointer",
+              fontSize: 12,
+              fontWeight: 600,
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              boxShadow: "0 2px 8px rgba(191,138,47,0.2)",
+              transition: "all 0.2s ease",
+            }}
+            title="Generate physical print-ready A4/A5 PDF daily menu for dining room service"
+          >
+            🖨️ Print / PDF Menu
+          </button>
 
           {/* Download CSV button */}
           <button
@@ -1392,6 +1417,16 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* 1-Click Print Menu Modal (BK-23) */}
+      {showPrintModal && (
+        <PrintMenuModal
+          theme={theme}
+          menuData={draft}
+          initialCategory={activeCat}
+          onClose={() => setShowPrintModal(false)}
+        />
       )}
     </div>
   );

@@ -56,6 +56,16 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 | **FEAT-21** | **Static Content Sanitization** | Removed all hardcoded personal names from login footers, input placeholders, user subtitles, and static copy, ensuring a clean, professional interface. | 🟢 Shipped |
 | **FEAT-22** | **Automated Navigation AM/PM** | Removed manual sun/moon toggle buttons from top navigation; the theme now transitions dynamically and automatically. | 🟢 Shipped |
 
+### 1.6 Marketing Ticker, Data Pipelines & Production Release
+| ID | Feature | Description | Status |
+|---|---|---|---|
+| **FEAT-23** | **Scrolling Promotional Marquee (BK-15)** | GPU-accelerated continuous ribbon ticker with hover/focus pause, manual pause toggle button, and interactive offer details modal. | 🟢 Shipped |
+| **FEAT-24** | **Historical Sales Catch-Up (DATA-01)** | Automated tool reconciling and posting 73 days of backlog daily sales journals from Toast directly into Xero. | 🟢 Shipped |
+| **FEAT-25** | **Diagnostic Logging & Health Dashboard (OPS-01)** | Toggleable detailed execution logs and failure alerting for morning 05:15 AM runs. | 🟢 Shipped |
+| **FEAT-26** | **Production Staging & GitHub Pages Deployment (GO-01)** | Successfully merged `dev` to `main`, triggered automated GitHub Actions build, and deployed to production. | 🟢 Shipped |
+| **FEAT-27** | **1-Click Print-Ready PDF Menu Generator (BK-23)** | Built-in A4/A5 physical dining room menu generator matching brand typography for instant daily service printouts from Menu Studio and Staff Portal. | 🟢 Shipped |
+| **FEAT-28** | **Local SEO & Google Search Enhancement (BK-16)** | Full technical SEO crawl suite: sitemap.xml, robots.txt, canonical domain alignment, Google ReserveAction Toast Tables schema, rich OpenGraph metadata, and local Richmond/East Sheen keyword targeting. | 🟢 Shipped |
+
 ---
 
 ## 🟡 2. Immediate Go-Live Milestones (Pending Production Cutover)
@@ -112,7 +122,7 @@ The following features have been scoped or requested for future exploration once
 | **BK-11** | **Toast POS Direct Menu Integration** | Explore direct sync between Toast POS API and website menu to eliminate manual dual-entry of menu items and pricing. | High (Future) | 🔵 Prioritized |
 | **BK-12** | **Menu Item Availability / 86 Toggle** | Quick-action switch in Staff Portal allowing staff to mark individual dishes as "Sold Out for Today" without deleting them. | High | 🔵 Prioritized |
 | **BK-13** | **Audit Log of Menu Changes** | Visual timestamped history in Staff Portal recording which user made what price or item modification. | Medium | 🔵 Backlog |
-| **BK-23** | **1-Click Print-Ready PDF Menu Generator** | Export magazine-grade, formatted A4/A5 PDF physical menus directly from the in-browser Menu Studio with 1 click, eliminating manual InDesign/Word formatting when dishes or prices change. | High | 🔵 Prioritized |
+| **BK-23** | **1-Click Print-Ready PDF Menu Generator** | Export magazine-grade, formatted A4/A5 PDF physical menus directly from the in-browser Menu Studio with 1 click, eliminating manual InDesign/Word formatting when dishes or prices change. | High | 🟢 Complete |
 
 ### 3.5 Quality Assurance & Automated Testing
 | ID | Feature | Description | Priority | Status |
@@ -122,12 +132,18 @@ The following features have been scoped or requested for future exploration once
 ### 3.6 Search Engine Optimization (SEO) & Local Discoverability
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
-| **BK-16** | **Full SEO Analysis & Google Search Enhancement** | Perform a comprehensive technical and content SEO audit to boost Google search rankings and local pack visibility for Richmond and London dining searches. Includes: generating `sitemap.xml` & `robots.txt`, route-specific dynamic OpenGraph/meta tags, expanding Schema.org JSON-LD (Restaurant, Menu, ReserveAction, GeoCoordinates), optimizing Core Web Vitals (LCP, CLS, INP), and aligning high-intent local search keywords (*"specialty coffee Richmond"*, *"brunch East Sheen"*, *"wine bar Upper Richmond Road"*, *"artisan coffee shop SW14"*). | High | 🔵 Prioritized |
+| **BK-16** | **Full SEO Analysis & Google Search Enhancement** | Perform a comprehensive technical and content SEO audit to boost Google search rankings and local pack visibility for Richmond and London dining searches. Includes: generating `sitemap.xml` & `robots.txt`, route-specific dynamic OpenGraph/meta tags, expanding Schema.org JSON-LD (Restaurant, Menu, ReserveAction, GeoCoordinates), optimizing Core Web Vitals (LCP, CLS, INP), and aligning high-intent local search keywords (*"specialty coffee Richmond"*, *"brunch East Sheen"*, *"wine bar Upper Richmond Road"*, *"artisan coffee shop SW14"*). | High | 🟢 Complete |
 
 ### 3.7 Analytics & Business Intelligence
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
 | **BK-28** | **Monitor Website Traffic and Build Analytics** | Privacy-first website traffic monitoring (daily visitors, session duration, referral channels) and customer intent tracking (menu views, reservation clicks, takeaway links, Google Maps directions) cross-correlated with Toast ePOS covers and daily revenue. Includes integration into the 05:15 AM executive daily email report. | High | 🔵 Prioritized |
+
+### 3.8 Toast & Xero Data Hub
+| ID | Feature | Description | Priority | Status |
+|---|---|---|---|---|
+| **DATA-02** | **Shift & Staff Gratuity Distribution Reporting** | Detailed reporting on daily service charge and tip allocations across lunch and evening shifts. | Medium | 🔵 Backlog |
+| **DATA-03** | **Tender Reconciliation Alerting** | Flag discrepancies between declared cash drawer totals in Toast and physical bank deposits. | Low | ⚪ Discovery |
 
 ---
 
