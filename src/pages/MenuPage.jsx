@@ -4,11 +4,13 @@ import { COLORS } from "../theme/tokens";
 import { defaultMenuTab } from "../utils/time";
 import { useMenu } from "../hooks/useContent";
 import { FadeIn } from "../components/ui/FadeIn";
+import { PrintMenuModal } from "../components/admin/PrintMenuModal";
 
 export function MenuPage({ theme, flags, onOpenStudio }) {
   const { menu } = useMenu();
   const tabs = Object.keys(menu).map((id) => ({ id, label: menu[id].title || id, icon: menu[id].icon || "" }));
   const [activeTab, setActiveTab] = useState(() => defaultMenuTab(flags));
+  const [showPrintModal, setShowPrintModal] = useState(false);
 
   useEffect(() => {
     setActiveTab(defaultMenuTab(flags));
@@ -78,6 +80,30 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
                 {tab.icon} {tab.label}
               </button>
             ))}
+
+            {/* 1-Click Print / PDF Menu button (BK-23) */}
+            <button
+              onClick={() => setShowPrintModal(true)}
+              style={{
+                padding: "10px 18px",
+                borderRadius: 30,
+                border: `1.5px solid ${COLORS.warmAmber}50`,
+                cursor: "pointer",
+                fontFamily: "'Outfit', sans-serif",
+                fontSize: 13,
+                fontWeight: 600,
+                letterSpacing: "0.02em",
+                background: `${COLORS.warmAmber}16`,
+                color: theme.heading,
+                transition: "all 0.3s ease",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+              title="Generate print-ready physical A4/A5 PDF menu for table service"
+            >
+              🖨️ Print / PDF Menu
+            </button>
           </div>
         </FadeIn>
 
@@ -249,6 +275,16 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
           </div>
         </FadeIn>
       </div>
+
+      {/* 1-Click Print Menu Modal (BK-23) */}
+      {showPrintModal && (
+        <PrintMenuModal
+          theme={theme}
+          menuData={menu}
+          initialCategory={current}
+          onClose={() => setShowPrintModal(false)}
+        />
+      )}
     </div>
   );
 }

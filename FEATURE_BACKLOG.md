@@ -63,6 +63,7 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 | **FEAT-24** | **Historical Sales Catch-Up (DATA-01)** | Automated tool reconciling and posting 73 days of backlog daily sales journals from Toast directly into Xero. | 🟢 Shipped |
 | **FEAT-25** | **Diagnostic Logging & Health Dashboard (OPS-01)** | Toggleable detailed execution logs and failure alerting for morning 05:15 AM runs. | 🟢 Shipped |
 | **FEAT-26** | **Production Staging & GitHub Pages Deployment (GO-01)** | Successfully merged `dev` to `main`, triggered automated GitHub Actions build, and deployed to production. | 🟢 Shipped |
+| **FEAT-27** | **1-Click Print-Ready PDF Menu Generator (BK-23)** | Built-in A4/A5 physical dining room menu generator matching brand typography for instant daily service printouts from Menu Studio and Staff Portal. | 🟢 Shipped |
 
 ---
 
@@ -120,7 +121,7 @@ The following features have been scoped or requested for future exploration once
 | **BK-11** | **Toast POS Direct Menu Integration** | Explore direct sync between Toast POS API and website menu to eliminate manual dual-entry of menu items and pricing. | High (Future) | 🔵 Prioritized |
 | **BK-12** | **Menu Item Availability / 86 Toggle** | Quick-action switch in Staff Portal allowing staff to mark individual dishes as "Sold Out for Today" without deleting them. | High | 🔵 Prioritized |
 | **BK-13** | **Audit Log of Menu Changes** | Visual timestamped history in Staff Portal recording which user made what price or item modification. | Medium | 🔵 Backlog |
-| **BK-23** | **1-Click Print-Ready PDF Menu Generator** | Export magazine-grade, formatted A4/A5 PDF physical menus directly from the in-browser Menu Studio with 1 click, eliminating manual InDesign/Word formatting when dishes or prices change. | High | 🔵 Prioritized |
+| **BK-23** | **1-Click Print-Ready PDF Menu Generator** | Export magazine-grade, formatted A4/A5 PDF physical menus directly from the in-browser Menu Studio with 1 click, eliminating manual InDesign/Word formatting when dishes or prices change. | High | 🟢 Complete |
 
 ### 3.5 Quality Assurance & Automated Testing
 | ID | Feature | Description | Priority | Status |

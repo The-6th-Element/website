@@ -6,6 +6,8 @@ import { UserManager } from "../components/admin/UserManager";
 import { PromotionsManager } from "../components/admin/PromotionsManager";
 import { FadeIn } from "../components/ui/FadeIn";
 import { Logomark } from "../components/ui/Logomark";
+import { useMenu } from "../hooks/useContent";
+import { PrintMenuModal } from "../components/admin/PrintMenuModal";
 
 export function StaffPage({
   theme,
@@ -25,6 +27,8 @@ export function StaffPage({
   const [loginLoading, setLoginLoading] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [resetMsg, setResetMsg] = useState("");
+  const { menu } = useMenu();
+  const [showPrintModal, setShowPrintModal] = useState(false);
 
   const handleResetDefaults = () => {
     resetStaffUsersToDefault();
@@ -574,34 +578,68 @@ export function StaffPage({
                 Launch the full interactive spreadsheet to batch-edit daytime &amp; evening menus, dietary tags (V, VE, GF), categories, or download and upload CSV files.
               </p>
             </div>
-            <button
-              onClick={onOpenStudio}
-              style={{
-                padding: "12px 26px",
-                borderRadius: 30,
-                border: "none",
-                background: theme.accent,
-                color: "#fff",
-                cursor: "pointer",
-                fontFamily: "'Outfit', sans-serif",
-                fontSize: 14,
-                fontWeight: 600,
-                letterSpacing: "0.03em",
-                boxShadow: "0 2px 10px rgba(191,138,47,0.3)",
-                transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                whiteSpace: "nowrap",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-1px)";
-                e.currentTarget.style.boxShadow = "0 4px 14px rgba(191,138,47,0.4)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "none";
-                e.currentTarget.style.boxShadow = "0 2px 10px rgba(191,138,47,0.3)";
-              }}
-            >
-              Open Menu Studio →
-            </button>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+              <button
+                onClick={() => setShowPrintModal(true)}
+                style={{
+                  padding: "12px 20px",
+                  borderRadius: 30,
+                  border: `1.5px solid ${COLORS.warmAmber}`,
+                  background: `${COLORS.warmAmber}18`,
+                  color: theme.heading,
+                  cursor: "pointer",
+                  fontFamily: "'Outfit', sans-serif",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  letterSpacing: "0.02em",
+                  boxShadow: "0 2px 8px rgba(191,138,47,0.2)",
+                  transition: "transform 0.2s ease, background 0.2s ease",
+                  whiteSpace: "nowrap",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                  e.currentTarget.style.background = `${COLORS.warmAmber}28`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "none";
+                  e.currentTarget.style.background = `${COLORS.warmAmber}18`;
+                }}
+              >
+                🖨️ Print Daily PDF Menu
+              </button>
+
+              <button
+                onClick={onOpenStudio}
+                style={{
+                  padding: "12px 24px",
+                  borderRadius: 30,
+                  border: "none",
+                  background: theme.accent,
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontFamily: "'Outfit', sans-serif",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  letterSpacing: "0.03em",
+                  boxShadow: "0 2px 10px rgba(191,138,47,0.3)",
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  whiteSpace: "nowrap",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                  e.currentTarget.style.boxShadow = "0 4px 14px rgba(191,138,47,0.4)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "none";
+                  e.currentTarget.style.boxShadow = "0 2px 10px rgba(191,138,47,0.3)";
+                }}
+              >
+                Open Menu Studio →
+              </button>
+            </div>
           </div>
         </FadeIn>
 
@@ -899,6 +937,15 @@ export function StaffPage({
           </div>
         </FadeIn>
       </div>
+
+      {/* 1-Click Print Menu Modal (BK-23) */}
+      {showPrintModal && (
+        <PrintMenuModal
+          theme={theme}
+          menuData={menu}
+          onClose={() => setShowPrintModal(false)}
+        />
+      )}
     </div>
   );
 }
