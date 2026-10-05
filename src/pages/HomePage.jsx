@@ -71,388 +71,276 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           }}
         />
 
+        <style>{`
+          .hero-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 36px;
+            align-items: center;
+            width: 100%;
+            max-width: 1180px;
+            margin: 0 auto;
+          }
+          @media (min-width: 920px) {
+            .hero-grid-layout {
+              grid-template-columns: 1fr 1.15fr;
+              gap: 52px;
+            }
+            .hero-foundation-col {
+              order: 1;
+            }
+            .hero-copy-col {
+              order: 2;
+              text-align: left;
+            }
+          }
+          @media (max-width: 919px) {
+            .hero-copy-col {
+              order: 1;
+              text-align: center;
+            }
+            .hero-foundation-col {
+              order: 2;
+            }
+            .hero-cta {
+              justify-content: center;
+            }
+            .hero-copy-col p {
+              margin-left: auto;
+              margin-right: auto;
+            }
+          }
+          .element-badge-tile {
+            background: ${theme.surfaceAlt};
+            border: 1px solid ${theme.muted}20;
+            border-radius: 14px;
+            padding: 16px 14px;
+            text-align: left;
+            transition: all 0.3s ease;
+          }
+          .element-badge-tile:hover {
+            border-color: ${theme.accent}60;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+          }
+        `}</style>
+
         <div
           style={{
             position: "relative",
             zIndex: 1,
             width: "100%",
-            maxWidth: 1080,
+            maxWidth: 1180,
             margin: "0 auto",
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "clamp(24px, 5vw, 64px)",
+            padding: "20px 0 40px",
           }}
         >
-          {/* Left: rotating five-elements emblem medallion with the "VI" mark */}
-          <FadeIn>
-            <div
-              style={{
-                position: "relative",
-                width: "min(52vw, 260px)",
-                height: "min(52vw, 260px)",
-                flexShrink: 0,
-              }}
-            >
-              <img
-                src="/elements-mark.png"
-                alt="The Sixth Element — five elements emblem"
-                className="rotate-emblem"
-                loading="eager"
-                decoding="async"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "contain",
-                  opacity: isAM ? 0.9 : 0.92,
-                  filter: isAM
-                    ? "brightness(0.5) contrast(1.15) drop-shadow(0 4px 14px rgba(75,54,33,0.25))"
-                    : "drop-shadow(0 0 22px rgba(191,138,47,0.4))",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  pointerEvents: "none",
-                }}
-              >
-                <span
+          <div className="hero-grid-layout">
+            {/* Left: Our Foundation — Compact Five Elements Matrix */}
+            <div className="hero-foundation-col">
+              <FadeIn>
+                <div style={{ textAlign: "left", marginBottom: 18 }}>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      letterSpacing: "0.25em",
+                      textTransform: "uppercase",
+                      color: theme.muted,
+                      marginBottom: 6,
+                      fontWeight: 500,
+                    }}
+                  >
+                    Our Foundation
+                  </div>
+                  <h2
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: "clamp(24px, 3.2vw, 32px)",
+                      fontWeight: 400,
+                      color: theme.heading,
+                    }}
+                  >
+                    Five Elements, One Space
+                  </h2>
+                </div>
+
+                <div
                   style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "clamp(26px, 4.5vw, 40px)",
-                    fontWeight: 500,
-                    background: "linear-gradient(135deg, #E8C57D 0%, #BF8A2F 60%, #8A6220 100%)",
-                    WebkitBackgroundClip: "text",
-                    backgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    color: theme.accent,
-                    letterSpacing: "0.02em",
+                    display: "grid",
+                    gridTemplateColumns: "repeat(2, 1fr)",
+                    gap: 12,
                   }}
                 >
-                  VI
-                </span>
-              </div>
-            </div>
-          </FadeIn>
+                  {/* Four Elements 2x2 */}
+                  {ELEMENTS.slice(0, 4).map((el) => (
+                    <div key={el.name} className="element-badge-tile">
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                        <span style={{ fontSize: 18, color: el.color }}>{el.symbol}</span>
+                        <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18, fontWeight: 500, color: theme.heading }}>
+                          {el.name}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: 12, lineHeight: 1.5, color: theme.muted, fontWeight: 300 }}>
+                        {el.name === "Earth" && "Honest provenance. Soil and season."}
+                        {el.name === "Water" && "Social impact & community flow."}
+                        {el.name === "Fire" && "Evening warmth & natural wine."}
+                        {el.name === "Air" && "Morning lightness & specialty coffee."}
+                      </p>
+                    </div>
+                  ))}
 
-          {/* Right: headline + copy */}
-          <div
-            className="hero-copy"
-            style={{ flex: "1 1 340px", minWidth: 280, maxWidth: 620, textAlign: "left" }}
-          >
-            <FadeIn delay={0.1}>
-              <div
-                style={{
-                  fontSize: 12,
-                  letterSpacing: "0.3em",
-                  textTransform: "uppercase",
-                  color: theme.muted,
-                  marginBottom: 20,
-                  fontWeight: 500,
-                }}
-              >
-                Richmond-upon-Thames
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.2}>
-              <h1
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "clamp(36px, 6vw, 72px)",
-                  fontWeight: 300,
-                  color: theme.heading,
-                  lineHeight: 1.1,
-                  marginBottom: 16,
-                }}
-              >
-                The Five Elements Shape Life.
-              </h1>
-            </FadeIn>
-            <FadeIn delay={0.3}>
-              <h2
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "clamp(26px, 4.5vw, 48px)",
-                  fontWeight: 500,
-                  fontStyle: "italic",
-                  color: theme.accent,
-                  marginBottom: 28,
-                }}
-              >
-                We Offer the Sixth.
-              </h2>
-            </FadeIn>
-            <FadeIn delay={0.45}>
-              <p
-                style={{
-                  fontSize: 16,
-                  lineHeight: 1.7,
-                  color: theme.muted,
-                  maxWidth: 520,
-                  marginBottom: 36,
-                  fontWeight: 300,
-                }}
-              >
-                A space where morning light meets evening warmth. Specialty coffee by day, natural wine by
-                night. Always intentional. Always Richmond.
-              </p>
-            </FadeIn>
-            <FadeIn delay={0.6}>
-              <div className="hero-cta" style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                {flags?.booking_enabled !== false ? (
-                  <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={theme} />
-                ) : (
-                  <CTAButton label="Explore Menu" onClick={() => navigate("menu")} primary theme={theme} />
-                )}
-              </div>
-            </FadeIn>
+                  {/* Space (The Sixth Element) — Spans 2 columns */}
+                  <div
+                    className="element-badge-tile"
+                    style={{
+                      gridColumn: "span 2",
+                      background: isAM
+                        ? `linear-gradient(135deg, ${theme.surfaceAlt} 0%, ${theme.surface} 100%)`
+                        : `linear-gradient(135deg, rgba(191,138,47,0.12) 0%, rgba(20,18,16,0.9) 100%)`,
+                      border: `1px solid ${theme.accent}35`,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "16px 20px",
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                        <span style={{ fontSize: 16, color: theme.accent }}>✦</span>
+                        <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 500, color: theme.heading }}>
+                          Space <span style={{ fontSize: 13, color: theme.accent, fontStyle: "italic", marginLeft: 4 }}>(The Sixth Element)</span>
+                        </span>
+                      </div>
+                      <p style={{ fontSize: 12, lineHeight: 1.5, color: theme.muted, fontWeight: 300 }}>
+                        The intangible feeling of belonging — the pause you return for.
+                      </p>
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: 26,
+                        fontWeight: 600,
+                        color: theme.accent,
+                        letterSpacing: "0.05em",
+                        paddingLeft: 12,
+                        flexShrink: 0,
+                      }}
+                    >
+                      VI
+                    </div>
+                  </div>
+                </div>
+              </FadeIn>
+            </div>
+
+            {/* Right: Headline + Copy + CTA */}
+            <div className="hero-copy-col">
+              <FadeIn delay={0.1}>
+                <div
+                  style={{
+                    display: "inline-block",
+                    padding: "4px 12px",
+                    borderRadius: 999,
+                    background: `${theme.accent}15`,
+                    border: `1px solid ${theme.accent}30`,
+                    fontSize: 11,
+                    letterSpacing: "0.25em",
+                    textTransform: "uppercase",
+                    color: theme.accent,
+                    marginBottom: 16,
+                    fontWeight: 500,
+                  }}
+                >
+                  Richmond-upon-Thames
+                </div>
+              </FadeIn>
+              <FadeIn delay={0.2}>
+                <h1
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "clamp(32px, 5vw, 64px)",
+                    fontWeight: 300,
+                    color: theme.heading,
+                    lineHeight: 1.12,
+                    marginBottom: 14,
+                  }}
+                >
+                  The Five Elements Shape Life.
+                </h1>
+              </FadeIn>
+              <FadeIn delay={0.3}>
+                <h2
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "clamp(24px, 4vw, 42px)",
+                    fontWeight: 500,
+                    fontStyle: "italic",
+                    color: theme.accent,
+                    marginBottom: 22,
+                  }}
+                >
+                  We Offer the Sixth.
+                </h2>
+              </FadeIn>
+              <FadeIn delay={0.45}>
+                <p
+                  style={{
+                    fontSize: 15,
+                    lineHeight: 1.7,
+                    color: theme.muted,
+                    maxWidth: 500,
+                    marginBottom: 28,
+                    fontWeight: 300,
+                  }}
+                >
+                  A space where morning light meets evening warmth. Specialty coffee by day, natural wine by
+                  night. Always intentional. Always Richmond.
+                </p>
+              </FadeIn>
+              <FadeIn delay={0.6}>
+                <div className="hero-cta" style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                  {flags?.booking_enabled !== false ? (
+                    <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={theme} />
+                  ) : (
+                    <CTAButton label="Explore Menu" onClick={() => navigate("menu")} primary theme={theme} />
+                  )}
+                  <CTAButton label="Explore Menu" onClick={() => navigate("menu")} theme={theme} />
+                </div>
+              </FadeIn>
+            </div>
           </div>
         </div>
 
-        {/* Scroll indicator */}
+        {/* Scroll indicator pointing to Instagram Moments */}
         <div
           style={{
             position: "absolute",
-            bottom: 40,
+            bottom: 24,
             left: "50%",
             transform: "translateX(-50%)",
             animation: "float 2s ease-in-out infinite",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 6,
+            opacity: 0.75,
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            const el = document.getElementById("instagram-feed");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
           }}
         >
+          <span style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: theme.muted }}>
+            Live Moments
+          </span>
           <div
             style={{
               width: 1,
-              height: 40,
-              background: `linear-gradient(to bottom, ${theme.muted}, transparent)`,
+              height: 24,
+              background: `linear-gradient(to bottom, ${theme.accent}, transparent)`,
             }}
           />
-        </div>
-      </section>
-
-      {/* Elemental Story Scroller */}
-      <section style={{ padding: "100px 24px", background: theme.surface, transition: "background 1.2s ease" }}>
-        <FadeIn>
-          <div style={{ textAlign: "center", marginBottom: 60 }}>
-            <div
-              style={{
-                fontSize: 11,
-                letterSpacing: "0.3em",
-                textTransform: "uppercase",
-                color: theme.muted,
-                marginBottom: 12,
-              }}
-            >
-              Our Foundation
-            </div>
-            <h2
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(28px, 4vw, 44px)",
-                fontWeight: 400,
-                color: theme.heading,
-              }}
-            >
-              Five Elements, One Space
-            </h2>
-          </div>
-        </FadeIn>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: 24,
-            padding: "0 0 20px",
-            maxWidth: 1200,
-            margin: "0 auto",
-          }}
-        >
-          {ELEMENTS.map((el, i) => (
-            <FadeIn key={el.name} delay={i * 0.1} style={{ flex: "1 1 200px", minWidth: 200, maxWidth: 280 }}>
-              <div
-                className="hover-lift"
-                style={{
-                  height: "100%",
-                  padding: 32,
-                  background: theme.surfaceAlt,
-                  borderRadius: 16,
-                  border: `1px solid ${theme.muted}15`,
-                  cursor: "default",
-                  transition: "all 0.3s ease",
-                }}
-              >
-                <div style={{ fontSize: 36, marginBottom: 16, color: el.color }}>{el.symbol}</div>
-                <h3
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: 24,
-                    fontWeight: 500,
-                    color: theme.heading,
-                    marginBottom: 12,
-                  }}
-                >
-                  {el.name}
-                </h3>
-                <p style={{ fontSize: 14, lineHeight: 1.7, color: theme.muted, fontWeight: 300 }}>
-                  {el.desc}
-                </p>
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </section>
-
-      {/* Phase Showcase */}
-      <section style={{ padding: "100px 24px" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <FadeIn>
-            <div style={{ textAlign: "center", marginBottom: 60 }}>
-              <div
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.3em",
-                  textTransform: "uppercase",
-                  color: theme.muted,
-                  marginBottom: 12,
-                }}
-              >
-                Dynamic Experience
-              </div>
-              <h2
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "clamp(28px, 4vw, 44px)",
-                  fontWeight: 400,
-                  color: theme.heading,
-                }}
-              >
-                Two Moods, One Space
-              </h2>
-            </div>
-          </FadeIn>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: 32 }}>
-            <FadeIn delay={0.1}>
-              <div
-                className="hover-lift"
-                style={{
-                  borderRadius: 20,
-                  overflow: "hidden",
-                  background: `linear-gradient(135deg, ${COLORS.ivory}, ${COLORS.cream})`,
-                  border: `1px solid ${COLORS.sand}40`,
-                }}
-              >
-                <div style={{ padding: "40px 32px" }}>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      letterSpacing: "0.2em",
-                      textTransform: "uppercase",
-                      color: COLORS.mossGreen,
-                      marginBottom: 8,
-                      fontWeight: 600,
-                    }}
-                  >
-                    ☀️ AM Phase · 8am – 2pm
-                  </div>
-                  <h3
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: 28,
-                      fontWeight: 400,
-                      color: COLORS.earthBrown,
-                      marginBottom: 12,
-                    }}
-                  >
-                    Air
-                  </h3>
-                  <p style={{ fontSize: 14, lineHeight: 1.7, color: COLORS.charcoal, fontWeight: 300 }}>
-                    Bright, breathable mornings. Sunlit interiors, specialty coffee, and honest brunch plates. The
-                    space feels open, airy, and full of possibility.
-                  </p>
-                  <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
-                    {["Coffee", "Brunch", "Light"].map((t) => (
-                      <span
-                        key={t}
-                        style={{
-                          padding: "4px 12px",
-                          borderRadius: 20,
-                          fontSize: 11,
-                          fontWeight: 500,
-                          background: `${COLORS.mossGreen}15`,
-                          color: COLORS.mossGreen,
-                        }}
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.25}>
-              <div
-                className="hover-lift"
-                style={{
-                  borderRadius: 20,
-                  overflow: "hidden",
-                  background: `linear-gradient(135deg, #1A1410, #2A1E14)`,
-                  border: `1px solid ${COLORS.warmAmber}20`,
-                }}
-              >
-                <div style={{ padding: "40px 32px" }}>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      letterSpacing: "0.2em",
-                      textTransform: "uppercase",
-                      color: COLORS.warmAmber,
-                      marginBottom: 8,
-                      fontWeight: 600,
-                    }}
-                  >
-                    🌙 PM Phase · 2pm – Close
-                  </div>
-                  <h3
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: 28,
-                      fontWeight: 400,
-                      color: COLORS.ivory,
-                      marginBottom: 12,
-                    }}
-                  >
-                    Fire
-                  </h3>
-                  <p style={{ fontSize: 14, lineHeight: 1.7, color: COLORS.sand, fontWeight: 300 }}>
-                    Warmer tones, lower light. The space transforms for natural wine, craft beers, and soon,
-                    curated cocktails. An intimate evening atmosphere.
-                  </p>
-                  <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
-                    {["Wine", "Beer", "Cocktails"].map((t) => (
-                      <span
-                        key={t}
-                        style={{
-                          padding: "4px 12px",
-                          borderRadius: 20,
-                          fontSize: 11,
-                          fontWeight: 500,
-                          background: `${COLORS.warmAmber}20`,
-                          color: COLORS.warmAmber,
-                        }}
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </FadeIn>
-          </div>
         </div>
       </section>
 
