@@ -21,7 +21,7 @@ export const PRINT_PRESETS = {
 /**
  * Format price cleanly with £ symbol and 2 decimal places if needed.
  */
-export function formatPrintPrice(price) {
+function formatPrintPrice(price) {
   if (price === undefined || price === null || price === "") return "";
   const num = typeof price === "number" ? price : parseFloat(String(price).replace(/[^0-9.]/g, ""));
   if (isNaN(num)) return String(price);

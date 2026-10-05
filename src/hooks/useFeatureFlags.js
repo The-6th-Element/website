@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 // Feature Flags (persisted in localStorage)
-export const DEFAULT_FLAGS = {
+const DEFAULT_FLAGS = {
   instagram_feed: true,     // show/hide Instagram grid
   booking_enabled: true,    // enable/disable reservations
   pm_switch_hour: 14,       // UK hour (24h) when the site switches to evening/dark mode

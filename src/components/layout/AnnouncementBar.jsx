@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { COLORS } from "../../theme/tokens";
 import { usePromotions, isPromoLive } from "../../hooks/useContent";
+import { trackPromoClick } from "../../utils/analytics";
 
 export const ANNOUNCEMENT_BAR_H = 40;
 
@@ -293,7 +294,10 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
                   <button
                     type="button"
                     className="tse-ticker-item-btn"
-                    onClick={() => setActiveModalPromo(promo)}
+                    onClick={() => {
+                      trackPromoClick(promo.id, promo.title);
+                      setActiveModalPromo(promo);
+                    }}
                     title={`Click for details: ${promo.title}`}
                   >
                     {promo.badge_text && (
@@ -318,7 +322,10 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
                     type="button"
                     tabIndex={-1}
                     className="tse-ticker-item-btn"
-                    onClick={() => setActiveModalPromo(promo)}
+                    onClick={() => {
+                      trackPromoClick(promo.id, promo.title);
+                      setActiveModalPromo(promo);
+                    }}
                   >
                     {promo.badge_text && (
                       <span className="tse-ticker-badge">{promo.badge_text}</span>

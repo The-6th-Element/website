@@ -8,7 +8,7 @@ const DEFAULT_REPO = "The-6th-Element/website";
 /**
  * Encodes a UTF-8 string to base64 safely (handles emojis and special characters).
  */
-export function utf8ToBase64(str) {
+function utf8ToBase64(str) {
   return window.btoa(unescape(encodeURIComponent(str)));
 }
 

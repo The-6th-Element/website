@@ -61,14 +61,14 @@ export const ROLES = {
   },
 };
 
-// Initial seeded accounts
-export const DEFAULT_USERS = [
+// Initial seeded accounts (hashed using SHA-256)
+const DEFAULT_USERS = [
   {
     username: "pooja",
     name: "Pooja Somani",
     title: "Owner",
     role: "admin",
-    passwordHash: "b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4", // R1chm0nd-s1xth@007!
+    passwordHash: "b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4",
     isProtected: true, // Primary owner account
     createdAt: "2026-10-04",
   },
@@ -77,7 +77,7 @@ export const DEFAULT_USERS = [
     name: "Deepak",
     title: "Administrator",
     role: "admin",
-    passwordHash: "b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4", // R1chm0nd-s1xth@007!
+    passwordHash: "b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4",
     isProtected: true,
     createdAt: "2026-10-04",
   },
@@ -86,7 +86,7 @@ export const DEFAULT_USERS = [
     name: "Duty Manager",
     title: "General Manager",
     role: "manager",
-    passwordHash: "32730f193cd7a81697cf9d63fb33c8f72442de952e511ea152f8d81a9bc7244c", // Manager@Sixth2026
+    passwordHash: "32730f193cd7a81697cf9d63fb33c8f72442de952e511ea152f8d81a9bc7244c",
     isProtected: false,
     createdAt: "2026-10-04",
   },
@@ -95,7 +95,7 @@ export const DEFAULT_USERS = [
     name: "Kitchen & Bar Lead",
     title: "Head Chef",
     role: "kitchen",
-    passwordHash: "eb95682c0d9d8896842b70c71ce6af9a430f22231cdbcb709cb51fb63dbc5fd8", // Kitchen@Sixth2026
+    passwordHash: "eb95682c0d9d8896842b70c71ce6af9a430f22231cdbcb709cb51fb63dbc5fd8",
     isProtected: false,
     createdAt: "2026-10-04",
   },
@@ -118,7 +118,7 @@ export function getStaffUsers() {
 /**
  * Persists staff accounts into browser storage and dispatches sync event.
  */
-export function saveStaffUsers(users) {
+function saveStaffUsers(users) {
   try {
     localStorage.setItem("tse_staff_users", JSON.stringify(users));
   } catch {}

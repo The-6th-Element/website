@@ -1,7 +1,7 @@
 // src/components/ui/FadeIn.jsx
 import React, { useState, useEffect, useRef } from "react";
 
-export function useInView(options = {}) {
+function useInView(options = {}) {
   const [isInView, setIsInView] = useState(false);
   const ref = useRef(null);
 

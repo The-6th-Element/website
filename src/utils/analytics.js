@@ -2,10 +2,8 @@
 // Lightweight, privacy-conscious first-party telemetry for The Sixth Element
 // Fully UK GDPR / PECR compliant (no cookies, zero PII, anonymous sessions).
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://crjtogivsllhsxuznufn.supabase.co";
-const SUPABASE_ANON_KEY =
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyanRvZ2l2c2xsaHN4dXpudWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMDU4ODIsImV4cCI6MjEwNjc4MTg4Mn0.uX8IHMaKAApaROFRehMtZADYOMqb2GdIT-ecvrDAOEA";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
 const SESSION_KEY = "t6e_anon_session_id";
 const LOCAL_STORAGE_KEY = "t6e_offline_events_buffer";

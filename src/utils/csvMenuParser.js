@@ -69,7 +69,7 @@ export function downloadMenuCsv(menuData = MENU_DATA, filename = "the_sixth_elem
  * @param {string} text - Raw CSV string
  * @returns {Array<Array<string>>} 2D array of parsed rows
  */
-export function parseRawCsv(text) {
+function parseRawCsv(text) {
   const rows = [];
   let currentRow = [];
   let currentVal = "";

@@ -72,7 +72,7 @@ export function usePromotions() {
 }
 
 // Normalizes menu categories into a consistent { title, subtitle, icon, sections } shape
-export function normalizeMenu(menu) {
+function normalizeMenu(menu) {
   const out = {};
   for (const [key, cat] of Object.entries(menu || {})) {
     const { sections, sections_live, sections_teaser, subtitle, subtitle_live, subtitle_teaser, ...rest } = cat || {};
