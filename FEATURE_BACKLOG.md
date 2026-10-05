@@ -60,12 +60,12 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 
 ## 🟡 2. Immediate Go-Live Milestones (Pending Production Cutover)
 
-| ID | Milestone Item | Description | Target |
-|---|---|---|---|
-| **GO-01** | **Merge `dev` into `main`** | Merge the verified `dev` branch into `main` to trigger the production GitHub Actions build. | Immediate |
-| **GO-02** | **GoDaddy DNS Cutover (Phase 4)** | Replace Vercel A record (`216.198.79.1`) with 4 GitHub Pages Apex IPs (`185.199.108.153`, `109.153`, `110.153`, `111.153`) and set `www` CNAME to `the-6th-element.github.io`. | Phase 4 |
-| **GO-03** | **GitHub Pages HTTPS Enforcement** | Enable **Enforce HTTPS** in GitHub repo settings once DNS resolves to provision the free Let's Encrypt SSL certificate. | Phase 4 |
-| **GO-04** | **Production Verification (Phase 5)** | Run full end-to-end audit on `https://the6thelement.co.uk`: Toast Tables booking, Menu Studio 1-click publishing drill, mobile checks, and Google Rich Results Schema test. | Phase 5 |
+| ID | Milestone Item | Description | Target | Priority | Status |
+|---|---|---|---|---|---|
+| **GO-01** | **Merge `dev` into `main`** | Merge the verified `dev` branch into `main` to trigger the production GitHub Actions build. | Immediate | High | 🟢 Complete |
+| **GO-02** | **GoDaddy DNS Cutover (Phase 4)** | Replace Vercel A record (`216.198.79.1`) with 4 GitHub Pages Apex IPs (`185.199.108.153`, `109.153`, `110.153`, `111.153`) and set `www` CNAME to `the-6th-element.github.io`. | Phase 4 | High | 🟡 Pending DNS Action |
+| **GO-03** | **GitHub Pages HTTPS Enforcement** | Enable **Enforce HTTPS** in GitHub repo settings once DNS resolves to provision the free Let's Encrypt SSL certificate. | Phase 4 | High | 🟡 Pending DNS Resolution |
+| **GO-04** | **Production Verification (Phase 5)** | Run full end-to-end audit on `https://the6thelement.co.uk`: Toast Tables booking, Menu Studio 1-click publishing drill, mobile checks, and Google Rich Results Schema test. | Phase 5 | High | 🟡 Pending Cutover |
 
 ---
 
@@ -74,60 +74,60 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 The following features have been scoped or requested for future exploration once the site is live on GitHub Pages:
 
 ### 3.1 Media & Visual Experience
-| ID | Feature | Description | Priority |
-|---|---|---|---|
-| **BK-01** | **Ambient Video Background Loop** | Subdued, high-aesthetic background video loop of the café/lounge (morning steam, evening pour) with battery-saving auto-pause on mobile. | Medium |
-| **BK-02** | **Photo & Video Reels Lightbox** | Interactive gallery showcasing interior architecture, latte art, cocktails, and seasonal dishes with touch-swipe on mobile devices. | Medium |
-| **BK-03** | **Automated Live Instagram Feed Sync** | Replace static placeholder photos with an automated periodic sync fetching the latest posts and reels from `@the.sixth.element.210` via Meta Graph API / GitHub Actions cron, caching thumbnails locally with zero ongoing monthly widget subscription fees. | High |
-| **BK-17** | **Interactive Day-to-Night Vibe Slider** | An interactive time-scrubber on the homepage allowing visitors to slide from 8:00am Morning Coffee to 12:30pm Brunch to 5:30pm Golden Hour to 9:00pm Candlelit Lounge, watching the atmosphere, lighting, and dishes morph dynamically. | High |
-| **BK-18** | **"Sounds of The Sixth Element" Curated Spotify Audio Integration** | Lifestyle music widget linking to curated daytime acoustic/lo-fi and evening vinyl/jazz playlists to immerse guests in the venue's audio identity. | Low |
-| **BK-25** | **Instagram Story Circles & Mobile Highlights** | Tappable story bubbles on the mobile homepage inspired by Instagram stories (*Today's Bakes*, *Wine of the Week*, *Old Spike Coffee*, *Dogs of Sixth Element*), providing quick video reel previews without leaving the site. | Medium |
+| ID | Feature | Description | Priority | Status |
+|---|---|---|---|---|
+| **BK-01** | **Ambient Video Background Loop** | Subdued, high-aesthetic background video loop of the café/lounge (morning steam, evening pour) with battery-saving auto-pause on mobile. | Medium | 🔵 Backlog |
+| **BK-02** | **Photo & Video Reels Lightbox** | Interactive gallery showcasing interior architecture, latte art, cocktails, and seasonal dishes with touch-swipe on mobile devices. | Medium | 🔵 Backlog |
+| **BK-03** | **Automated Live Instagram Feed Sync** | Replace static placeholder photos with an automated periodic sync fetching the latest posts and reels from `@the.sixth.element.210` via Meta Graph API / GitHub Actions cron, caching thumbnails locally with zero ongoing monthly widget subscription fees. | High | 🔵 Prioritized |
+| **BK-17** | **Interactive Day-to-Night Vibe Slider** | An interactive time-scrubber on the homepage allowing visitors to slide from 8:00am Morning Coffee to 12:30pm Brunch to 5:30pm Golden Hour to 9:00pm Candlelit Lounge, watching the atmosphere, lighting, and dishes morph dynamically. | High | 🔵 Prioritized |
+| **BK-18** | **"Sounds of The Sixth Element" Curated Spotify Audio Integration** | Lifestyle music widget linking to curated daytime acoustic/lo-fi and evening vinyl/jazz playlists to immerse guests in the venue's audio identity. | Low | ⚪ Discovery |
+| **BK-25** | **Instagram Story Circles & Mobile Highlights** | Tappable story bubbles on the mobile homepage inspired by Instagram stories (*Today's Bakes*, *Wine of the Week*, *Old Spike Coffee*, *Dogs of Sixth Element*), providing quick video reel previews without leaving the site. | Medium | 🔵 Backlog |
 
 ### 3.2 Guest Operations & Hospitality
-| ID | Feature | Description | Priority |
-|---|---|---|---|
-| **BK-04** | **Click & Collect / Takeaway Ordering** | Simple mobile-first takeaway ordering for morning coffees, pastries, and brunch dishes with time-slot collection. | Medium |
-| **BK-05** | **Private Hire & Events Inquiry Portal** | Interactive inquiry form for private venue hire, evening gatherings, masterclasses, and corporate bookings with date checker and guest estimator. | Medium |
-| **BK-06** | **Digital Gift Cards** | Integration with a digital gift voucher provider (e.g., Toast Gift Cards, Square, or Stripe) for custom-amount vouchers with instant email delivery. | High |
-| **BK-07** | **Interactive Dietary & Allergen Matrix** | Filterable menu view allowing guests to highlight all items suitable for specific allergen profiles (Nut-Free, Celery, Sesame, Dairy-Free, Egg-Free). | Medium |
-| **BK-19** | **Live Walk-in & Table Availability Indicator** | Real-time 1-tap status switch in Staff Portal allowing staff to signal 🟢 Walk-ins Welcome / 🟡 Short Wait / 🔴 Bookings Only to eliminate customer hesitation and drive spontaneous visits. | Medium |
-| **BK-20** | **"Dog-Friendly & Richmond Park Walkers" Guide** | Dedicated emblem and micro-section highlighting dog-friendly indoor seating, heated terrace, complimentary organic treats, water bowls, and takeaway coffee hatch for park walkers. | High |
-| **BK-24** | **Context-Aware WhatsApp Hospitality Concierge** | Floating WhatsApp button with pre-populated contextual messages based on user intent (e.g. large parties of 6+ on Reservations, daily dietary queries on Menu, dog-friendly or table walk-in queries on Contact). | High |
+| ID | Feature | Description | Priority | Status |
+|---|---|---|---|---|
+| **BK-04** | **Click & Collect / Takeaway Ordering** | Simple mobile-first takeaway ordering for morning coffees, pastries, and brunch dishes with time-slot collection. | Medium | 🔵 Backlog |
+| **BK-05** | **Private Hire & Events Inquiry Portal** | Interactive inquiry form for private venue hire, evening gatherings, masterclasses, and corporate bookings with date checker and guest estimator. | Medium | 🔵 Backlog |
+| **BK-06** | **Digital Gift Cards** | Integration with a digital gift voucher provider (e.g., Toast Gift Cards, Square, or Stripe) for custom-amount vouchers with instant email delivery. | High | 🔵 Prioritized |
+| **BK-07** | **Interactive Dietary & Allergen Matrix** | Filterable menu view allowing guests to highlight all items suitable for specific allergen profiles (Nut-Free, Celery, Sesame, Dairy-Free, Egg-Free). | Medium | 🔵 Backlog |
+| **BK-19** | **Live Walk-in & Table Availability Indicator** | Real-time 1-tap status switch in Staff Portal allowing staff to signal 🟢 Walk-ins Welcome / 🟡 Short Wait / 🔴 Bookings Only to eliminate customer hesitation and drive spontaneous visits. | Medium | 🔵 Prioritized |
+| **BK-20** | **"Dog-Friendly & Richmond Park Walkers" Guide** | Dedicated emblem and micro-section highlighting dog-friendly indoor seating, heated terrace, complimentary organic treats, water bowls, and takeaway coffee hatch for park walkers. | High | 🔵 Prioritized |
+| **BK-24** | **Context-Aware WhatsApp Hospitality Concierge** | Floating WhatsApp button with pre-populated contextual messages based on user intent (e.g. large parties of 6+ on Reservations, daily dietary queries on Menu, dog-friendly or table walk-in queries on Contact). | High | 🔵 Prioritized |
 
 ### 3.3 Marketing & Community Growth
-| ID | Feature | Description | Priority |
-|---|---|---|---|
-| **BK-08** | **VIP Club / Newsletter Signup** | Elegant footer and popup modal to capture guest emails (e.g. Mailchimp / Klaviyo / Resend) with automated welcome offer. | Medium |
-| **BK-09** | **Live Google Reviews Sync** | Automatic periodic sync with Google Places API to showcase fresh 5-star customer testimonials dynamically. | Low |
-| **BK-10** | **Community / Local Events Calendar** | Lightweight events calendar for live music evenings, coffee cupping sessions, and Richmond community collaborations. | Low |
-| **BK-15** | **Scrolling Promotional Top Ticker (Marquee)** | Upgrade the top announcement bar into an elegant, continuously scrolling ticker (marquee) showcasing live promotions, happy hour timings, and special offers with hover-to-pause, smooth GPU-accelerated animation, and configurable scroll speed. | Medium |
-| **BK-21** | **Ticketed Tasting Masterclasses & Workshops** | Prepaid ticketing system for intimate, limited-seat natural wine tastings, coffee cupping sessions with Old Spike, and live acoustic music nights. | Medium |
-| **BK-22** | **Interactive Provenance & Producers Map ("Story of the Soil")** | Visual interactive story showcasing supplier origins: Old Spike social impact coffee in Peckham, artisan sourdough bakeries, British charcuterie, and biodynamic natural vineyards across Europe/UK. | Medium |
-| **BK-26** | **"VIP Tasting & Secret Drops" WhatsApp Channel** | Opt-in community broadcast channel for Richmond locals receiving rare natural wine uncorking drops, acoustic night invites, and exclusive seasonal perks with ~95% open rates. | Medium |
-| **BK-27** | **OpenGraph Rich Social Sharing Cards (Facebook & WhatsApp)** | High-resolution OpenGraph and Twitter/X card metadata ensuring links shared in local Richmond/East Sheen Facebook groups, WhatsApp chats, and iMessage display stunning branded imagery and compelling venue copy. | High |
+| ID | Feature | Description | Priority | Status |
+|---|---|---|---|---|
+| **BK-08** | **VIP Club / Newsletter Signup** | Elegant footer and popup modal to capture guest emails (e.g. Mailchimp / Klaviyo / Resend) with automated welcome offer. | Medium | 🔵 Backlog |
+| **BK-09** | **Live Google Reviews Sync** | Automatic periodic sync with Google Places API to showcase fresh 5-star customer testimonials dynamically. | Low | ⚪ Discovery |
+| **BK-10** | **Community / Local Events Calendar** | Lightweight events calendar for live music evenings, coffee cupping sessions, and Richmond community collaborations. | Low | ⚪ Discovery |
+| **BK-15** | **Scrolling Promotional Top Ticker (Marquee)** | Upgrade the top announcement bar into an elegant, continuously scrolling ticker (marquee) showcasing live promotions, happy hour timings, and special offers with hover-to-pause, smooth GPU-accelerated animation, and configurable scroll speed. | Medium | 🔵 Backlog |
+| **BK-21** | **Ticketed Tasting Masterclasses & Workshops** | Prepaid ticketing system for intimate, limited-seat natural wine tastings, coffee cupping sessions with Old Spike, and live acoustic music nights. | Medium | 🔵 Backlog |
+| **BK-22** | **Interactive Provenance & Producers Map ("Story of the Soil")** | Visual interactive story showcasing supplier origins: Old Spike social impact coffee in Peckham, artisan sourdough bakeries, British charcuterie, and biodynamic natural vineyards across Europe/UK. | Medium | 🔵 Backlog |
+| **BK-26** | **"VIP Tasting & Secret Drops" WhatsApp Channel** | Opt-in community broadcast channel for Richmond locals receiving rare natural wine uncorking drops, acoustic night invites, and exclusive seasonal perks with ~95% open rates. | Medium | 🔵 Backlog |
+| **BK-27** | **OpenGraph Rich Social Sharing Cards (Facebook & WhatsApp)** | High-resolution OpenGraph and Twitter/X card metadata ensuring links shared in local Richmond/East Sheen Facebook groups, WhatsApp chats, and iMessage display stunning branded imagery and compelling venue copy. | High | 🔵 Prioritized |
 
 ### 3.4 Operational & Admin Tooling
-| ID | Feature | Description | Priority |
-|---|---|---|---|
-| **BK-11** | **Toast POS Direct Menu Integration** | Explore direct sync between Toast POS API and website menu to eliminate manual dual-entry of menu items and pricing. | High (Future) |
-| **BK-12** | **Menu Item Availability / 86 Toggle** | Quick-action switch in Staff Portal allowing staff to mark individual dishes as "Sold Out for Today" without deleting them. | High |
-| **BK-13** | **Audit Log of Menu Changes** | Visual timestamped history in Staff Portal recording which user made what price or item modification. | Medium |
-| **BK-23** | **1-Click Print-Ready PDF Menu Generator** | Export magazine-grade, formatted A4/A5 PDF physical menus directly from the in-browser Menu Studio with 1 click, eliminating manual InDesign/Word formatting when dishes or prices change. | High |
+| ID | Feature | Description | Priority | Status |
+|---|---|---|---|---|
+| **BK-11** | **Toast POS Direct Menu Integration** | Explore direct sync between Toast POS API and website menu to eliminate manual dual-entry of menu items and pricing. | High (Future) | 🔵 Prioritized |
+| **BK-12** | **Menu Item Availability / 86 Toggle** | Quick-action switch in Staff Portal allowing staff to mark individual dishes as "Sold Out for Today" without deleting them. | High | 🔵 Prioritized |
+| **BK-13** | **Audit Log of Menu Changes** | Visual timestamped history in Staff Portal recording which user made what price or item modification. | Medium | 🔵 Backlog |
+| **BK-23** | **1-Click Print-Ready PDF Menu Generator** | Export magazine-grade, formatted A4/A5 PDF physical menus directly from the in-browser Menu Studio with 1 click, eliminating manual InDesign/Word formatting when dishes or prices change. | High | 🔵 Prioritized |
 
 ### 3.5 Quality Assurance & Automated Testing
-| ID | Feature | Description | Priority |
-|---|---|---|---|
-| **BK-14** | **Full Automated Regression Test Pack** | Build and maintain a comprehensive automated regression test pack (unit, component, and end-to-end browser tests) covering all critical user journeys: navigation routing, daylight/evening theme switching, Toast Tables reservation opening, Menu Studio spreadsheet editing and CSV import/export, role-based access control (RBAC) permissions, and mobile touch viewports. Integrated into GitHub Actions CI/CD to run automatically on every future change before merging/deployment. | High |
+| ID | Feature | Description | Priority | Status |
+|---|---|---|---|---|
+| **BK-14** | **Full Automated Regression Test Pack** | Build and maintain a comprehensive automated regression test pack (unit, component, and end-to-end browser tests) covering all critical user journeys: navigation routing, daylight/evening theme switching, Toast Tables reservation opening, Menu Studio spreadsheet editing and CSV import/export, role-based access control (RBAC) permissions, and mobile touch viewports. Integrated into GitHub Actions CI/CD to run automatically on every future change before merging/deployment. | High | 🔵 Prioritized |
 
 ### 3.6 Search Engine Optimization (SEO) & Local Discoverability
-| ID | Feature | Description | Priority |
-|---|---|---|---|
-| **BK-16** | **Full SEO Analysis & Google Search Enhancement** | Perform a comprehensive technical and content SEO audit to boost Google search rankings and local pack visibility for Richmond and London dining searches. Includes: generating `sitemap.xml` & `robots.txt`, route-specific dynamic OpenGraph/meta tags, expanding Schema.org JSON-LD (Restaurant, Menu, ReserveAction, GeoCoordinates), optimizing Core Web Vitals (LCP, CLS, INP), and aligning high-intent local search keywords (*"specialty coffee Richmond"*, *"brunch East Sheen"*, *"wine bar Upper Richmond Road"*, *"artisan coffee shop SW14"*). | High |
+| ID | Feature | Description | Priority | Status |
+|---|---|---|---|---|
+| **BK-16** | **Full SEO Analysis & Google Search Enhancement** | Perform a comprehensive technical and content SEO audit to boost Google search rankings and local pack visibility for Richmond and London dining searches. Includes: generating `sitemap.xml` & `robots.txt`, route-specific dynamic OpenGraph/meta tags, expanding Schema.org JSON-LD (Restaurant, Menu, ReserveAction, GeoCoordinates), optimizing Core Web Vitals (LCP, CLS, INP), and aligning high-intent local search keywords (*"specialty coffee Richmond"*, *"brunch East Sheen"*, *"wine bar Upper Richmond Road"*, *"artisan coffee shop SW14"*). | High | 🔵 Prioritized |
 
 ### 3.7 Analytics & Business Intelligence
-| ID | Feature | Description | Priority |
-|---|---|---|---|
-| **BK-28** | **Monitor Website Traffic and Build Analytics** | Privacy-first website traffic monitoring (daily visitors, session duration, referral channels) and customer intent tracking (menu views, reservation clicks, takeaway links, Google Maps directions) cross-correlated with Toast ePOS covers and daily revenue. Includes integration into the 05:15 AM executive daily email report. | High |
+| ID | Feature | Description | Priority | Status |
+|---|---|---|---|---|
+| **BK-28** | **Monitor Website Traffic and Build Analytics** | Privacy-first website traffic monitoring (daily visitors, session duration, referral channels) and customer intent tracking (menu views, reservation clicks, takeaway links, Google Maps directions) cross-correlated with Toast ePOS covers and daily revenue. Includes integration into the 05:15 AM executive daily email report. | High | 🔵 Prioritized |
 
 ---
 
