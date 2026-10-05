@@ -2,6 +2,7 @@
 import React from "react";
 import { MAP_EMBED_SRC, MAP_DIRECTIONS_URL } from "../data/config";
 import { FadeIn } from "../components/ui/FadeIn";
+import { trackDirectionsClick, trackContactClick } from "../utils/analytics";
 
 export function ContactPage({ theme }) {
   return (
@@ -58,8 +59,8 @@ export function ContactPage({ theme }) {
               {[
                 { icon: "📍", label: "Address", value: "210 Upper Richmond Road West\nLondon, SW14 8AH" },
                 { icon: "🕐", label: "Hours", value: "Mon–Fri: 8am – 10pm\nSat–Sun: 9am – 11pm" },
-                { icon: "📞", label: "Phone", value: "+44(0)20 35188688" },
-                { icon: "📧", label: "Email", value: "info@the6thelement.co.uk" },
+                { icon: "📞", label: "Phone", value: "+44(0)20 35188688", href: "tel:+442035188688", type: "phone" },
+                { icon: "📧", label: "Email", value: "info@the6thelement.co.uk", href: "mailto:info@the6thelement.co.uk", type: "email" },
               ].map((item) => (
                 <div key={item.label} style={{ display: "flex", gap: 16, marginBottom: 24 }}>
                   <div style={{ fontSize: 20, marginTop: 2 }}>{item.icon}</div>
@@ -76,17 +77,33 @@ export function ContactPage({ theme }) {
                     >
                       {item.label}
                     </div>
-                    <div
-                      style={{
-                        fontSize: 14,
-                        color: theme.text,
-                        fontWeight: 300,
-                        whiteSpace: "pre-line",
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      {item.value}
-                    </div>
+                    {item.href ? (
+                      <a
+                        href={item.href}
+                        onClick={() => trackContactClick(item.type)}
+                        style={{
+                          fontSize: 14,
+                          color: theme.accent,
+                          fontWeight: 400,
+                          textDecoration: "none",
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        {item.value}
+                      </a>
+                    ) : (
+                      <div
+                        style={{
+                          fontSize: 14,
+                          color: theme.text,
+                          fontWeight: 300,
+                          whiteSpace: "pre-line",
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        {item.value}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -95,6 +112,7 @@ export function ContactPage({ theme }) {
                 href={MAP_DIRECTIONS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackDirectionsClick("contact_page")}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",

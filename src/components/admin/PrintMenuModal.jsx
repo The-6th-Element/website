@@ -7,6 +7,7 @@ import {
   downloadPrintableMenuHtml,
   PRINT_PRESETS,
 } from "../../utils/menuPrintGenerator";
+import { trackMenuPrint } from "../../utils/analytics";
 
 export function PrintMenuModal({ theme, menuData, initialCategory = "all", onClose }) {
   const [category, setCategory] = useState(initialCategory);
@@ -32,6 +33,7 @@ export function PrintMenuModal({ theme, menuData, initialCategory = "all", onClo
 
   const handlePrintClick = () => {
     setIsPrinting(true);
+    trackMenuPrint(paperSize, category);
     triggerPrintMenu({
       menuData,
       category,
@@ -45,6 +47,7 @@ export function PrintMenuModal({ theme, menuData, initialCategory = "all", onClo
   };
 
   const handleDownloadHtml = () => {
+    trackMenuPrint(paperSize, category);
     downloadPrintableMenuHtml({
       menuData,
       category,

@@ -1,0 +1,264 @@
+// src/components/admin/AnalyticsDashboard.jsx
+import React, { useState, useEffect } from "react";
+import { COLORS } from "../../theme/tokens";
+import { getStoredTelemetryMetrics } from "../../utils/analytics";
+
+export function AnalyticsDashboard({ theme }) {
+  const [metrics, setMetrics] = useState(() => getStoredTelemetryMetrics());
+  const [copied, setCopied] = useState(false);
+
+  const refreshMetrics = () => {
+    setMetrics(getStoredTelemetryMetrics());
+  };
+
+  useEffect(() => {
+    refreshMetrics();
+    const interval = setInterval(refreshMetrics, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleClear = () => {
+    if (window.confirm("Clear the local telemetry buffer? (Does not affect Supabase)")) {
+      localStorage.removeItem("t6e_offline_events_buffer");
+      refreshMetrics();
+    }
+  };
+
+  const bookingRate =
+    metrics.uniqueSessions > 0
+      ? ((metrics.bookClicks / metrics.uniqueSessions) * 100).toFixed(1)
+      : "0.0";
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+      {/* Top Header & Status Banner */}
+      <div
+        style={{
+          background: `${theme.accent}12`,
+          border: `1px solid ${theme.accent}30`,
+          borderRadius: 16,
+          padding: "20px 24px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 16,
+        }}
+      >
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+            <span style={{ fontSize: 18 }}>📊</span>
+            <h3 style={{ margin: 0, fontSize: 18, color: theme.heading, fontWeight: 500 }}>
+              Website Traffic & Dining Intent Telemetry
+            </h3>
+            <span
+              style={{
+                fontSize: 11,
+                padding: "3px 8px",
+                borderRadius: 12,
+                fontWeight: 600,
+                background: metrics.isLiveConnected ? "#E6F4EA" : "#FEF7E0",
+                color: metrics.isLiveConnected ? "#137333" : "#B06000",
+              }}
+            >
+              {metrics.isLiveConnected ? "🟢 Live Supabase Sync" : "⚡ First-Party Local Buffer"}
+            </span>
+          </div>
+          <p style={{ margin: 0, fontSize: 13, color: theme.muted, lineHeight: 1.5 }}>
+            100% GDPR & PECR compliant. Tracks anonymous customer buying signals without third-party cookies or intrusive banners.
+          </p>
+        </div>
+
+        <div style={{ display: "flex", gap: 10 }}>
+          <button
+            onClick={refreshMetrics}
+            style={{
+              padding: "8px 16px",
+              borderRadius: 20,
+              border: `1px solid ${theme.muted}40`,
+              background: "transparent",
+              color: theme.text,
+              fontSize: 13,
+              cursor: "pointer",
+            }}
+          >
+            ↻ Refresh
+          </button>
+          <button
+            onClick={handleClear}
+            style={{
+              padding: "8px 16px",
+              borderRadius: 20,
+              border: `1px solid #d9302540`,
+              background: "#d9302510",
+              color: "#d93025",
+              fontSize: 13,
+              cursor: "pointer",
+            }}
+          >
+            Clear Buffer
+          </button>
+        </div>
+      </div>
+
+      {/* KPI Cards Grid */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gap: 16,
+        }}
+      >
+        {[
+          { label: "Unique Visitors", value: metrics.uniqueSessions, icon: "👤", sub: `${metrics.mobilePct}% Mobile devices` },
+          { label: "Book Table Taps", value: metrics.bookClicks, icon: "🍽️", sub: `${bookingRate}% Conversion rate`, highlight: true },
+          { label: "Get Directions", value: metrics.directionsClicks, icon: "📍", sub: "Richmond walk-in intent" },
+          { label: "Menu Tab Views", value: metrics.menuSwitches, icon: "📜", sub: "Daytime vs Evening interest" },
+          { label: "PDF Menus Printed", value: metrics.printDownloads, icon: "🖨️", sub: "Physical A4/A5 exports" },
+          { label: "Promo Banner Taps", value: metrics.promoClicks, icon: "🏷️", sub: "Announcement conversions" },
+        ].map((kpi, idx) => (
+          <div
+            key={idx}
+            style={{
+              background: kpi.highlight ? `${COLORS.warmAmber}10` : `${theme.muted}0c`,
+              border: `1px solid ${kpi.highlight ? COLORS.warmAmber + "50" : theme.muted + "25"}`,
+              borderRadius: 14,
+              padding: "18px 20px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 12, color: theme.muted, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>
+                {kpi.label}
+              </span>
+              <span style={{ fontSize: 16 }}>{kpi.icon}</span>
+            </div>
+            <div style={{ fontSize: 30, fontWeight: 600, color: kpi.highlight ? COLORS.warmAmber : theme.heading }}>
+              {kpi.value}
+            </div>
+            <div style={{ fontSize: 12, color: theme.muted }}>{kpi.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Cross-Correlation Explanation Banner */}
+      <div
+        style={{
+          background: `${COLORS.mossGreen}12`,
+          border: `1px solid ${COLORS.mossGreen}40`,
+          borderRadius: 14,
+          padding: "16px 20px",
+          display: "flex",
+          gap: 14,
+          alignItems: "flex-start",
+        }}
+      >
+        <span style={{ fontSize: 22 }}>🤖</span>
+        <div style={{ fontSize: 13, color: theme.text, lineHeight: 1.6 }}>
+          <strong>Automated 05:15 AM Cross-Correlation:</strong> Every morning, the Toast-to-Xero nightly sync engine connects directly to this telemetry database to calculate yesterday's <strong>Web Intent vs Physical Toast Sales</strong>. You receive an automated digest in your morning email showing web footfall, top viewed menus, and dining conversion.
+        </div>
+      </div>
+
+      {/* Live Stream of Recent Intent Events */}
+      <div
+        style={{
+          background: `${theme.muted}08`,
+          border: `1px solid ${theme.muted}20`,
+          borderRadius: 14,
+          padding: 24,
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <h4 style={{ margin: 0, fontSize: 15, color: theme.heading, fontWeight: 600 }}>
+            Recent Intent Activity Stream ({metrics.recentEvents.length} events logged)
+          </h4>
+          <span style={{ fontSize: 12, color: theme.muted }}>Auto-updates live</span>
+        </div>
+
+        {metrics.recentEvents.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "30px 0", color: theme.muted, fontSize: 13 }}>
+            No events logged in the buffer yet. Browse the menu or tap "Book a Table" to see live activity here.
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {metrics.recentEvents.map((evt, i) => {
+              const timeStr = new Date(evt.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+              const isHighIntent = evt.event_name === "book_table_click" || evt.event_name === "directions_click";
+              return (
+                <div
+                  key={i}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "10px 14px",
+                    borderRadius: 8,
+                    background: isHighIntent ? `${COLORS.warmAmber}15` : `${theme.muted}10`,
+                    borderLeft: `3px solid ${isHighIntent ? COLORS.warmAmber : theme.muted}`,
+                    fontSize: 13,
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ fontWeight: 600, color: theme.heading }}>
+                      {evt.event_name.replace(/_/g, " ").toUpperCase()}
+                    </span>
+                    <span style={{ color: theme.muted, fontSize: 12 }}>
+                      {evt.event_data ? JSON.stringify(evt.event_data) : ""}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span
+                      style={{
+                        fontSize: 10,
+                        padding: "2px 6px",
+                        borderRadius: 4,
+                        background: `${theme.muted}25`,
+                        color: theme.muted,
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {evt.device_type}
+                    </span>
+                    <span style={{ color: theme.muted, fontSize: 12 }}>{timeStr}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Supabase Connection Instructions Link */}
+      <div
+        style={{
+          borderTop: `1px solid ${theme.muted}20`,
+          paddingTop: 20,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          fontSize: 13,
+          color: theme.muted,
+          flexWrap: "wrap",
+          gap: 12,
+        }}
+      >
+        <div>
+          To connect your permanent free Supabase cloud database, run the SQL script in:
+          <code style={{ marginLeft: 6, padding: "2px 6px", background: `${theme.muted}20`, borderRadius: 4 }}>
+            docs/supabase_analytics_schema.sql
+          </code>
+        </div>
+        <a
+          href="https://supabase.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: COLORS.warmAmber, textDecoration: "none", fontWeight: 500 }}
+        >
+          Open Supabase Dashboard ↗
+        </a>
+      </div>
+    </div>
+  );
+}

@@ -65,6 +65,7 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 | **FEAT-26** | **Production Staging & GitHub Pages Deployment (GO-01)** | Successfully merged `dev` to `main`, triggered automated GitHub Actions build, and deployed to production. | 🟢 Shipped |
 | **FEAT-27** | **1-Click Print-Ready PDF Menu Generator (BK-23)** | Built-in A4/A5 physical dining room menu generator matching brand typography for instant daily service printouts from Menu Studio and Staff Portal. | 🟢 Shipped |
 | **FEAT-28** | **Local SEO & Google Search Enhancement (BK-16)** | Full technical SEO crawl suite: sitemap.xml, robots.txt, canonical domain alignment, Google ReserveAction Toast Tables schema, rich OpenGraph metadata, and local Richmond/East Sheen keyword targeting. | 🟢 Shipped |
+| **FEAT-29** | **Website Footfall & Buying Intent Telemetry (BK-28)** | Privacy-first first-party customer intent telemetry, Supabase schema migration, Staff Portal live analytics tab, and automated 05:15 AM cross-correlation digest in Toast-to-Xero sync engine. | 🟢 Shipped |
 
 ---
 
@@ -137,7 +138,7 @@ The following features have been scoped or requested for future exploration once
 ### 3.7 Analytics & Business Intelligence
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
-| **BK-28** | **Monitor Website Traffic and Build Analytics** | Privacy-first website traffic monitoring (daily visitors, session duration, referral channels) and customer intent tracking (menu views, reservation clicks, takeaway links, Google Maps directions) cross-correlated with Toast ePOS covers and daily revenue. Includes integration into the 05:15 AM executive daily email report. | High | 🔵 Prioritized |
+| **BK-28** | **Monitor Website Traffic and Build Analytics** | Privacy-first website traffic monitoring (daily visitors, session duration, referral channels) and customer intent tracking (menu views, reservation clicks, takeaway links, Google Maps directions) cross-correlated with Toast ePOS covers and daily revenue. Includes integration into the 05:15 AM executive daily email report. | High | 🟢 Complete |
 
 ### 3.8 Toast & Xero Data Hub
 | ID | Feature | Description | Priority | Status |

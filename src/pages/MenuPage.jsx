@@ -5,6 +5,7 @@ import { defaultMenuTab } from "../utils/time";
 import { useMenu } from "../hooks/useContent";
 import { FadeIn } from "../components/ui/FadeIn";
 import { PrintMenuModal } from "../components/admin/PrintMenuModal";
+import { trackMenuTab } from "../utils/analytics";
 
 export function MenuPage({ theme, flags, onOpenStudio }) {
   const { menu } = useMenu();
@@ -62,7 +63,10 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  trackMenuTab(tab.id);
+                }}
                 style={{
                   padding: "10px 20px",
                   borderRadius: 30,

@@ -8,6 +8,7 @@ import { FadeIn } from "../components/ui/FadeIn";
 import { Logomark } from "../components/ui/Logomark";
 import { useMenu } from "../hooks/useContent";
 import { PrintMenuModal } from "../components/admin/PrintMenuModal";
+import { AnalyticsDashboard } from "../components/admin/AnalyticsDashboard";
 
 export function StaffPage({
   theme,
@@ -48,6 +49,7 @@ export function StaffPage({
   const availableTabs = [
     canManageUsers && { id: "users", label: "Staff & Users", icon: "👥" },
     canManagePromos && { id: "promos", label: "Offers & Promos", icon: "🎁" },
+    { id: "analytics", label: "Traffic & Intent", icon: "📊" },
     canEditSettings && { id: "settings", label: "Operations & Display", icon: "⚙️" },
   ].filter(Boolean);
 
@@ -736,6 +738,28 @@ export function StaffPage({
                   </p>
                 </div>
                 <PromotionsManager theme={theme} />
+              </div>
+            )}
+
+            {/* TAB: Website Traffic & Intent Analytics */}
+            {activeTab === "analytics" && (
+              <div>
+                <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: `1px solid ${theme.muted}15` }}>
+                  <h2
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: 26,
+                      fontWeight: 500,
+                      color: theme.heading,
+                    }}
+                  >
+                    Traffic &amp; Dining Intent Analytics
+                  </h2>
+                  <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginTop: 4 }}>
+                    First-party, privacy-compliant tracking of visitor intent, reservation clicks, directions, and menu popularity.
+                  </p>
+                </div>
+                <AnalyticsDashboard theme={theme} />
               </div>
             )}
 

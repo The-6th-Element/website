@@ -17,6 +17,7 @@ import { ContactPage } from "./pages/ContactPage";
 import { StaffPage } from "./pages/StaffPage";
 import { MenuStudio } from "./components/admin/MenuStudio";
 import { authenticateStaff, verifyStaffSession } from "./utils/userManager";
+import { trackPageView, trackBookTableClick } from "./utils/analytics";
 
 // ── Main App ───────────────────────────────────────────────────────
 export default function TheSixthElement() {
@@ -150,9 +151,15 @@ export default function TheSixthElement() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  // Dynamic SEO title & route metadata (BK-16)
+  const handleOpenBooking = useCallback((location = "general") => {
+    trackBookTableClick(typeof location === "string" ? location : "button");
+    setBookingOpen(true);
+  }, []);
+
+  // Dynamic SEO title & route metadata (BK-16) + First-Party Intent Analytics (BK-28)
   useEffect(() => {
     scrollToTop();
+    trackPageView(currentPage);
     const PAGE_TITLES = {
       home: "The Sixth Element | Modern Indian & Specialty Coffee | Richmond, London",
       menu: "Food & Drinks Menu | Daytime Brunch & Evening Dining | The Sixth Element",
@@ -233,7 +240,7 @@ export default function TheSixthElement() {
         theme={theme}
         onToggle={setBarVisible}
         navigate={navigate}
-        setBookingOpen={setBookingOpen}
+        setBookingOpen={handleOpenBooking}
       />
       <Navbar
         theme={theme}
@@ -249,7 +256,7 @@ export default function TheSixthElement() {
           theme={theme}
           isAM={isAM}
           navigate={navigate}
-          setBookingOpen={setBookingOpen}
+          setBookingOpen={handleOpenBooking}
           flags={flags}
         />
       )}
@@ -284,7 +291,7 @@ export default function TheSixthElement() {
         />
       )}
 
-      <PersistentCTA theme={theme} flags={flags} setBookingOpen={setBookingOpen} />
+      <PersistentCTA theme={theme} flags={flags} setBookingOpen={handleOpenBooking} />
       {bookingOpen && <ReservationModal theme={theme} onClose={() => setBookingOpen(false)} />}
       <StructuredData />
       <Footer theme={theme} navigate={navigate} />
