@@ -56,6 +56,14 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 | **FEAT-21** | **Static Content Sanitization** | Removed all hardcoded personal names from login footers, input placeholders, user subtitles, and static copy, ensuring a clean, professional interface. | 🟢 Shipped |
 | **FEAT-22** | **Automated Navigation AM/PM** | Removed manual sun/moon toggle buttons from top navigation; the theme now transitions dynamically and automatically. | 🟢 Shipped |
 
+### 1.6 Marketing Ticker, Data Pipelines & Production Release
+| ID | Feature | Description | Status |
+|---|---|---|---|
+| **FEAT-23** | **Scrolling Promotional Marquee (BK-15)** | GPU-accelerated continuous ribbon ticker with hover/focus pause, manual pause toggle button, and interactive offer details modal. | 🟢 Shipped |
+| **FEAT-24** | **Historical Sales Catch-Up (DATA-01)** | Automated tool reconciling and posting 73 days of backlog daily sales journals from Toast directly into Xero. | 🟢 Shipped |
+| **FEAT-25** | **Diagnostic Logging & Health Dashboard (OPS-01)** | Toggleable detailed execution logs and failure alerting for morning 05:15 AM runs. | 🟢 Shipped |
+| **FEAT-26** | **Production Staging & GitHub Pages Deployment (GO-01)** | Successfully merged `dev` to `main`, triggered automated GitHub Actions build, and deployed to production. | 🟢 Shipped |
+
 ---
 
 ## 🟡 2. Immediate Go-Live Milestones (Pending Production Cutover)
@@ -128,6 +136,12 @@ The following features have been scoped or requested for future exploration once
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
 | **BK-28** | **Monitor Website Traffic and Build Analytics** | Privacy-first website traffic monitoring (daily visitors, session duration, referral channels) and customer intent tracking (menu views, reservation clicks, takeaway links, Google Maps directions) cross-correlated with Toast ePOS covers and daily revenue. Includes integration into the 05:15 AM executive daily email report. | High | 🔵 Prioritized |
+
+### 3.8 Toast & Xero Data Hub
+| ID | Feature | Description | Priority | Status |
+|---|---|---|---|---|
+| **DATA-02** | **Shift & Staff Gratuity Distribution Reporting** | Detailed reporting on daily service charge and tip allocations across lunch and evening shifts. | Medium | 🔵 Backlog |
+| **DATA-03** | **Tender Reconciliation Alerting** | Flag discrepancies between declared cash drawer totals in Toast and physical bank deposits. | Low | ⚪ Discovery |
 
 ---
 
