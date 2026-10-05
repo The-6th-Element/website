@@ -13,6 +13,21 @@ export function PromotionsManager({ theme }) {
     is_active: true,
   };
   const [draft, setDraft] = useState(blank);
+  const [tickerSpeed, setTickerSpeed] = useState(() => {
+    try {
+      return localStorage.getItem("tse_ticker_speed") || "normal";
+    } catch {
+      return "normal";
+    }
+  });
+
+  const changeSpeed = (speed) => {
+    setTickerSpeed(speed);
+    try {
+      localStorage.setItem("tse_ticker_speed", speed);
+      window.dispatchEvent(new Event("tse_ticker_speed_updated"));
+    } catch {}
+  };
 
   const inputStyle = {
     width: "100%", padding: "8px 10px", borderRadius: 6, marginTop: 4,
@@ -30,10 +45,59 @@ export function PromotionsManager({ theme }) {
   return (
     <div>
       <div style={{ fontSize: 11, color: theme.muted, lineHeight: 1.6, marginBottom: 12, fontWeight: 300 }}>
-        Promotions show on the homepage while active and within their date window.
+        Promotions show continuously on the top scrolling ticker and homepage while active and within their date window.
         {saveState === "saving" && <span style={{ color: theme.accent }}> · Saving…</span>}
         {saveState === "saved" && <span style={{ color: COLORS.mossGreen }}> · Saved ✓</span>}
         {saveState === "error" && <span style={{ color: "#EF4444" }}> · Save failed</span>}
+      </div>
+
+      {/* Ticker Speed Settings */}
+      <div style={{
+        padding: "12px 14px",
+        borderRadius: 10,
+        background: theme.surfaceAlt,
+        border: `1px solid ${theme.muted}20`,
+        marginBottom: 16,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: 10,
+      }}>
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: theme.heading }}>
+            Top Ticker Marquee Speed
+          </div>
+          <div style={{ fontSize: 10.5, color: theme.muted, fontWeight: 300 }}>
+            Controls the scrolling pace of live offers across the top bar
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 6 }}>
+          {[
+            { id: "slow", label: "Slow (45s)" },
+            { id: "normal", label: "Normal (28s)" },
+            { id: "fast", label: "Fast (16s)" },
+          ].map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => changeSpeed(opt.id)}
+              style={{
+                padding: "5px 10px",
+                borderRadius: 6,
+                fontSize: 11,
+                fontWeight: tickerSpeed === opt.id ? 600 : 400,
+                border: `1px solid ${tickerSpeed === opt.id ? theme.accent : theme.muted + "30"}`,
+                background: tickerSpeed === opt.id ? `${theme.accent}20` : "transparent",
+                color: tickerSpeed === opt.id ? theme.accent : theme.muted,
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {promotions.length === 0 && !showForm && (

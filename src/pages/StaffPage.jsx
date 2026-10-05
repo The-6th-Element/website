@@ -1,7 +1,7 @@
 // src/pages/StaffPage.jsx
 import React, { useState } from "react";
 import { COLORS } from "../theme/tokens";
-import { ROLES, hasPermission } from "../utils/userManager";
+import { ROLES, hasPermission, resetStaffUsersToDefault } from "../utils/userManager";
 import { UserManager } from "../components/admin/UserManager";
 import { PromotionsManager } from "../components/admin/PromotionsManager";
 import { FadeIn } from "../components/ui/FadeIn";
@@ -20,8 +20,18 @@ export function StaffPage({
 }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  const [resetMsg, setResetMsg] = useState("");
+
+  const handleResetDefaults = () => {
+    resetStaffUsersToDefault();
+    setResetMsg("Accounts restored to initial defaults.");
+    setLoginError("");
+    setTimeout(() => setResetMsg(""), 6000);
+  };
 
   const role = adminAuth.role || "staff";
   const roleDef = ROLES[role] || ROLES.staff;
@@ -185,23 +195,45 @@ export function StaffPage({
                   >
                     Password
                   </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="current-password"
-                    placeholder="Enter password"
-                    style={{
-                      width: "100%",
-                      padding: "14px 16px",
-                      borderRadius: 12,
-                      border: `1px solid ${theme.muted}30`,
-                      background: theme.surfaceAlt,
-                      color: theme.text,
-                      fontFamily: "'Outfit', sans-serif",
-                      fontSize: 16,
-                    }}
-                  />
+                  <div style={{ position: "relative" }}>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="current-password"
+                      placeholder="Enter password..."
+                      style={{
+                        width: "100%",
+                        padding: "14px 44px 14px 16px",
+                        borderRadius: 12,
+                        border: `1px solid ${theme.muted}30`,
+                        background: theme.surfaceAlt,
+                        color: theme.text,
+                        fontFamily: "'Outfit', sans-serif",
+                        fontSize: 16,
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((p) => !p)}
+                      title={showPassword ? "Hide password" : "Show password"}
+                      style={{
+                        position: "absolute",
+                        right: 12,
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        color: theme.muted,
+                        fontSize: 16,
+                        padding: 4,
+                        lineHeight: 1,
+                      }}
+                    >
+                      {showPassword ? "🙈" : "👁"}
+                    </button>
+                  </div>
                 </div>
 
                 {loginError && (
@@ -218,6 +250,24 @@ export function StaffPage({
                     }}
                   >
                     <span>⚠</span> {loginError}
+                  </div>
+                )}
+
+                {resetMsg && (
+                  <div
+                    style={{
+                      padding: "12px 16px",
+                      borderRadius: 10,
+                      background: `${COLORS.mossGreen}18`,
+                      color: COLORS.mossGreen,
+                      border: `1px solid ${COLORS.mossGreen}40`,
+                      fontSize: 13,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <span>✓</span> {resetMsg}
                   </div>
                 )}
 
@@ -245,10 +295,91 @@ export function StaffPage({
                 </button>
               </form>
 
+              {/* Login Help & Credentials Recovery Drawer */}
+              <div style={{ marginTop: 20, textAlign: "center" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowHelp((h) => !h)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: theme.accent,
+                    fontSize: 12,
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    textUnderlineOffset: 3,
+                    fontFamily: "'Outfit', sans-serif",
+                    padding: "4px 8px",
+                  }}
+                >
+                  {showHelp ? "Hide Login Credentials Help" : "Forgot password or need login help?"}
+                </button>
+
+                {showHelp && (
+                  <div
+                    style={{
+                      marginTop: 14,
+                      padding: "16px",
+                      borderRadius: 12,
+                      background: theme.surfaceAlt,
+                      border: `1px solid ${theme.muted}25`,
+                      textAlign: "left",
+                      fontSize: 12,
+                      color: theme.text,
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    <div style={{ fontWeight: 600, marginBottom: 6, color: theme.heading }}>
+                      Default Admin Credentials:
+                    </div>
+                    <div style={{ fontFamily: "monospace", fontSize: 12, background: "rgba(0,0,0,0.04)", padding: "8px 10px", borderRadius: 6, marginBottom: 10 }}>
+                      <div><strong>Admin Usernames:</strong> deepak &nbsp;<em>(or pooja)</em></div>
+                      <div><strong>Password:</strong> R1chm0nd-s1xth@007!</div>
+                    </div>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUsername("deepak");
+                          setPassword("R1chm0nd-s1xth@007!");
+                        }}
+                        style={{
+                          padding: "6px 10px",
+                          borderRadius: 6,
+                          background: `${theme.accent}15`,
+                          border: `1px solid ${theme.accent}40`,
+                          color: theme.accent,
+                          fontSize: 11,
+                          fontWeight: 500,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Auto-fill Deepak Admin
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleResetDefaults}
+                        style={{
+                          padding: "6px 10px",
+                          borderRadius: 6,
+                          background: "transparent",
+                          border: `1px solid ${theme.muted}40`,
+                          color: theme.muted,
+                          fontSize: 11,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Restore Seeded Accounts
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div
                 style={{
-                  marginTop: 24,
-                  paddingTop: 18,
+                  marginTop: 20,
+                  paddingTop: 16,
                   borderTop: `1px solid ${theme.muted}15`,
                   fontSize: 11,
                   color: theme.muted,
