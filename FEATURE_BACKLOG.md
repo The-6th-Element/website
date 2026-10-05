@@ -4,68 +4,69 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 
 ---
 
-## 📌 Status Key
-- 🟢 **Completed (Shipped to `dev`)**: Fully implemented, verified, built, and committed.
-- 🟡 **Pending Go-Live (Phase 4 & 5)**: Ready for production merge, DNS cutover, and production domain verification.
-- 🔵 **Backlog / Future Exploration**: Prioritized candidate features for upcoming development cycles.
-- ⚪ **Idea / In Discovery**: Concepts proposed for scoping and viability assessment.
+## 📌 Standardized Status Lifecycle
+- 🟢 **Complete**: Fully implemented, tested, verified, and live in the codebase.
+- 🟡 **Pending Go-Live**: Implementation complete; awaiting external operational action (e.g. GoDaddy DNS cutover).
+- 🔵 **Prioritised**: High priority; scoped, agreed upon, and queued as immediate next priorities.
+- ⚪ **Backlog**: Validated enhancements scheduled for subsequent roadmap phases.
+- 💡 **Discovery**: Early concepts under research or viability/API feasibility assessment.
 
 ---
 
-## 🟢 1. Completed Features (Shipped to `dev` Branch)
+## 🟢 1. Completed Features (Production & Main)
 
 ### 1.1 Architecture, Theme & Modularization (Phase 1)
 | ID | Feature | Description | Status |
 |---|---|---|---|
-| **FEAT-01** | **Monolith Decomposition** | Replaced 2,652-line monolithic `App.jsx` with structured architecture: `src/theme/`, `src/components/`, `src/pages/`, `src/data/`, and `src/utils/`. | 🟢 Shipped |
-| **FEAT-02** | **Centralized Design Tokens** | Unified luxury color palette (`Earth Brown #4B3621`, `Moss Green #606E3D`, `Warm Amber #BF8A2F`, `Charcoal #2C2C2C`, `Cream #FAF8F0`) and typography (`Cormorant Garamond` & `Outfit`). | 🟢 Shipped |
-| **FEAT-03** | **Time-Based Theme Engine** | Automatic daylight (AM) to evening (PM lounge) styling driven by UK London time (`Europe/London` handling BST/GMT) with configurable admin switch hour. | 🟢 Shipped |
-| **FEAT-04** | **Dedicated Page Routing** | Client-side routing for Home, Menu, Social Impact, Our Story, Contact, Staff Portal (`/staff`), and Menu Studio (`/studio`) with browser back/forward history and scroll-to-top. | 🟢 Shipped |
+| **FEAT-01** | **Monolith Decomposition** | Replaced 2,652-line monolithic `App.jsx` with structured architecture: `src/theme/`, `src/components/`, `src/pages/`, `src/data/`, and `src/utils/`. | 🟢 Complete |
+| **FEAT-02** | **Centralized Design Tokens** | Unified luxury color palette (`Earth Brown #4B3621`, `Moss Green #606E3D`, `Warm Amber #BF8A2F`, `Charcoal #2C2C2C`, `Cream #FAF8F0`) and typography (`Cormorant Garamond` & `Outfit`). | 🟢 Complete |
+| **FEAT-03** | **Time-Based Theme Engine** | Automatic daylight (AM) to evening (PM lounge) styling driven by UK London time (`Europe/London` handling BST/GMT) with configurable admin switch hour. | 🟢 Complete |
+| **FEAT-04** | **Dedicated Page Routing** | Client-side routing for Home, Menu, Social Impact, Our Story, Contact, Staff Portal (`/staff`), and Menu Studio (`/studio`) with browser back/forward history and scroll-to-top. | 🟢 Complete |
 
 ### 1.2 Menu Management & CSV Studio (Phase 2)
 | ID | Feature | Description | Status |
 |---|---|---|---|
-| **FEAT-05** | **Interactive Menu Studio** | In-browser spreadsheet for batch-editing daytime & evening menus, descriptions, prices, categories, and dietary tags (`V`, `VE`, `GF`, `GF*`). | 🟢 Shipped |
-| **FEAT-06** | **CSV Import & Export** | 1-click download of the complete menu as `sixth_element_menu.csv` for editing in Excel/Google Sheets, plus drag-and-drop CSV upload and parsing. | 🟢 Shipped |
-| **FEAT-07** | **1-Click GitHub Direct Publisher** | Client-side GitHub API publisher allowing authorized admins to push menu changes directly to GitHub from the browser without CLI tools. | 🟢 Shipped |
-| **FEAT-08** | **Integrated Menu Studio Route** | Rendered Menu Studio as a full-page experience (`/studio`) retaining the website logo and main navigation links at the top. | 🟢 Shipped |
+| **FEAT-05** | **Interactive Menu Studio** | In-browser spreadsheet for batch-editing daytime & evening menus, descriptions, prices, categories, and dietary tags (`V`, `VE`, `GF`, `GF*`). | 🟢 Complete |
+| **FEAT-06** | **CSV Import & Export** | 1-click download of the complete menu as `sixth_element_menu.csv` for editing in Excel/Google Sheets, plus drag-and-drop CSV upload and parsing. | 🟢 Complete |
+| **FEAT-07** | **1-Click GitHub Direct Publisher** | Client-side GitHub API publisher allowing authorized admins to push menu changes directly to GitHub from the browser without CLI tools. | 🟢 Complete |
+| **FEAT-08** | **Integrated Menu Studio Route** | Rendered Menu Studio as a full-page experience (`/studio`) retaining the website logo and main navigation links at the top. | 🟢 Complete |
 
 ### 1.3 Staff & User Management with RBAC
 | ID | Feature | Description | Status |
 |---|---|---|---|
-| **FEAT-09** | **Role-Based Access Control (RBAC)** | Multi-user credential store with 5 roles: `Owner` (Pooja Somani), `Admin` (Deepak), `Manager`, `Shift Lead`, and `Chef / Kitchen`. | 🟢 Shipped |
-| **FEAT-10** | **Granular Publishing Permissions** | Only `Admin` and `Owner` accounts can publish updates to the live site; other staff roles can edit menus and save local drafts. | 🟢 Shipped |
-| **FEAT-11** | **User Management UI** | Dedicated Admin tab to view staff, add new team members with custom titles/roles, update credentials, and delete staff accounts (with Owner deletion protection). | 🟢 Shipped |
-| **FEAT-12** | **Cross-Network Auth & Fallback** | Secure SHA-256 password hashing with a pure JavaScript cryptographic fallback to allow testing across local WiFi/LAN (`http://192.168.1.195:5173/`). | 🟢 Shipped |
+| **FEAT-09** | **Role-Based Access Control (RBAC)** | Multi-user credential store with 5 roles: `Owner` (Pooja Somani), `Admin` (Deepak), `Manager`, `Shift Lead`, and `Chef / Kitchen`. | 🟢 Complete |
+| **FEAT-10** | **Granular Publishing Permissions** | Only `Admin` and `Owner` accounts can publish updates to the live site; other staff roles can edit menus and save local drafts. | 🟢 Complete |
+| **FEAT-11** | **User Management UI** | Dedicated Admin tab to view staff, add new team members with custom titles/roles, update credentials, and delete staff accounts (with Owner deletion protection). | 🟢 Complete |
+| **FEAT-12** | **Cross-Network Auth & Fallback** | Secure SHA-256 password hashing with a pure JavaScript cryptographic fallback to allow testing across local WiFi/LAN (`http://192.168.1.195:5173/`). | 🟢 Complete |
 
 ### 1.4 Hosting, CI/CD & Infrastructure (Phase 3)
 | ID | Feature | Description | Status |
 |---|---|---|---|
-| **FEAT-13** | **GitHub Actions CI/CD** | Automated pipeline (`.github/workflows/deploy.yml`) that builds Vite and deploys static artifacts to GitHub Pages on every push to `main`. | 🟢 Shipped |
-| **FEAT-14** | **Vercel Elimination** | Removed legacy serverless API routes (`/api/admin-auth.js`, `/api/content.js`) and Vercel dependencies, transitioning to permanent zero-cost hosting. | 🟢 Shipped |
-| **FEAT-15** | **Custom Domain & SPA Routing** | Added `public/CNAME` (`the6thelement.co.uk`) and `public/404.html` SPA routing redirect script for smooth sub-page reloads. | 🟢 Shipped |
-| **FEAT-16** | **Supabase Decommissioning** | Removed unused database connections; converted promotions, announcement bars, and operational flags to persistent browser storage. | 🟢 Shipped |
+| **FEAT-13** | **GitHub Actions CI/CD** | Automated pipeline (`.github/workflows/deploy.yml`) that builds Vite and deploys static artifacts to GitHub Pages on every push to `main`. | 🟢 Complete |
+| **FEAT-14** | **Vercel Elimination** | Removed legacy serverless API routes (`/api/admin-auth.js`, `/api/content.js`) and Vercel dependencies, transitioning to permanent zero-cost hosting. | 🟢 Complete |
+| **FEAT-15** | **Custom Domain & SPA Routing** | Added `public/CNAME` (`the6thelement.co.uk`) and `public/404.html` SPA routing redirect script for smooth sub-page reloads. | 🟢 Complete |
+| **FEAT-16** | **Supabase Decommissioning** | Removed unused database connections; converted promotions, announcement bars, and operational flags to persistent browser storage. | 🟢 Complete |
 
 ### 1.5 Guest Experience & Mobile Optimizations
 | ID | Feature | Description | Status |
 |---|---|---|---|
-| **FEAT-17** | **Toast Tables Broadened Modal** | Expanded the reservation modal container to `min(980px, 95vw)` for comfortable calendar, party size, and seating-time selection. | 🟢 Shipped |
-| **FEAT-18** | **iOS & Android Touch Tuning** | Added `viewport-fit=cover`, dynamic viewport heights (`100dvh`), iOS notch safe-area padding, `-webkit-backdrop-filter` glassmorphism, 16px input minimum font size (no auto-zoom), and removed 300ms tap delay. | 🟢 Shipped |
-| **FEAT-19** | **Top Announcement Bar** | Configurable site-wide promotional banner with dismiss/persist logic and real-time Admin Console management. | 🟢 Shipped |
-| **FEAT-20** | **Staff Portal Dedicated Page** | Replaced the narrow 380px drawer with a full-width dedicated workspace at `/staff`. | 🟢 Shipped |
-| **FEAT-21** | **Static Content Sanitization** | Removed all hardcoded personal names from login footers, input placeholders, user subtitles, and static copy, ensuring a clean, professional interface. | 🟢 Shipped |
-| **FEAT-22** | **Automated Navigation AM/PM** | Removed manual sun/moon toggle buttons from top navigation; the theme now transitions dynamically and automatically. | 🟢 Shipped |
+| **FEAT-17** | **Toast Tables Broadened Modal** | Expanded the reservation modal container to `min(980px, 95vw)` for comfortable calendar, party size, and seating-time selection. | 🟢 Complete |
+| **FEAT-18** | **iOS & Android Touch Tuning** | Added `viewport-fit=cover`, dynamic viewport heights (`100dvh`), iOS notch safe-area padding, `-webkit-backdrop-filter` glassmorphism, 16px input minimum font size (no auto-zoom), and removed 300ms tap delay. | 🟢 Complete |
+| **FEAT-19** | **Top Announcement Bar** | Configurable site-wide promotional banner with dismiss/persist logic and real-time Admin Console management. | 🟢 Complete |
+| **FEAT-20** | **Staff Portal Dedicated Page** | Replaced the narrow 380px drawer with a full-width dedicated workspace at `/staff`. | 🟢 Complete |
+| **FEAT-21** | **Static Content Sanitization** | Removed all hardcoded personal names from login footers, input placeholders, user subtitles, and static copy, ensuring a clean, professional interface. | 🟢 Complete |
+| **FEAT-22** | **Automated Navigation AM/PM** | Removed manual sun/moon toggle buttons from top navigation; the theme now transitions dynamically and automatically. | 🟢 Complete |
 
 ### 1.6 Marketing Ticker, Data Pipelines & Production Release
 | ID | Feature | Description | Status |
 |---|---|---|---|
-| **FEAT-23** | **Scrolling Promotional Marquee (BK-15)** | GPU-accelerated continuous ribbon ticker with hover/focus pause, manual pause toggle button, and interactive offer details modal. | 🟢 Shipped |
-| **FEAT-24** | **Historical Sales Catch-Up (DATA-01)** | Automated tool reconciling and posting 73 days of backlog daily sales journals from Toast directly into Xero. | 🟢 Shipped |
-| **FEAT-25** | **Diagnostic Logging & Health Dashboard (OPS-01)** | Toggleable detailed execution logs and failure alerting for morning 05:15 AM runs. | 🟢 Shipped |
-| **FEAT-26** | **Production Staging & GitHub Pages Deployment (GO-01)** | Successfully merged `dev` to `main`, triggered automated GitHub Actions build, and deployed to production. | 🟢 Shipped |
-| **FEAT-27** | **1-Click Print-Ready PDF Menu Generator (BK-23)** | Built-in A4/A5 physical dining room menu generator matching brand typography for instant daily service printouts from Menu Studio and Staff Portal. | 🟢 Shipped |
-| **FEAT-28** | **Local SEO & Google Search Enhancement (BK-16)** | Full technical SEO crawl suite: sitemap.xml, robots.txt, canonical domain alignment, Google ReserveAction Toast Tables schema, rich OpenGraph metadata, and local Richmond/East Sheen keyword targeting. | 🟢 Shipped |
-| **FEAT-29** | **Website Footfall & Buying Intent Telemetry (BK-28)** | Privacy-first first-party customer intent telemetry, Supabase schema migration, Staff Portal live analytics tab, and automated 05:15 AM cross-correlation digest in Toast-to-Xero sync engine. | 🟢 Shipped |
+| **FEAT-23** | **Scrolling Promotional Marquee (BK-15)** | GPU-accelerated continuous ribbon ticker with hover/focus pause, manual pause toggle button, and interactive offer details modal. | 🟢 Complete |
+| **FEAT-24** | **Historical Sales Catch-Up (DATA-01)** | Automated tool reconciling and posting 73 days of backlog daily sales journals from Toast directly into Xero. | 🟢 Complete |
+| **FEAT-25** | **Diagnostic Logging & Health Dashboard (OPS-01)** | Toggleable detailed execution logs and failure alerting for morning 05:15 AM runs. | 🟢 Complete |
+| **FEAT-26** | **Production Staging & GitHub Pages Deployment (GO-01)** | Successfully merged `dev` to `main`, triggered automated GitHub Actions build, and deployed to production. | 🟢 Complete |
+| **FEAT-27** | **1-Click Print-Ready PDF Menu Generator (BK-23)** | Built-in A4/A5 physical dining room menu generator matching brand typography for instant daily service printouts from Menu Studio and Staff Portal. | 🟢 Complete |
+| **FEAT-28** | **Local SEO & Google Search Enhancement (BK-16)** | Full technical SEO crawl suite: sitemap.xml, robots.txt, canonical domain alignment, Google ReserveAction Toast Tables schema, rich OpenGraph metadata, and local Richmond/East Sheen keyword targeting. | 🟢 Complete |
+| **FEAT-29** | **Website Footfall & Buying Intent Telemetry (BK-28)** | Privacy-first first-party customer intent telemetry, Supabase schema migration, Staff Portal live analytics tab, and automated 05:15 AM cross-correlation digest in Toast-to-Xero sync engine. | 🟢 Complete |
 
 ---
 
@@ -74,9 +75,9 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 | ID | Milestone Item | Description | Target | Priority | Status |
 |---|---|---|---|---|---|
 | **GO-01** | **Merge `dev` into `main`** | Merge the verified `dev` branch into `main` to trigger the production GitHub Actions build. | Immediate | High | 🟢 Complete |
-| **GO-02** | **GoDaddy DNS Cutover (Phase 4)** | Replace Vercel A record (`216.198.79.1`) with 4 GitHub Pages Apex IPs (`185.199.108.153`, `109.153`, `110.153`, `111.153`) and set `www` CNAME to `the-6th-element.github.io`. | Phase 4 | High | 🟡 Pending DNS Action |
-| **GO-03** | **GitHub Pages HTTPS Enforcement** | Enable **Enforce HTTPS** in GitHub repo settings once DNS resolves to provision the free Let's Encrypt SSL certificate. | Phase 4 | High | 🟡 Pending DNS Resolution |
-| **GO-04** | **Production Verification (Phase 5)** | Run full end-to-end audit on `https://the6thelement.co.uk`: Toast Tables booking, Menu Studio 1-click publishing drill, mobile checks, and Google Rich Results Schema test. | Phase 5 | High | 🟡 Pending Cutover |
+| **GO-02** | **GoDaddy DNS Cutover (Phase 4)** | Replace Vercel A record (`216.198.79.1`) with 4 GitHub Pages Apex IPs (`185.199.108.153`, `109.153`, `110.153`, `111.153`) and set `www` CNAME to `the-6th-element.github.io`. | Phase 4 | High | 🟡 Pending Go-Live |
+| **GO-03** | **GitHub Pages HTTPS Enforcement** | Enable **Enforce HTTPS** in GitHub repo settings once DNS resolves to provision the free Let's Encrypt SSL certificate. | Phase 4 | High | 🟡 Pending Go-Live |
+| **GO-04** | **Production Verification (Phase 5)** | Run full end-to-end audit on `https://the6thelement.co.uk`: Toast Tables booking, Menu Studio 1-click publishing drill, mobile checks, and Google Rich Results Schema test. | Phase 5 | High | 🟡 Pending Go-Live |
 
 ---
 
@@ -87,48 +88,48 @@ The following features have been scoped or requested for future exploration once
 ### 3.1 Media & Visual Experience
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
-| **BK-01** | **Ambient Video Background Loop** | Subdued, high-aesthetic background video loop of the café/lounge (morning steam, evening pour) with battery-saving auto-pause on mobile. | Medium | 🔵 Backlog |
-| **BK-02** | **Photo & Video Reels Lightbox** | Interactive gallery showcasing interior architecture, latte art, cocktails, and seasonal dishes with touch-swipe on mobile devices. | Medium | 🔵 Backlog |
-| **BK-03** | **Automated Live Instagram Feed Sync** | Replace static placeholder photos with an automated periodic sync fetching the latest posts and reels from `@the.sixth.element.210` via Meta Graph API / GitHub Actions cron, caching thumbnails locally with zero ongoing monthly widget subscription fees. | High | 🔵 Prioritized |
-| **BK-17** | **Interactive Day-to-Night Vibe Slider** | An interactive time-scrubber on the homepage allowing visitors to slide from 8:00am Morning Coffee to 12:30pm Brunch to 5:30pm Golden Hour to 9:00pm Candlelit Lounge, watching the atmosphere, lighting, and dishes morph dynamically. | High | 🔵 Prioritized |
-| **BK-18** | **"Sounds of The Sixth Element" Curated Spotify Audio Integration** | Lifestyle music widget linking to curated daytime acoustic/lo-fi and evening vinyl/jazz playlists to immerse guests in the venue's audio identity. | Low | ⚪ Discovery |
-| **BK-25** | **Instagram Story Circles & Mobile Highlights** | Tappable story bubbles on the mobile homepage inspired by Instagram stories (*Today's Bakes*, *Wine of the Week*, *Old Spike Coffee*, *Dogs of Sixth Element*), providing quick video reel previews without leaving the site. | Medium | 🔵 Backlog |
+| **BK-01** | **Ambient Video Background Loop** | Subdued, high-aesthetic background video loop of the café/lounge (morning steam, evening pour) with battery-saving auto-pause on mobile. | Medium | ⚪ Backlog |
+| **BK-02** | **Photo & Video Reels Lightbox** | Interactive gallery showcasing interior architecture, latte art, cocktails, and seasonal dishes with touch-swipe on mobile devices. | Medium | ⚪ Backlog |
+| **BK-03** | **Automated Live Instagram Feed Sync** | Replace static placeholder photos with an automated periodic sync fetching the latest posts and reels from `@the.sixth.element.210` via Meta Graph API / GitHub Actions cron, caching thumbnails locally with zero ongoing monthly widget subscription fees. | High | 🔵 Prioritised |
+| **BK-17** | **Interactive Day-to-Night Vibe Slider** | An interactive time-scrubber on the homepage allowing visitors to slide from 8:00am Morning Coffee to 12:30pm Brunch to 5:30pm Golden Hour to 9:00pm Candlelit Lounge, watching the atmosphere, lighting, and dishes morph dynamically. | High | 🔵 Prioritised |
+| **BK-18** | **"Sounds of The Sixth Element" Curated Spotify Audio Integration** | Lifestyle music widget linking to curated daytime acoustic/lo-fi and evening vinyl/jazz playlists to immerse guests in the venue's audio identity. | Low | 💡 Discovery |
+| **BK-25** | **Instagram Story Circles & Mobile Highlights** | Tappable story bubbles on the mobile homepage inspired by Instagram stories (*Today's Bakes*, *Wine of the Week*, *Old Spike Coffee*, *Dogs of Sixth Element*), providing quick video reel previews without leaving the site. | Medium | ⚪ Backlog |
 
 ### 3.2 Guest Operations & Hospitality
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
-| **BK-04** | **Click & Collect / Takeaway Ordering** | Simple mobile-first takeaway ordering for morning coffees, pastries, and brunch dishes with time-slot collection. | Medium | 🔵 Backlog |
-| **BK-05** | **Private Hire & Events Inquiry Portal** | Interactive inquiry form for private venue hire, evening gatherings, masterclasses, and corporate bookings with date checker and guest estimator. | Medium | 🔵 Backlog |
-| **BK-06** | **Digital Gift Cards** | Integration with a digital gift voucher provider (e.g., Toast Gift Cards, Square, or Stripe) for custom-amount vouchers with instant email delivery. | High | 🔵 Prioritized |
-| **BK-07** | **Interactive Dietary & Allergen Matrix** | Filterable menu view allowing guests to highlight all items suitable for specific allergen profiles (Nut-Free, Celery, Sesame, Dairy-Free, Egg-Free). | Medium | 🔵 Backlog |
-| **BK-19** | **Live Walk-in & Table Availability Indicator** | Real-time 1-tap status switch in Staff Portal allowing staff to signal 🟢 Walk-ins Welcome / 🟡 Short Wait / 🔴 Bookings Only to eliminate customer hesitation and drive spontaneous visits. | Medium | 🔵 Prioritized |
-| **BK-20** | **"Dog-Friendly & Richmond Park Walkers" Guide** | Dedicated emblem and micro-section highlighting dog-friendly indoor seating, heated terrace, complimentary organic treats, water bowls, and takeaway coffee hatch for park walkers. | High | 🔵 Prioritized |
-| **BK-24** | **Context-Aware WhatsApp Hospitality Concierge** | Floating WhatsApp button with pre-populated contextual messages based on user intent (e.g. large parties of 6+ on Reservations, daily dietary queries on Menu, dog-friendly or table walk-in queries on Contact). | High | 🔵 Prioritized |
+| **BK-04** | **Click & Collect / Takeaway Ordering** | Simple mobile-first takeaway ordering for morning coffees, pastries, and brunch dishes with time-slot collection. | Medium | ⚪ Backlog |
+| **BK-05** | **Private Hire & Events Inquiry Portal** | Interactive inquiry form for private venue hire, evening gatherings, masterclasses, and corporate bookings with date checker and guest estimator. | Medium | ⚪ Backlog |
+| **BK-06** | **Digital Gift Cards** | Integration with a digital gift voucher provider (e.g., Toast Gift Cards, Square, or Stripe) for custom-amount vouchers with instant email delivery. | High | 🔵 Prioritised |
+| **BK-07** | **Interactive Dietary & Allergen Matrix** | Filterable menu view allowing guests to highlight all items suitable for specific allergen profiles (Nut-Free, Celery, Sesame, Dairy-Free, Egg-Free). | Medium | ⚪ Backlog |
+| **BK-19** | **Live Walk-in & Table Availability Indicator** | Real-time 1-tap status switch in Staff Portal allowing staff to signal 🟢 Walk-ins Welcome / 🟡 Short Wait / 🔴 Bookings Only to eliminate customer hesitation and drive spontaneous visits. | Medium | 🔵 Prioritised |
+| **BK-20** | **"Dog-Friendly & Richmond Park Walkers" Guide** | Dedicated emblem and micro-section highlighting dog-friendly indoor seating, heated terrace, complimentary organic treats, water bowls, and takeaway coffee hatch for park walkers. | High | 🔵 Prioritised |
+| **BK-24** | **Context-Aware WhatsApp Hospitality Concierge** | Floating WhatsApp button with pre-populated contextual messages based on user intent (e.g. large parties of 6+ on Reservations, daily dietary queries on Menu, dog-friendly or table walk-in queries on Contact). | High | 🔵 Prioritised |
 
 ### 3.3 Marketing & Community Growth
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
-| **BK-08** | **VIP Club / Newsletter Signup** | Elegant footer and popup modal to capture guest emails (e.g. Mailchimp / Klaviyo / Resend) with automated welcome offer. | Medium | 🔵 Backlog |
-| **BK-09** | **Live Google Reviews Sync** | Automatic periodic sync with Google Places API to showcase fresh 5-star customer testimonials dynamically. | Low | ⚪ Discovery |
-| **BK-10** | **Community / Local Events Calendar** | Lightweight events calendar for live music evenings, coffee cupping sessions, and Richmond community collaborations. | Low | ⚪ Discovery |
+| **BK-08** | **VIP Club / Newsletter Signup** | Elegant footer and popup modal to capture guest emails (e.g. Mailchimp / Klaviyo / Resend) with automated welcome offer. | Medium | ⚪ Backlog |
+| **BK-09** | **Live Google Reviews Sync** | Automatic periodic sync with Google Places API to showcase fresh 5-star customer testimonials dynamically. | Low | 💡 Discovery |
+| **BK-10** | **Community / Local Events Calendar** | Lightweight events calendar for live music evenings, coffee cupping sessions, and Richmond community collaborations. | Low | 💡 Discovery |
 | **BK-15** | **Scrolling Promotional Top Ticker (Marquee)** | Upgrade the top announcement bar into an elegant, continuously scrolling ticker (marquee) showcasing live promotions, happy hour timings, and special offers with hover-to-pause, smooth GPU-accelerated animation, and configurable scroll speed. | Medium | 🟢 Complete |
-| **BK-21** | **Ticketed Tasting Masterclasses & Workshops** | Prepaid ticketing system for intimate, limited-seat natural wine tastings, coffee cupping sessions with Old Spike, and live acoustic music nights. | Medium | 🔵 Backlog |
-| **BK-22** | **Interactive Provenance & Producers Map ("Story of the Soil")** | Visual interactive story showcasing supplier origins: Old Spike social impact coffee in Peckham, artisan sourdough bakeries, British charcuterie, and biodynamic natural vineyards across Europe/UK. | Medium | 🔵 Backlog |
-| **BK-26** | **"VIP Tasting & Secret Drops" WhatsApp Channel** | Opt-in community broadcast channel for Richmond locals receiving rare natural wine uncorking drops, acoustic night invites, and exclusive seasonal perks with ~95% open rates. | Medium | 🔵 Backlog |
-| **BK-27** | **OpenGraph Rich Social Sharing Cards (Facebook & WhatsApp)** | High-resolution OpenGraph and Twitter/X card metadata ensuring links shared in local Richmond/East Sheen Facebook groups, WhatsApp chats, and iMessage display stunning branded imagery and compelling venue copy. | High | 🔵 Prioritized |
+| **BK-21** | **Ticketed Tasting Masterclasses & Workshops** | Prepaid ticketing system for intimate, limited-seat natural wine tastings, coffee cupping sessions with Old Spike, and live acoustic music nights. | Medium | ⚪ Backlog |
+| **BK-22** | **Interactive Provenance & Producers Map ("Story of the Soil")** | Visual interactive story showcasing supplier origins: Old Spike social impact coffee in Peckham, artisan sourdough bakeries, British charcuterie, and biodynamic natural vineyards across Europe/UK. | Medium | ⚪ Backlog |
+| **BK-26** | **"VIP Tasting & Secret Drops" WhatsApp Channel** | Opt-in community broadcast channel for Richmond locals receiving rare natural wine uncorking drops, acoustic night invites, and exclusive seasonal perks with ~95% open rates. | Medium | ⚪ Backlog |
+| **BK-27** | **OpenGraph Rich Social Sharing Cards (Facebook & WhatsApp)** | High-resolution OpenGraph and Twitter/X card metadata ensuring links shared in local Richmond/East Sheen Facebook groups, WhatsApp chats, and iMessage display stunning branded imagery and compelling venue copy. | High | 🔵 Prioritised |
 
 ### 3.4 Operational & Admin Tooling
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
-| **BK-11** | **Toast POS Direct Menu Integration** | Explore direct sync between Toast POS API and website menu to eliminate manual dual-entry of menu items and pricing. | High (Future) | 🔵 Prioritized |
-| **BK-12** | **Menu Item Availability / 86 Toggle** | Quick-action switch in Staff Portal allowing staff to mark individual dishes as "Sold Out for Today" without deleting them. | High | 🔵 Prioritized |
-| **BK-13** | **Audit Log of Menu Changes** | Visual timestamped history in Staff Portal recording which user made what price or item modification. | Medium | 🔵 Backlog |
+| **BK-11** | **Toast POS Direct Menu Integration** | Explore direct sync between Toast POS API and website menu to eliminate manual dual-entry of menu items and pricing. | High (Future) | 🔵 Prioritised |
+| **BK-12** | **Menu Item Availability / 86 Toggle** | Quick-action switch in Staff Portal allowing staff to mark individual dishes as "Sold Out for Today" without deleting them. | High | 🔵 Prioritised |
+| **BK-13** | **Audit Log of Menu Changes** | Visual timestamped history in Staff Portal recording which user made what price or item modification. | Medium | ⚪ Backlog |
 | **BK-23** | **1-Click Print-Ready PDF Menu Generator** | Export magazine-grade, formatted A4/A5 PDF physical menus directly from the in-browser Menu Studio with 1 click, eliminating manual InDesign/Word formatting when dishes or prices change. | High | 🟢 Complete |
 
 ### 3.5 Quality Assurance & Automated Testing
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
-| **BK-14** | **Full Automated Regression Test Pack** | Build and maintain a comprehensive automated regression test pack (unit, component, and end-to-end browser tests) covering all critical user journeys: navigation routing, daylight/evening theme switching, Toast Tables reservation opening, Menu Studio spreadsheet editing and CSV import/export, role-based access control (RBAC) permissions, and mobile touch viewports. Integrated into GitHub Actions CI/CD to run automatically on every future change before merging/deployment. | High | 🔵 Prioritized |
+| **BK-14** | **Full Automated Regression Test Pack** | Build and maintain a comprehensive automated regression test pack (unit, component, and end-to-end browser tests) covering all critical user journeys: navigation routing, daylight/evening theme switching, Toast Tables reservation opening, Menu Studio spreadsheet editing and CSV import/export, role-based access control (RBAC) permissions, and mobile touch viewports. Integrated into GitHub Actions CI/CD to run automatically on every future change before merging/deployment. | High | 🔵 Prioritised |
 
 ### 3.6 Search Engine Optimization (SEO) & Local Discoverability
 | ID | Feature | Description | Priority | Status |
@@ -143,8 +144,8 @@ The following features have been scoped or requested for future exploration once
 ### 3.8 Toast & Xero Data Hub
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
-| **DATA-02** | **Shift & Staff Gratuity Distribution Reporting** | Detailed reporting on daily service charge and tip allocations across lunch and evening shifts. | Medium | 🔵 Backlog |
-| **DATA-03** | **Tender Reconciliation Alerting** | Flag discrepancies between declared cash drawer totals in Toast and physical bank deposits. | Low | ⚪ Discovery |
+| **DATA-02** | **Shift & Staff Gratuity Distribution Reporting** | Detailed reporting on daily service charge and tip allocations across lunch and evening shifts. | Medium | ⚪ Backlog |
+| **DATA-03** | **Tender Reconciliation Alerting** | Flag discrepancies between declared cash drawer totals in Toast and physical bank deposits. | Low | 💡 Discovery |
 
 ---
 
