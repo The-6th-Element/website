@@ -6,7 +6,7 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 
 ## 📌 Standardized Status Lifecycle
 - 🟢 **Complete**: Fully implemented, tested, verified, and live in the codebase.
-- 🟡 **Pending Go-Live**: Implementation complete; awaiting external operational action (e.g. GoDaddy DNS cutover).
+- 🟡 **Pending Go-Live**: Implementation complete; awaiting external operational action (e.g. 123-reg.co.uk DNS cutover).
 - 🔵 **Prioritised**: High priority; scoped, agreed upon, and queued as immediate next priorities.
 - ⚪ **Backlog**: Validated enhancements scheduled for subsequent roadmap phases.
 - 💡 **Discovery**: Early concepts under research or viability/API feasibility assessment.
@@ -75,7 +75,7 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 | ID | Milestone Item | Description | Target | Priority | Status |
 |---|---|---|---|---|---|
 | **GO-01** | **Merge `dev` into `main`** | Merge the verified `dev` branch into `main` to trigger the production GitHub Actions build. | Immediate | High | 🟢 Complete |
-| **GO-02** | **GoDaddy DNS Cutover (Phase 4)** | Replace Vercel A record (`216.198.79.1`) with 4 GitHub Pages Apex IPs (`185.199.108.153`, `109.153`, `110.153`, `111.153`) and set `www` CNAME to `the-6th-element.github.io`. | Phase 4 | High | 🟡 Pending Go-Live |
+| **GO-02** | **123-reg.co.uk DNS Cutover (Phase 4)** | Replace Vercel A record (`216.198.79.1`) with 4 GitHub Pages Apex IPs (`185.199.108.153`, `109.153`, `110.153`, `111.153`) and set `www` CNAME to `the-6th-element.github.io`. | Phase 4 | High | 🟡 Pending Go-Live |
 | **GO-03** | **GitHub Pages HTTPS Enforcement** | Enable **Enforce HTTPS** in GitHub repo settings once DNS resolves to provision the free Let's Encrypt SSL certificate. | Phase 4 | High | 🟡 Pending Go-Live |
 | **GO-04** | **Production Verification (Phase 5)** | Run full end-to-end audit on `https://the6thelement.co.uk`: Toast Tables booking, Menu Studio 1-click publishing drill, mobile checks, and Google Rich Results Schema test. | Phase 5 | High | 🟡 Pending Go-Live |
 
