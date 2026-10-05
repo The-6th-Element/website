@@ -1,7 +1,7 @@
 // src/pages/StaffPage.jsx
 import React, { useState } from "react";
 import { COLORS } from "../theme/tokens";
-import { ROLES, hasPermission, resetStaffUsersToDefault } from "../utils/userManager";
+import { ROLES, hasPermission } from "../utils/userManager";
 import { UserManager } from "../components/admin/UserManager";
 import { PromotionsManager } from "../components/admin/PromotionsManager";
 import { FadeIn } from "../components/ui/FadeIn";
@@ -27,16 +27,8 @@ export function StaffPage({
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
-  const [resetMsg, setResetMsg] = useState("");
   const { menu } = useMenu();
   const [showPrintModal, setShowPrintModal] = useState(false);
-
-  const handleResetDefaults = () => {
-    resetStaffUsersToDefault();
-    setResetMsg("Accounts restored to initial defaults.");
-    setLoginError("");
-    setTimeout(() => setResetMsg(""), 6000);
-  };
 
   const role = adminAuth.role || "staff";
   const roleDef = ROLES[role] || ROLES.staff;
@@ -301,7 +293,7 @@ export function StaffPage({
                 </button>
               </form>
 
-              {/* Login Help & Credentials Recovery Drawer */}
+              {/* Forgot Password Notice */}
               <div style={{ marginTop: 20, textAlign: "center" }}>
                 <button
                   type="button"
@@ -309,75 +301,36 @@ export function StaffPage({
                   style={{
                     background: "none",
                     border: "none",
-                    color: theme.accent,
+                    color: theme.muted,
                     fontSize: 12,
                     cursor: "pointer",
                     textDecoration: "underline",
                     textUnderlineOffset: 3,
                     fontFamily: "'Outfit', sans-serif",
                     padding: "4px 8px",
+                    transition: "color 0.2s ease",
                   }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = theme.accent)}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = theme.muted)}
                 >
-                  {showHelp ? "Hide Login Credentials Help" : "Forgot password or need login help?"}
+                  {showHelp ? "Close help" : "Forgot your password?"}
                 </button>
 
                 {showHelp && (
                   <div
                     style={{
                       marginTop: 14,
-                      padding: "16px",
+                      padding: "16px 20px",
                       borderRadius: 12,
                       background: theme.surfaceAlt,
-                      border: `1px solid ${theme.muted}25`,
-                      textAlign: "left",
+                      border: `1px solid ${theme.muted}20`,
+                      textAlign: "center",
                       fontSize: 12,
-                      color: theme.text,
+                      color: theme.muted,
                       lineHeight: 1.6,
                     }}
                   >
-                    <div style={{ fontWeight: 600, marginBottom: 6, color: theme.heading }}>
-                      Default Admin Credentials:
-                    </div>
-                    <div style={{ fontFamily: "monospace", fontSize: 12, background: "rgba(0,0,0,0.04)", padding: "8px 10px", borderRadius: 6, marginBottom: 10 }}>
-                      <div><strong>Admin Usernames:</strong> deepak &nbsp;<em>(or pooja)</em></div>
-                      <div><strong>Password:</strong> R1chm0nd-s1xth@007!</div>
-                    </div>
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setUsername("deepak");
-                          setPassword("R1chm0nd-s1xth@007!");
-                        }}
-                        style={{
-                          padding: "6px 10px",
-                          borderRadius: 6,
-                          background: `${theme.accent}15`,
-                          border: `1px solid ${theme.accent}40`,
-                          color: theme.accent,
-                          fontSize: 11,
-                          fontWeight: 500,
-                          cursor: "pointer",
-                        }}
-                      >
-                        Auto-fill Deepak Admin
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleResetDefaults}
-                        style={{
-                          padding: "6px 10px",
-                          borderRadius: 6,
-                          background: "transparent",
-                          border: `1px solid ${theme.muted}40`,
-                          color: theme.muted,
-                          fontSize: 11,
-                          cursor: "pointer",
-                        }}
-                      >
-                        Restore Seeded Accounts
-                      </button>
-                    </div>
+                    To reset your staff credentials, please contact a venue Administrator or General Manager.
                   </div>
                 )}
               </div>
