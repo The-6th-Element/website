@@ -86,8 +86,8 @@ async function syncFromBehold(beholdUrl, handle) {
       permalink: item.permalink || `https://www.instagram.com/${handle}`,
       caption: item.prunedCaption || item.caption || 'Moments at The Sixth Element, East Sheen.',
       timestamp: timeStr,
-      likes: item.likeCount ?? (Math.floor(Math.random() * 50) + 30),
-      comments: item.commentsCount ?? 2,
+      likes: typeof item.likeCount === 'number' ? item.likeCount : null,
+      comments: typeof item.commentsCount === 'number' ? item.commentsCount : null,
       tag: tag,
     });
   }
