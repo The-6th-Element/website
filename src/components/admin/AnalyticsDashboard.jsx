@@ -294,7 +294,7 @@ export function AnalyticsDashboard({ theme }) {
         )}
       </div>
 
-      {/* Supabase Connection Instructions Link */}
+      {/* Supabase Connection Status Footer */}
       <div
         style={{
           borderTop: `1px solid ${theme.muted}20`,
@@ -308,14 +308,16 @@ export function AnalyticsDashboard({ theme }) {
           gap: 12,
         }}
       >
-        <div>
-          To connect your permanent free Supabase cloud database, run the SQL script in:
-          <code style={{ marginLeft: 6, padding: "2px 6px", background: `${theme.muted}20`, borderRadius: 4 }}>
-            docs/supabase_analytics_schema.sql
-          </code>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ color: metrics.isLiveConnected ? "#137333" : "#B06000" }}>●</span>
+          <span>
+            {metrics.isLiveConnected
+              ? "Supabase Analytics Cloud Database: Connected & Active (Region: Europe/London)"
+              : "To connect your free Supabase cloud database, run the SQL script in docs/supabase_analytics_schema.sql"}
+          </span>
         </div>
         <a
-          href="https://supabase.com"
+          href="https://supabase.com/dashboard"
           target="_blank"
           rel="noopener noreferrer"
           style={{ color: COLORS.warmAmber, textDecoration: "none", fontWeight: 500 }}
