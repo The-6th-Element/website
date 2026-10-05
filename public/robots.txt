@@ -1,0 +1,13 @@
+# robots.txt for https://the6thelement.co.uk
+# The Sixth Element · 210 Upper Richmond Road West, London SW14 8AH
+
+User-agent: *
+Allow: /
+Disallow: /#staff
+Disallow: /#studio
+Disallow: /staff
+Disallow: /studio
+
+# Search Engine Crawl Directives
+Host: https://the6thelement.co.uk
+Sitemap: https://the6thelement.co.uk/sitemap.xml

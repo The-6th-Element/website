@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Home Page -->
+  <url>
+    <loc>https://the6thelement.co.uk/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://the6thelement.co.uk/day-cafe.jpg</image:loc>
+      <image:title>The Sixth Element · Day Café &amp; Specialty Coffee</image:title>
+      <image:caption>Sunlit daytime dining and specialty coffee near Richmond Park</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://the6thelement.co.uk/evening-lounge.jpg</image:loc>
+      <image:title>The Sixth Element · Evening Lounge &amp; Wine Bar</image:title>
+      <image:caption>Warm evening atmosphere with natural wines and modern Indian plates</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Menu Page -->
+  <url>
+    <loc>https://the6thelement.co.uk/#menu</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://the6thelement.co.uk/hero-cocktail.jpg</image:loc>
+      <image:title>Signature Cocktails &amp; Natural Wines</image:title>
+    </image:image>
+  </url>
+
+  <!-- About & Philosophy Page -->
+  <url>
+    <loc>https://the6thelement.co.uk/#about</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Social Impact Page -->
+  <url>
+    <loc>https://the6thelement.co.uk/#impact</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Location & Contact Page -->
+  <url>
+    <loc>https://the6thelement.co.uk/#contact</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+</urlset>

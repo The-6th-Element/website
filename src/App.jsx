@@ -150,8 +150,22 @@ export default function TheSixthElement() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  // Also reset scroll *after* the new page commits.
-  useEffect(() => { scrollToTop(); }, [currentPage]);
+  // Dynamic SEO title & route metadata (BK-16)
+  useEffect(() => {
+    scrollToTop();
+    const PAGE_TITLES = {
+      home: "The Sixth Element | Modern Indian & Specialty Coffee | Richmond, London",
+      menu: "Food & Drinks Menu | Daytime Brunch & Evening Dining | The Sixth Element",
+      about: "Our Story & Culinary Philosophy | Inspired by the Elements | The Sixth Element",
+      impact: "Social Impact & Ethical Sourcing | The Sixth Element London",
+      contact: "Find Us, Hours & Reservations | 210 Upper Richmond Road West, SW14",
+      staff: "Staff & Management Portal | The Sixth Element",
+      studio: "Menu Studio & Spreadsheet Editor | The Sixth Element",
+    };
+    if (PAGE_TITLES[currentPage]) {
+      document.title = PAGE_TITLES[currentPage];
+    }
+  }, [currentPage]);
 
   return (
     <div style={{
