@@ -68,6 +68,13 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 | **FEAT-28** | **Local SEO & Google Search Enhancement (BK-16)** | Full technical SEO crawl suite: sitemap.xml, robots.txt, canonical domain alignment, Google ReserveAction Toast Tables schema, rich OpenGraph metadata, and local Richmond/East Sheen keyword targeting. | 🟢 Complete |
 | **FEAT-29** | **Website Footfall & Buying Intent Telemetry (BK-28)** | Privacy-first first-party customer intent telemetry, Supabase schema migration, Staff Portal live analytics tab, and automated 05:15 AM cross-correlation digest in Toast-to-Xero sync engine. | 🟢 Complete |
 
+### 1.7 Live Social Sync & Homepage Experience Redesign
+| ID | Feature | Description | Status |
+|---|---|---|---|
+| **FEAT-30** | **Live Instagram Feed Integration (BK-03)** | Connected `@the.sixth.element.210` via Behold.so feed API. Option B Bento Grid with cached high-res photography (`public/images/instagram/`), authentic caption tags, real engagement counts, zero widget fees, and an automated 6-hour GitHub Actions sync (`.github/workflows/sync-instagram.yml`). | 🟢 Complete |
+| **FEAT-31** | **Symmetrical Hero Architecture & Five Elements Redesign** | Reorganized above-the-fold hero into a balanced 2-column layout. Left Column: The Five Elements (*Earth, Water, Fire, Air, Ether*), featuring custom vector SVG icons defining each element, with Ether as the fifth element spanning the foundation with Roman numeral `V`. Right Column: The Sixth Element with subtitle "A Sense of Belonging", gilded Roman numeral `VI`, lead manifesto quote, day-to-night transformation narrative, and primary action buttons. | 🟢 Complete |
+| **FEAT-32** | **Dynamic Experience Elimination & Direct Instagram Scroll** | Removed the standalone "Dynamic Experience" (Two Moods, One Space / AM & PM showcase) section to streamline vertical real estate above the fold. Updated scroll prompt to "Live Moments" with smooth scroll directly to `#instagram-feed`. | 🟢 Complete |
+
 ---
 
 ## 🟡 2. Immediate Go-Live Milestones (Pending Production Cutover)
@@ -90,7 +97,7 @@ The following features have been scoped or requested for future exploration once
 |---|---|---|---|---|
 | **BK-01** | **Ambient Video Background Loop** | Subdued, high-aesthetic background video loop of the café/lounge (morning steam, evening pour) with battery-saving auto-pause on mobile. | Medium | ⚪ Backlog |
 | **BK-02** | **Photo & Video Reels Lightbox** | Interactive gallery showcasing interior architecture, latte art, cocktails, and seasonal dishes with touch-swipe on mobile devices. | Medium | ⚪ Backlog |
-| **BK-03** | **Automated Live Instagram Feed Sync** | Option B Bento Grid implemented with zero monthly widget fees. Automated 6-hr GitHub Actions sync (`sync-instagram.yml`) and local asset caching (`scripts/sync_instagram.js`). Parked pending Meta developer credentials. | High | 🟡 Pending Go-Live |
+| **BK-03** | **Automated Live Instagram Feed Sync** | Connected live feed `@the.sixth.element.210` via Behold.so and cached assets to `public/images/instagram/`. Option B Bento Grid live with 6-hr GitHub Actions automated cron sync. | High | 🟢 Complete |
 | **BK-17** | **Interactive Day-to-Night Vibe Slider** | An interactive time-scrubber on the homepage allowing visitors to slide from 8:00am Morning Coffee to 12:30pm Brunch to 5:30pm Golden Hour to 9:00pm Candlelit Lounge, watching the atmosphere, lighting, and dishes morph dynamically. | High | 🔵 Prioritised |
 | **BK-18** | **"Sounds of The Sixth Element" Curated Spotify Audio Integration** | Lifestyle music widget linking to curated daytime acoustic/lo-fi and evening vinyl/jazz playlists to immerse guests in the venue's audio identity. | Low | 💡 Discovery |
 | **BK-25** | **Instagram Story Circles & Mobile Highlights** | Tappable story bubbles on the mobile homepage inspired by Instagram stories (*Today's Bakes*, *Wine of the Week*, *Old Spike Coffee*, *Dogs of Sixth Element*), providing quick video reel previews without leaving the site. | Medium | ⚪ Backlog |
