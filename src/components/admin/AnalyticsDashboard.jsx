@@ -293,38 +293,6 @@ export function AnalyticsDashboard({ theme }) {
           </div>
         )}
       </div>
-
-      {/* Supabase Connection Status Footer */}
-      <div
-        style={{
-          borderTop: `1px solid ${theme.muted}20`,
-          paddingTop: 20,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          fontSize: 13,
-          color: theme.muted,
-          flexWrap: "wrap",
-          gap: 12,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ color: metrics.isLiveConnected ? "#137333" : "#B06000" }}>●</span>
-          <span>
-            {metrics.isLiveConnected
-              ? "Supabase Analytics Cloud Database: Connected & Active (Region: Europe/London)"
-              : "To connect your free Supabase cloud database, run the SQL script in docs/supabase_analytics_schema.sql"}
-          </span>
-        </div>
-        <a
-          href="https://supabase.com/dashboard"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: COLORS.warmAmber, textDecoration: "none", fontWeight: 500 }}
-        >
-          Open Supabase Dashboard ↗
-        </a>
-      </div>
     </div>
   );
 }
