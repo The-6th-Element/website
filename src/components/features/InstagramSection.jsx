@@ -3,71 +3,71 @@ import React, { useState, useEffect } from "react";
 import { FadeIn } from "../ui/FadeIn";
 import { INSTAGRAM_CONFIG } from "../../data/config";
 
-// High-fidelity fallback data matching @the.sixth.element.210
+// High-fidelity fallback data matching real @the.sixth.element.210 photography
 const FALLBACK_FEED = {
   handle: "the.sixth.element.210",
   profile_url: "https://www.instagram.com/the.sixth.element.210",
-  last_synced: "2026-10-05T18:00:00Z",
+  last_synced: "2026-10-05T22:00:00Z",
   posts: [
     {
-      id: "post_1",
+      id: "post_1_17877395469632364",
       is_hero: true,
+      type: "photo",
+      image_url: "/images/instagram/post_1_17877395469632364.jpg",
+      permalink: "https://www.instagram.com/p/Dd_cC_5iKph/",
+      caption: "A Little Taste of India, All on One Platter! Weekend Indian feast at The Sixth Element.",
+      timestamp: "Recent",
+      likes: 11,
+      comments: 0,
+      tag: "Weekend Feast",
+    },
+    {
+      id: "post_2_18104753264347053",
+      is_hero: false,
       type: "reel",
-      image_url: "/images/instagram/post_hero_cocktail.jpg",
-      permalink: "https://www.instagram.com/the.sixth.element.210",
-      caption: "Smoked Tamarind Mezcal & Cardamom Old Fashioned. The alchemy begins when dusk settles over East Sheen.",
-      timestamp: "2h ago",
-      likes: 184,
-      comments: 22,
-      tag: "Evening Alchemy",
-    },
-    {
-      id: "post_2",
-      is_hero: false,
-      type: "photo",
-      image_url: "/images/instagram/post_coffee_latte.jpg",
-      permalink: "https://www.instagram.com/the.sixth.element.210",
-      caption: "Morning ritual. Fresh single-origin flat whites, ethically roasted in South London by @oldspikeroastery.",
-      timestamp: "6h ago",
-      likes: 142,
-      comments: 14,
-      tag: "Morning Ritual",
-    },
-    {
-      id: "post_3",
-      is_hero: false,
-      type: "photo",
-      image_url: "/images/instagram/post_spiced_brunch.jpg",
-      permalink: "https://www.instagram.com/the.sixth.element.210",
-      caption: "Chili crisp poached eggs on whipped herb labneh with toasted sourdough. Weekend brunch serving until 3pm.",
-      timestamp: "1d ago",
-      likes: 215,
-      comments: 31,
+      image_url: "/images/instagram/post_2_18104753264347053.jpg",
+      permalink: "https://www.instagram.com/reel/Dd9X2K7zvk6/",
+      caption: "Brunch at the Sixth Element, East Sheen.",
+      timestamp: "Recent",
+      likes: 10,
+      comments: 1,
       tag: "Brunch Plates",
     },
     {
-      id: "post_4",
+      id: "post_3_18344837110281104",
       is_hero: false,
-      type: "photo",
-      image_url: "/images/instagram/post_terrace_dog.jpg",
-      permalink: "https://www.instagram.com/the.sixth.element.210",
-      caption: "The best post-Richmond Park pitstop. Four-legged friends are always welcome on our heated garden terrace.",
-      timestamp: "2d ago",
-      likes: 328,
-      comments: 45,
-      tag: "Terrace Life",
+      type: "reel",
+      image_url: "/images/instagram/post_3_18344837110281104.jpg",
+      permalink: "https://www.instagram.com/reel/Dd4dkCMAZGN/",
+      caption: "Come taste the goodness at The Sixth Element.",
+      timestamp: "Recent",
+      likes: 12,
+      comments: 2,
+      tag: "Signature Moment",
     },
     {
-      id: "post_5",
+      id: "post_4_18095630372411930",
+      is_hero: false,
+      type: "reel",
+      image_url: "/images/instagram/post_4_18095630372411930.jpg",
+      permalink: "https://www.instagram.com/reel/DddnJVqkack/",
+      caption: "Discover your new favourite signature drink at The Sixth Element!",
+      timestamp: "Recent",
+      likes: 68,
+      comments: 4,
+      tag: "Evening Alchemy",
+    },
+    {
+      id: "post_5_18178782013442271",
       is_hero: false,
       type: "photo",
-      image_url: "/images/instagram/post_orange_wine.jpg",
-      permalink: "https://www.instagram.com/the.sixth.element.210",
-      caption: "Golden Hour (5–7pm Daily). Low-intervention skin-contact orange wines & aperitivo bar bites to close the day.",
-      timestamp: "3d ago",
-      likes: 167,
-      comments: 19,
-      tag: "Golden Hour",
+      image_url: "/images/instagram/post_5_18178782013442271.jpg",
+      permalink: "https://www.instagram.com/p/DdbYewxiPti/",
+      caption: "We’re LIVE on Deliveroo! Get your Sixth Element favourites delivered straight to your door.",
+      timestamp: "Recent",
+      likes: 54,
+      comments: 3,
+      tag: "Order Online",
     },
   ],
 };
@@ -333,11 +333,20 @@ export function InstagramSection({ theme }) {
               <img src={heroPost.image_url} alt={heroPost.caption} />
 
               <div className="bento-overlay">
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8, fontSize: 12, color: "#DFAC4E", fontWeight: 500 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, fontSize: 12, color: "#DFAC4E", fontWeight: 500 }}>
                   <span>{heroPost.timestamp}</span>
-                  <span>·</span>
-                  <span>❤️ {heroPost.likes}</span>
-                  <span>💬 {heroPost.comments}</span>
+                  {typeof heroPost.likes === "number" && heroPost.likes > 0 && (
+                    <>
+                      <span>·</span>
+                      <span>❤️ {heroPost.likes}</span>
+                    </>
+                  )}
+                  {typeof heroPost.comments === "number" && heroPost.comments > 0 && (
+                    <>
+                      <span>·</span>
+                      <span>💬 {heroPost.comments}</span>
+                    </>
+                  )}
                 </div>
                 <p
                   style={{
@@ -434,7 +443,9 @@ export function InstagramSection({ theme }) {
                     }}
                   >
                     <span>{post.timestamp}</span>
-                    <span>❤️ {post.likes}</span>
+                    {typeof post.likes === "number" && post.likes > 0 && (
+                      <span>❤️ {post.likes}</span>
+                    )}
                   </div>
                 </div>
               </a>
