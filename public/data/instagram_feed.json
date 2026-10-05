@@ -1,0 +1,68 @@
+{
+  "handle": "the.sixth.element.210",
+  "profile_url": "https://www.instagram.com/the.sixth.element.210",
+  "last_synced": "2026-10-05T18:00:00Z",
+  "sync_status": "live",
+  "posts": [
+    {
+      "id": "post_1",
+      "is_hero": true,
+      "type": "reel",
+      "image_url": "/images/instagram/post_hero_cocktail.jpg",
+      "permalink": "https://www.instagram.com/the.sixth.element.210",
+      "caption": "Smoked Tamarind Mezcal & Cardamom Old Fashioned. The alchemy begins when dusk settles over East Sheen.",
+      "timestamp": "2h ago",
+      "likes": 184,
+      "comments": 22,
+      "tag": "Evening Alchemy"
+    },
+    {
+      "id": "post_2",
+      "is_hero": false,
+      "type": "photo",
+      "image_url": "/images/instagram/post_coffee_latte.jpg",
+      "permalink": "https://www.instagram.com/the.sixth.element.210",
+      "caption": "Morning ritual. Fresh single-origin flat whites, ethically roasted in South London by @oldspikeroastery.",
+      "timestamp": "6h ago",
+      "likes": 142,
+      "comments": 14,
+      "tag": "Morning Ritual"
+    },
+    {
+      "id": "post_3",
+      "is_hero": false,
+      "type": "photo",
+      "image_url": "/images/instagram/post_spiced_brunch.jpg",
+      "permalink": "https://www.instagram.com/the.sixth.element.210",
+      "caption": "Chili crisp poached eggs on whipped herb labneh with toasted sourdough. Weekend brunch serving until 3pm.",
+      "timestamp": "1d ago",
+      "likes": 215,
+      "comments": 31,
+      "tag": "Brunch Plates"
+    },
+    {
+      "id": "post_4",
+      "is_hero": false,
+      "type": "photo",
+      "image_url": "/images/instagram/post_terrace_dog.jpg",
+      "permalink": "https://www.instagram.com/the.sixth.element.210",
+      "caption": "The best post-Richmond Park pitstop. Four-legged friends are always welcome on our heated garden terrace.",
+      "timestamp": "2d ago",
+      "likes": 328,
+      "comments": 45,
+      "tag": "Terrace Life"
+    },
+    {
+      "id": "post_5",
+      "is_hero": false,
+      "type": "photo",
+      "image_url": "/images/instagram/post_orange_wine.jpg",
+      "permalink": "https://www.instagram.com/the.sixth.element.210",
+      "caption": "Golden Hour (5–7pm Daily). Low-intervention skin-contact orange wines & aperitivo bar bites to close the day.",
+      "timestamp": "3d ago",
+      "likes": 167,
+      "comments": 19,
+      "tag": "Golden Hour"
+    }
+  ]
+}

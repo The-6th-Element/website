@@ -34,8 +34,9 @@ export const DEFAULT_PROMOTIONS = [
 
 // ── Instagram Section Config ───────────────────────────────────────
 export const INSTAGRAM_CONFIG = {
-  handle: "thesixthelement.richmond",
+  handle: "the.sixth.element.210",
   profileUrl: "https://www.instagram.com/the.sixth.element.210",
+  feedJsonUrl: "/data/instagram_feed.json",
   elfsightWidgetId: null,
   curatorFeedId: null,
 };

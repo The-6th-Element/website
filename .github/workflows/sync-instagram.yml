@@ -1,0 +1,42 @@
+name: Sync Instagram Feed
+
+on:
+  schedule:
+    # Runs every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  sync-feed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch and Cache Latest Instagram Posts
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_HANDLE: 'the.sixth.element.210'
+        run: node scripts/sync_instagram.js
+
+      - name: Commit and Push Updated Feed Snapshot
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/data/instagram_feed.json public/images/instagram/
+          if git diff --staged --quiet; then
+            echo "No new Instagram posts detected. Feed is up to date."
+          else
+            git commit -m "chore(sync): update live Instagram feed snapshot [skip ci]"
+            git push origin ${{ github.ref_name }}
+          fi
