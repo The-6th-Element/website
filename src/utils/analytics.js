@@ -76,14 +76,7 @@ export async function trackEvent(eventName, eventData = {}) {
       const endpoint = `${SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/site_events`;
       const body = JSON.stringify(payload);
 
-      // Prefer native sendBeacon for fast, non-blocking delivery
-      if (typeof navigator !== "undefined" && navigator.sendBeacon) {
-        const blob = new Blob([body], { type: "application/json" });
-        const queued = navigator.sendBeacon(endpoint, blob);
-        if (queued) return;
-      }
-
-      // Fallback to fetch with keepalive
+      // Use fetch with keepalive to reliably send apikey and Authorization headers
       await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -110,6 +103,28 @@ export const trackMenuTab = (tab) => trackEvent("menu_tab_switch", { tab });
 export const trackMenuPrint = (format, period) => trackEvent("menu_print_pdf", { format, period });
 export const trackPromoClick = (id, title) => trackEvent("promo_banner_click", { id, title });
 export const trackContactClick = (channel) => trackEvent("contact_click", { channel });
+
+/**
+ * Queries live aggregate web metrics from Supabase if configured.
+ */
+export async function fetchLiveCloudMetrics() {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
+  try {
+    const endpoint = `${SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/daily_web_metrics?order=trading_date.desc&limit=7`;
+    const res = await fetch(endpoint, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch {
+    // Return null on failure to fall back to local buffer
+  }
+  return null;
+}
 
 /**
  * Returns analytical summary metrics calculated from local telemetry or Supabase for the Staff Portal.

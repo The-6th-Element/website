@@ -1,32 +1,47 @@
-// src/components/admin/AnalyticsDashboard.jsx
 import React, { useState, useEffect } from "react";
 import { COLORS } from "../../theme/tokens";
-import { getStoredTelemetryMetrics } from "../../utils/analytics";
+import { getStoredTelemetryMetrics, fetchLiveCloudMetrics } from "../../utils/analytics";
 
 export function AnalyticsDashboard({ theme }) {
   const [metrics, setMetrics] = useState(() => getStoredTelemetryMetrics());
-  const [copied, setCopied] = useState(false);
+  const [cloudHistory, setCloudHistory] = useState(null);
 
-  const refreshMetrics = () => {
+  const refreshMetrics = async () => {
     setMetrics(getStoredTelemetryMetrics());
+    try {
+      const cloud = await fetchLiveCloudMetrics();
+      if (cloud && Array.isArray(cloud) && cloud.length > 0) {
+        setCloudHistory(cloud);
+      }
+    } catch {}
   };
 
   useEffect(() => {
     refreshMetrics();
-    const interval = setInterval(refreshMetrics, 5000);
+    const interval = setInterval(refreshMetrics, 6000);
     return () => clearInterval(interval);
   }, []);
 
   const handleClear = () => {
-    if (window.confirm("Clear the local telemetry buffer? (Does not affect Supabase)")) {
+    if (window.confirm("Clear the local telemetry buffer? (Does not affect Supabase cloud)")) {
       localStorage.removeItem("t6e_offline_events_buffer");
       refreshMetrics();
     }
   };
 
+  // If cloud data is loaded for today, use today's aggregated count
+  const todayCloud = cloudHistory ? cloudHistory[0] : null;
+  const displayVisitors = todayCloud ? todayCloud.unique_visitors : metrics.uniqueSessions;
+  const displayBookClicks = todayCloud ? todayCloud.book_table_clicks : metrics.bookClicks;
+  const displayDirections = todayCloud ? todayCloud.directions_clicks : metrics.directionsClicks;
+  const displayMenuViews = todayCloud ? todayCloud.menu_tab_switches : metrics.menuSwitches;
+  const displayPdfs = todayCloud ? todayCloud.menu_print_downloads : metrics.printDownloads;
+  const displayPromos = todayCloud ? todayCloud.promo_clicks : metrics.promoClicks;
+  const displayMobilePct = todayCloud ? todayCloud.mobile_percentage : metrics.mobilePct;
+
   const bookingRate =
-    metrics.uniqueSessions > 0
-      ? ((metrics.bookClicks / metrics.uniqueSessions) * 100).toFixed(1)
+    displayVisitors > 0
+      ? ((displayBookClicks / displayVisitors) * 100).toFixed(1)
       : "0.0";
 
   return (
@@ -110,12 +125,12 @@ export function AnalyticsDashboard({ theme }) {
         }}
       >
         {[
-          { label: "Unique Visitors", value: metrics.uniqueSessions, icon: "👤", sub: `${metrics.mobilePct}% Mobile devices` },
-          { label: "Book Table Taps", value: metrics.bookClicks, icon: "🍽️", sub: `${bookingRate}% Conversion rate`, highlight: true },
-          { label: "Get Directions", value: metrics.directionsClicks, icon: "📍", sub: "Richmond walk-in intent" },
-          { label: "Menu Tab Views", value: metrics.menuSwitches, icon: "📜", sub: "Daytime vs Evening interest" },
-          { label: "PDF Menus Printed", value: metrics.printDownloads, icon: "🖨️", sub: "Physical A4/A5 exports" },
-          { label: "Promo Banner Taps", value: metrics.promoClicks, icon: "🏷️", sub: "Announcement conversions" },
+          { label: "Unique Visitors", value: displayVisitors, icon: "👤", sub: `${displayMobilePct}% Mobile devices` },
+          { label: "Book Table Taps", value: displayBookClicks, icon: "🍽️", sub: `${bookingRate}% Conversion rate`, highlight: true },
+          { label: "Get Directions", value: displayDirections, icon: "📍", sub: "Richmond walk-in intent" },
+          { label: "Menu Tab Views", value: displayMenuViews, icon: "📜", sub: "Daytime vs Evening interest" },
+          { label: "PDF Menus Printed", value: displayPdfs, icon: "🖨️", sub: "Physical A4/A5 exports" },
+          { label: "Promo Banner Taps", value: displayPromos, icon: "🏷️", sub: "Announcement conversions" },
         ].map((kpi, idx) => (
           <div
             key={idx}
@@ -160,6 +175,55 @@ export function AnalyticsDashboard({ theme }) {
           <strong>Automated 05:15 AM Cross-Correlation:</strong> Every morning, the Toast-to-Xero nightly sync engine connects directly to this telemetry database to calculate yesterday's <strong>Web Intent vs Physical Toast Sales</strong>. You receive an automated digest in your morning email showing web footfall, top viewed menus, and dining conversion.
         </div>
       </div>
+
+      {/* 7-Day Cloud Daily Rollup Table (if Supabase connected) */}
+      {cloudHistory && cloudHistory.length > 0 && (
+        <div
+          style={{
+            background: `${theme.muted}08`,
+            border: `1px solid ${theme.muted}20`,
+            borderRadius: 14,
+            padding: 24,
+            overflowX: "auto",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <h4 style={{ margin: 0, fontSize: 15, color: theme.heading, fontWeight: 600 }}>
+              ☁️ Cloud Daily Performance History (Supabase Live)
+            </h4>
+            <span style={{ fontSize: 12, color: theme.muted }}>Europe/London Aggregation</span>
+          </div>
+
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, textAlign: "left" }}>
+            <thead>
+              <tr style={{ borderBottom: `2px solid ${theme.muted}25`, color: theme.muted, fontSize: 11, textTransform: "uppercase" }}>
+                <th style={{ padding: "8px 12px" }}>Trading Date</th>
+                <th style={{ padding: "8px 12px" }}>Visitors</th>
+                <th style={{ padding: "8px 12px" }}>Book Table</th>
+                <th style={{ padding: "8px 12px" }}>Conversion</th>
+                <th style={{ padding: "8px 12px" }}>Directions</th>
+                <th style={{ padding: "8px 12px" }}>Menu Views</th>
+                <th style={{ padding: "8px 12px" }}>PDF Menus</th>
+                <th style={{ padding: "8px 12px" }}>Mobile %</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cloudHistory.map((row, idx) => (
+                <tr key={idx} style={{ borderBottom: `1px solid ${theme.muted}15` }}>
+                  <td style={{ padding: "10px 12px", fontWeight: 600 }}>{row.trading_date}</td>
+                  <td style={{ padding: "10px 12px" }}>{row.unique_visitors}</td>
+                  <td style={{ padding: "10px 12px", color: COLORS.warmAmber, fontWeight: 600 }}>{row.book_table_clicks}</td>
+                  <td style={{ padding: "10px 12px" }}>{row.booking_intent_rate_pct}%</td>
+                  <td style={{ padding: "10px 12px" }}>{row.directions_clicks}</td>
+                  <td style={{ padding: "10px 12px" }}>{row.menu_tab_switches}</td>
+                  <td style={{ padding: "10px 12px" }}>{row.menu_print_downloads}</td>
+                  <td style={{ padding: "10px 12px" }}>{row.mobile_percentage}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Live Stream of Recent Intent Events */}
       <div
