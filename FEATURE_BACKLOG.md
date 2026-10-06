@@ -116,7 +116,7 @@ The following features have been scoped or requested for future exploration once
 | **BK-19** | **Live Walk-in & Table Availability Indicator** | Real-time 1-tap status switch in Staff Portal allowing staff to signal 🟢 Walk-ins Welcome / 🟡 Short Wait / 🔴 Bookings Only to eliminate customer hesitation and drive spontaneous visits. | Medium | 🔵 Prioritised |
 | **BK-20** | **"Dog-Friendly & Richmond Park Walkers" Guide** | Dedicated emblem and micro-section highlighting dog-friendly indoor seating, heated terrace, complimentary organic treats, water bowls, and takeaway coffee hatch for park walkers. | High | 🔵 Prioritised |
 | **BK-24** | **Context-Aware WhatsApp Hospitality Concierge** | Floating WhatsApp button with pre-populated contextual messages based on user intent (e.g. large parties of 6+ on Reservations, daily dietary queries on Menu, dog-friendly or table walk-in queries on Contact). | High | 🔵 Prioritised |
-| **BK-29** | **Interactive Dietary & Lifestyle Filter Chips (Menu UX)** | Instant client-side filter chips on the Menu page (🌿 Vegetarian, 🌱 Vegan, 🌾 Gluten-Friendly, Halal) with badge counts, Option A dish filtering, and telemetry integration. | High | 🟡 Ready to Deploy |
+| **BK-29** | **Interactive Dietary & Lifestyle Filter Chips (Menu UX)** | Instant client-side filter chips on the Menu page (🌿 Vegetarian, 🌱 Vegan, 🌾 Gluten-Friendly, Halal) with badge counts, Option A dish filtering, and telemetry integration. **Traceability Requirement**: Full defect traceability maintained between backlog item and any bug/error encountered to identify origin feature, gated by BK-14 automated regression pack. | High | 🟡 Ready to Deploy |
 | **BK-30** | **Frosted Mobile Hospitality Quick-Action Bar** | Sticky frosted bottom action bar on mobile devices offering 1-tap Book Table, Call, Directions, and Opening Hours with glassmorphic styling. | High | 🔵 Prioritised |
 | **BK-31** | **Real-Time Kitchen & Service Status Pill** | Dynamic navbar pill indicating live kitchen state (e.g., "🟢 Open Now · Serving Daytime Brunch" / "🌙 Evening Plates from 5:30pm") based on current London time. | High | 🔵 Prioritised |
 | **BK-33** | **Signature Dish Visual Peek & Lightbox Drawer** | Discrete photo indicator and modal lightbox for signature menu items (e.g., Cardamom French Toast, Old Delhi Butter Chicken, V60 Pour-Over). | Medium | ⚪ Backlog |
@@ -150,7 +150,7 @@ The following features have been scoped or requested for future exploration once
 ### 3.5 Quality Assurance & Automated Testing
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
-| **BK-14** | **Full Automated Regression Test Pack** | Build and maintain a comprehensive automated regression test pack (unit, component, and end-to-end browser tests) covering all critical user journeys: navigation routing, daylight/evening theme switching, Toast Tables reservation opening, Menu Studio spreadsheet editing and CSV import/export, role-based access control (RBAC) permissions, and mobile touch viewports. Integrated into GitHub Actions CI/CD to run automatically on every future change before merging/deployment. | High | 🔵 Prioritised |
+| **BK-14** | **Full Automated Regression Test Pack** | Build and maintain a comprehensive automated regression test pack (Vitest + Testing Library + jsdom) covering all critical user journeys: navigation routing, BK-29 dietary filter chips, daylight/evening theme switching, Menu Studio CSV import/export, and role-based access control (RBAC). Integrated into GitHub Actions CI/CD to run automatically on every push and PR to DEV/MAIN before deployment. | High | 🟡 In Progress (Phases 1–2 Complete · 25 Tests) |
 
 ### 3.6 Search Engine Optimization (SEO) & Local Discoverability
 | ID | Feature | Description | Priority | Status |
@@ -170,12 +170,22 @@ The following features have been scoped or requested for future exploration once
 
 ---
 
-## 📝 4. How to Add New Backlog Requests
+## 📝 4. How to Add New Backlog Requests & Change Governance
 
-Whenever you have a new idea or feature request, simply mention it in conversation (e.g., *"Add Click & Collect to the backlog"* or *"Let's explore an 86 toggle for sold out items"*). 
+Whenever you have a new idea, feature request, or change, simply mention it in conversation (e.g., *"Add Click & Collect to the backlog"* or *"Let's explore an 86 toggle for sold out items"*). 
+
+### 🛡️ Change Governance & Defect Traceability Protocol
+1. **Mandatory Backlog Attribution**:
+   Every requested change, enhancement, or bug fix MUST have an assigned Backlog Identifier (`BK-XX`, `FEAT-XX`, or `BUG-XX`) before implementing any code changes. If a change request is received that is not yet associated with an existing Backlog item, a unique identifier is assigned and recorded first.
+2. **Defect-to-Feature Traceability**:
+   Full traceability is maintained between any bug or error encountered and the specific backlog feature/change that introduced it, enabling rapid root cause analysis.
+3. **Automated Regression Pack Coverage (BK-14)**:
+   Every newly added feature and bug fix must have corresponding automated regression test cases added to the test suite, preventing regressions when merging from `dev` to `main`.
 
 New entries will be recorded with:
 1. **Feature Title & Summary**
 2. **User Story / Business Value**
 3. **Category** (Guest Experience, Kitchen/Ops, Marketing, Admin)
 4. **Estimated Complexity & Priority**
+5. **Traceability Link & Automated Test Mapping (BK-14)**
+

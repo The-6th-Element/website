@@ -51,5 +51,16 @@ npm.cmd run preview   # Previews production dist/ locally
 
 ---
 
+## Change Governance & Defect Traceability Protocol
+
+1. **Mandatory Backlog Attribution**:
+   Every requested change or bug fix MUST have an assigned Backlog Identifier (`BK-XX`, `FEAT-XX`, or `BUG-XX`) before implementing any code changes. If a user requests a change not currently associated with a backlog item, immediately allocate a new unique Backlog Identifier and record it before writing code.
+2. **Defect-to-Feature Traceability**:
+   Maintain explicit traceability between any bug/error encountered and the specific backlog item or commit that introduced it.
+3. **Regression Test Mandate (BK-14)**:
+   Every newly added functionality and bug fix must be accompanied by automated test cases added to the regression test pack so that pre-merge CI execution prevents recurrence.
+
+---
+
 ## Feature Backlog Maintenance
 All project feature requests and status updates are tracked in [FEATURE_BACKLOG.md](FEATURE_BACKLOG.md). Keep this document updated on every milestone.

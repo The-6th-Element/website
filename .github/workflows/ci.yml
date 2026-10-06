@@ -1,0 +1,33 @@
+name: Automated Regression Suite (BK-14)
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  regression-tests:
+    name: BK-14 Regression Test Pack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run BK-14 Automated Regression Suite
+        run: npm run test:run
+
+      - name: Verify Production Bundle Build
+        run: npm run build

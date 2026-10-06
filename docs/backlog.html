@@ -248,10 +248,10 @@
       <div class="brand-subtitle">Master Product & Feature Backlog · Richmond, London</div>
     </div>
     <div class="meta-box">
-      <div><strong>Document Version:</strong> v2.8 (BK-29 Dietary Filter Chips Ready to Deploy)</div>
+      <div><strong>Document Version:</strong> v2.9 (BK-14 Regression Test Pack Active · BK-29 Traceability Enforced)</div>
       <div><strong>Date:</strong> October 6, 2026</div>
       <div><strong>Branch:</strong> <code>main</code> (GitHub Pages Live) &amp; <code>dev</code></div>
-      <div><strong>Status:</strong> Phases 1–3 Complete · 1 Ready to Deploy (BK-29) · 23 Prioritised Enhancements</div>
+      <div><strong>Status:</strong> Phases 1–3 Complete · 1 Ready to Deploy (BK-29) · 1 In Progress (BK-14) · 22 Prioritised</div>
     </div>
   </div>
 
@@ -262,11 +262,11 @@
       <div class="summary-label">Complete (🟢)</div>
     </div>
     <div class="summary-card">
-      <div class="summary-num">1</div>
-      <div class="summary-label">Ready to Deploy (🟡)</div>
+      <div class="summary-num">2</div>
+      <div class="summary-label">Active / Ready (🟡)</div>
     </div>
     <div class="summary-card">
-      <div class="summary-num">23</div>
+      <div class="summary-num">22</div>
       <div class="summary-label">Prioritised / Up Next (🔵)</div>
     </div>
     <div class="summary-card">
@@ -285,7 +285,7 @@
       <span id="filter-indicator" class="filter-indicator">Hiding 36 Completed items</span>
     </div>
     <div style="font-size: 7.5pt; color: #8C8070;">
-      Active focus: <strong style="color: #B06000;">1 Ready to Deploy (BK-29)</strong> · <strong style="color: #1A73E8;">23 Prioritised Candidates</strong>
+      Active focus: <strong style="color: #B06000;">1 Ready (BK-29)</strong> · <strong style="color: #B06000;">1 In Progress (BK-14)</strong> · <strong style="color: #1A73E8;">22 Prioritised</strong>
     </div>
   </div>
 
@@ -806,7 +806,7 @@
       <tr>
         <td class="col-id">BK-29</td>
         <td class="col-name">Interactive Dietary &amp; Lifestyle Filter Chips</td>
-        <td class="col-desc">Instant client-side filter chips on the Menu page (🌿 Vegetarian, 🌱 Vegan, 🌾 Gluten-Friendly, Halal) with dynamic badge counts, Option A dish filtering, and telemetry integration.</td>
+        <td class="col-desc">Instant client-side filter chips on the Menu page (🌿 Vegetarian, 🌱 Vegan, 🌾 Gluten-Friendly, Halal) with dynamic badge counts, Option A dish filtering, and telemetry integration.<br><small style="color: #64748B; display: inline-block; margin-top: 4px;"><strong>Traceability Requirement:</strong> Full defect traceability maintained between backlog item and any bug/error encountered to identify origin feature; regression verified via BK-14.</small></td>
         <td class="col-priority"><span class="badge badge-high">High</span></td>
         <td class="col-status"><span class="badge badge-pending">Ready to Deploy</span></td>
       </tr>
@@ -980,9 +980,9 @@
       <tr>
         <td class="col-id">BK-14</td>
         <td class="col-name">Full Automated Regression Test Pack</td>
-        <td class="col-desc">Build and maintain an automated regression pack (unit, component, and end-to-end tests) covering all critical journeys: routing, AM/PM switching, Toast Tables booking, Menu Studio CSV import/export, RBAC permissions, and mobile viewports. Runs in CI/CD before any future deployment.</td>
+        <td class="col-desc">Comprehensive automated regression test pack (Vitest + Testing Library + jsdom) covering navigation routing, BK-29 dietary filter chips, day/night theming, Menu Studio CSV import/export, and RBAC permissions. Integrated into GitHub Actions CI/CD to automatically run on every push and PR to DEV and MAIN before deployment.<br><small style="color: #64748B; display: inline-block; margin-top: 4px;"><strong>Phases 1 &amp; 2 Complete:</strong> 25 tests active and passing across 6 test suites.</small></td>
         <td class="col-priority"><span class="badge badge-high">High</span></td>
-        <td class="col-status"><span class="badge badge-prioritised">Prioritised</span></td>
+        <td class="col-status"><span class="badge badge-pending">In Progress</span></td>
       </tr>
       <tr>
         <td class="col-id">BK-16</td>
@@ -1052,10 +1052,13 @@
     </tbody>
   </table>
 
-  <!-- SECTION 4: HOW TO REQUEST -->
+  <!-- SECTION 4: HOW TO REQUEST & CHANGE GOVERNANCE -->
   <div class="callout no-break" style="margin-top: 14px;">
-    <strong>How to Add or Prioritize New Feature Requests:</strong><br>
-    Whenever you have a new idea or priority adjustment, simply state it in plain English during your development sessions. Every item will be scoped, estimated, prioritized, and tracked in this living document across both repositories.
+    <strong>How to Add Feature Requests &amp; Change Governance Protocol:</strong><br>
+    Whenever you have a new idea or priority adjustment, simply state it in plain English during your development sessions.<br>
+    • <strong>Mandatory Backlog Attribution:</strong> Every requested change, feature, or bug fix is assigned a unique Backlog Identifier (<code>BK-XX</code>, <code>FEAT-XX</code>, or <code>BUG-XX</code>) before coding commences.<br>
+    • <strong>Defect Traceability:</strong> Any bugs encountered are explicitly mapped back to the feature that introduced them.<br>
+    • <strong>Automated Regression Suite:</strong> Every change is accompanied by automated test cases in the BK-14 regression test pack to protect against unintended regressions.
   </div>
 
   <!-- Footer -->
