@@ -361,7 +361,7 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
                     </div>
                   </div>
 
-                  {/* 5 Equal Elements: Earth, Water, Air, Fire, Space (Proportionally scaled up & clearly readable) */}
+                  {/* 5 Equal Elements: Earth, Water, Air, Fire, Ether (Proportionally scaled up & clearly readable) */}
                   <div className="elements-matrix-5col">
                     {/* Earth */}
                     <div className="elem-tile-compact">
@@ -415,13 +415,13 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
                       </div>
                     </div>
 
-                    {/* Space */}
+                    {/* Ether */}
                     <div className="elem-tile-compact">
                       <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}>
                         <ElementIcon name="Ether" color={theme.accent} size={23} />
                       </div>
                       <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18, fontWeight: 600, color: theme.heading, letterSpacing: "0.03em" }}>
-                        Space
+                        Ether
                       </div>
                       <div className="elem-tile-desc">
                         The Sanctuary
