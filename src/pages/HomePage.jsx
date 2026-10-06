@@ -1,7 +1,6 @@
 // src/pages/HomePage.jsx
 import React from "react";
 import { COLORS } from "../theme/tokens";
-import { ELEMENTS } from "../data/config";
 import { FadeIn } from "../components/ui/FadeIn";
 import { CTAButton } from "../components/ui/CTAButton";
 import { InstagramSection } from "../components/features/InstagramSection";

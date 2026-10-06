@@ -1,6 +1,5 @@
 // src/pages/MenuPage.jsx
 import React, { useState, useEffect } from "react";
-import { COLORS } from "../theme/tokens";
 import { defaultMenuTab } from "../utils/time";
 import { useMenu } from "../hooks/useContent";
 import { FadeIn } from "../components/ui/FadeIn";
