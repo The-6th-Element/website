@@ -76,6 +76,7 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 | **FEAT-32** | **Dynamic Experience Elimination & Direct Instagram Scroll** | Removed the standalone "Dynamic Experience" (Two Moods, One Space / AM & PM showcase) section to streamline vertical real estate above the fold. Updated scroll prompt to "Live Moments" with smooth scroll directly to `#instagram-feed`. | 🟢 Complete |
 | **FEAT-33** | **Uniform Rectangle Hero & Scaled Typography** | Implemented editorial hero composition featuring left showcase poster framed to match the exact combined height of the right cards (`align-items: stretch`). Scaled up fonts, icons, and card padding proportionally across *Our Foundation* and *The Sixth Element* for readability and luxury presence. Sits lowered below the navbar with zero logo overlap. | 🟢 Complete |
 | **FEAT-34** | **Single-Line Navbar Logo Lockup & Ether Standardization** | Streamlined top-left logo text to "The Sixth Element" on 1 line alongside the logomark for a sleek navbar profile and enhanced headroom. Standardized "Ether" as the universal reference to the fifth element across the site and philosophical copy. | 🟢 Complete |
+| **FEAT-35** | **Mobile UX, Responsive Grid & Touch Targets Optimization (iOS/Android)** | Full mobile rendering polish across iOS Safari & Android Chrome: balanced 5-element matrix so Ether spans row 3 symmetrically on `<480px`, optimized hero poster height (260–280px), locked background body scroll on open drawers/modals, enlarged interactive touch targets to 44×44px, standardized RFC 3966 `tel:+442035188688` links, added Escape key dismissal, and enabled high-priority LCP hero image preload. | 🟢 Complete |
 
 ---
 
@@ -103,6 +104,7 @@ The following features have been scoped or requested for future exploration once
 | **BK-17** | **Interactive Day-to-Night Vibe Slider** | An interactive time-scrubber on the homepage allowing visitors to slide from 8:00am Morning Coffee to 12:30pm Brunch to 5:30pm Golden Hour to 9:00pm Candlelit Lounge, watching the atmosphere, lighting, and dishes morph dynamically. | High | 🔵 Prioritised |
 | **BK-18** | **"Sounds of The Sixth Element" Curated Spotify Audio Integration** | Lifestyle music widget linking to curated daytime acoustic/lo-fi and evening vinyl/jazz playlists to immerse guests in the venue's audio identity. | Low | 💡 Discovery |
 | **BK-25** | **Instagram Story Circles & Mobile Highlights** | Tappable story bubbles on the mobile homepage inspired by Instagram stories (*Today's Bakes*, *Wine of the Week*, *Old Spike Coffee*, *Dogs of Sixth Element*), providing quick video reel previews without leaving the site. | Medium | ⚪ Backlog |
+| **BK-32** | **Subtle Tactile Paper Grain & Glassmorphic Noise Overlay** | Lightweight CSS/SVG noise texture overlay adding editorial tactile warmth and luxury print aesthetic across dark and cream backgrounds. | Medium | ⚪ Backlog |
 
 ### 3.2 Guest Operations & Hospitality
 | ID | Feature | Description | Priority | Status |
@@ -114,6 +116,10 @@ The following features have been scoped or requested for future exploration once
 | **BK-19** | **Live Walk-in & Table Availability Indicator** | Real-time 1-tap status switch in Staff Portal allowing staff to signal 🟢 Walk-ins Welcome / 🟡 Short Wait / 🔴 Bookings Only to eliminate customer hesitation and drive spontaneous visits. | Medium | 🔵 Prioritised |
 | **BK-20** | **"Dog-Friendly & Richmond Park Walkers" Guide** | Dedicated emblem and micro-section highlighting dog-friendly indoor seating, heated terrace, complimentary organic treats, water bowls, and takeaway coffee hatch for park walkers. | High | 🔵 Prioritised |
 | **BK-24** | **Context-Aware WhatsApp Hospitality Concierge** | Floating WhatsApp button with pre-populated contextual messages based on user intent (e.g. large parties of 6+ on Reservations, daily dietary queries on Menu, dog-friendly or table walk-in queries on Contact). | High | 🔵 Prioritised |
+| **BK-29** | **Interactive Dietary & Lifestyle Filter Chips (Menu UX)** | Instant client-side filter chips on the Menu page (🌿 Vegetarian, 🌱 Vegan, 🌾 Gluten-Friendly, Halal) with badge counts and smooth CSS transitions. | High | 🔵 Prioritised |
+| **BK-30** | **Frosted Mobile Hospitality Quick-Action Bar** | Sticky frosted bottom action bar on mobile devices offering 1-tap Book Table, Call, Directions, and Opening Hours with glassmorphic styling. | High | 🔵 Prioritised |
+| **BK-31** | **Real-Time Kitchen & Service Status Pill** | Dynamic navbar pill indicating live kitchen state (e.g., "🟢 Open Now · Serving Daytime Brunch" / "🌙 Evening Plates from 5:30pm") based on current London time. | High | 🔵 Prioritised |
+| **BK-33** | **Signature Dish Visual Peek & Lightbox Drawer** | Discrete photo indicator and modal lightbox for signature menu items (e.g., Cardamom French Toast, Old Delhi Butter Chicken, V60 Pour-Over). | Medium | ⚪ Backlog |
 
 ### 3.3 Marketing & Community Growth
 | ID | Feature | Description | Priority | Status |
@@ -127,7 +133,13 @@ The following features have been scoped or requested for future exploration once
 | **BK-26** | **"VIP Tasting & Secret Drops" WhatsApp Channel** | Opt-in community broadcast channel for Richmond locals receiving rare natural wine uncorking drops, acoustic night invites, and exclusive seasonal perks with ~95% open rates. | Medium | ⚪ Backlog |
 | **BK-27** | **OpenGraph Rich Social Sharing Cards (Facebook & WhatsApp)** | High-resolution OpenGraph and Twitter/X card metadata ensuring links shared in local Richmond/East Sheen Facebook groups, WhatsApp chats, and iMessage display stunning branded imagery and compelling venue copy. | High | 🔵 Prioritised |
 
-### 3.4 Operational & Admin Tooling
+### 3.4 Technical Performance, PWA & SEO
+| ID | Feature | Description | Priority | Status |
+|---|---|---|---|---|
+| **BK-34** | **Next-Gen WebP/AVIF Asset Pipeline & Retina Srcset** | Automated compression of photographic assets into modern WebP/AVIF with responsive retina srcset markup, reducing data transfer by ~60%. | Medium | ⚪ Backlog |
+| **BK-35** | **Progressive Web App (PWA) Manifest & Add to Home Screen** | Complete `manifest.json` with brand icons, standalone mobile windowing, and splash styling for 1-tap installation on iPhone and Android. | Low | 💡 Discovery |
+
+### 3.5 Operational & Admin Tooling
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
 | **BK-11** | **Toast POS Direct Menu Integration** | Explore direct sync between Toast POS API and website menu to eliminate manual dual-entry of menu items and pricing. | High (Future) | 🔵 Prioritised |
