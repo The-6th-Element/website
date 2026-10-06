@@ -9,6 +9,7 @@ import { Logomark } from "../components/ui/Logomark";
 import { useMenu } from "../hooks/useContent";
 import { PrintMenuModal } from "../components/admin/PrintMenuModal";
 import { AnalyticsDashboard } from "../components/admin/AnalyticsDashboard";
+import { ItemAvailabilityManager } from "../components/admin/ItemAvailabilityManager";
 
 export function StaffPage({
   theme,
@@ -40,6 +41,7 @@ export function StaffPage({
   // Determine available tabs based on permissions
   const availableTabs = [
     canManageUsers && { id: "users", label: "Staff & Users", icon: "👥" },
+    canEditMenu && { id: "availability", label: "86 / Sold Out", icon: "⚡" },
     canManagePromos && { id: "promos", label: "Offers & Promos", icon: "🎁" },
     { id: "analytics", label: "Traffic & Intent", icon: "📊" },
     canEditSettings && { id: "settings", label: "Operations & Display", icon: "⚙️" },
@@ -653,6 +655,11 @@ export function StaffPage({
                 </div>
                 <UserManager theme={theme} currentUser={adminAuth.username || adminAuth.user} />
               </div>
+            )}
+
+            {/* TAB: 86 / Item Availability */}
+            {activeTab === "availability" && canEditMenu && (
+              <ItemAvailabilityManager theme={theme} />
             )}
 
             {/* TAB: Offers & Promotions */}
