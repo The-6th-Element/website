@@ -103,6 +103,7 @@ export const trackMenuTab = (tab) => trackEvent("menu_tab_switch", { tab });
 export const trackMenuPrint = (format, period) => trackEvent("menu_print_pdf", { format, period });
 export const trackPromoClick = (id, title) => trackEvent("promo_banner_click", { id, title });
 export const trackContactClick = (channel) => trackEvent("contact_click", { channel });
+export const trackDietaryFilter = (diet, tab) => trackEvent("menu_dietary_filter", { diet, tab });
 
 /**
  * Queries live aggregate web metrics from Supabase if configured.

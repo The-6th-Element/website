@@ -1,24 +1,87 @@
 // src/pages/MenuPage.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { COLORS } from "../theme/tokens";
 import { defaultMenuTab } from "../utils/time";
 import { useMenu } from "../hooks/useContent";
 import { FadeIn } from "../components/ui/FadeIn";
 import { PrintMenuModal } from "../components/admin/PrintMenuModal";
-import { trackMenuTab } from "../utils/analytics";
+import { trackMenuTab, trackDietaryFilter } from "../utils/analytics";
+import {
+  DietaryFilterBar,
+  matchesDietaryFilter,
+  DIETARY_FILTERS,
+} from "../components/menu/DietaryFilterBar";
+
+/**
+ * Returns curated background and accent colors for dietary badges.
+ */
+function getTagStyle(t, theme) {
+  if (t === "COMING SOON") {
+    return { bg: `${theme.accent}20`, color: theme.accent, border: `${theme.accent}40` };
+  }
+  if (t === "HALAL" || t === "H") {
+    return { bg: "rgba(74, 124, 143, 0.16)", color: "#3B6E80", border: "rgba(74, 124, 143, 0.3)" };
+  }
+  if (t === "GF" || t === "GF*") {
+    return { bg: `${COLORS.warmAmber}18`, color: COLORS.warmAmber, border: `${COLORS.warmAmber}35` };
+  }
+  if (t === "VE") {
+    return { bg: `${COLORS.mossGreen}22`, color: COLORS.mossGreen, border: `${COLORS.mossGreen}40` };
+  }
+  return { bg: `${COLORS.mossGreen}15`, color: COLORS.mossGreen, border: `${COLORS.mossGreen}30` };
+}
 
 export function MenuPage({ theme, flags, onOpenStudio }) {
   const { menu } = useMenu();
   const tabs = Object.keys(menu).map((id) => ({ id, label: menu[id].title || id, icon: menu[id].icon || "" }));
   const [activeTab, setActiveTab] = useState(() => defaultMenuTab(flags));
+  const [activeDietFilter, setActiveDietFilter] = useState("all");
   const [showPrintModal, setShowPrintModal] = useState(false);
 
   useEffect(() => {
     setActiveTab(defaultMenuTab(flags));
   }, [flags?.menu_evening_hour]);
+
   const current = tabs.some((t) => t.id === activeTab) && menu[activeTab] ? activeTab : tabs[0]?.id || "";
   const data = menu[current] || { title: "", subtitle: "", icon: "", sections: [] };
-  const sections = data.sections || [];
+  const rawSections = data.sections || [];
+
+  // Compute live item counts for all dietary filter chips within the current category tab
+  const filterCounts = useMemo(() => {
+    const allItems = rawSections.flatMap((s) => s.items || []);
+    return {
+      all: allItems.length,
+      V: allItems.filter((i) => matchesDietaryFilter(i, "V")).length,
+      VE: allItems.filter((i) => matchesDietaryFilter(i, "VE")).length,
+      GF: allItems.filter((i) => matchesDietaryFilter(i, "GF")).length,
+      HALAL: allItems.filter((i) => matchesDietaryFilter(i, "HALAL")).length,
+    };
+  }, [rawSections]);
+
+  // Option A: Filter / Hide non-matching dishes and empty section headers
+  const displaySections = useMemo(() => {
+    if (activeDietFilter === "all") return rawSections;
+    return rawSections
+      .map((section) => ({
+        ...section,
+        items: (section.items || []).filter((item) =>
+          matchesDietaryFilter(item, activeDietFilter)
+        ),
+      }))
+      .filter((section) => section.items.length > 0);
+  }, [rawSections, activeDietFilter]);
+
+  const handleDietFilterChange = (filterId) => {
+    setActiveDietFilter(filterId);
+    trackDietaryFilter(filterId, current);
+  };
+
+  const totalFilteredDishes = displaySections.reduce(
+    (acc, sec) => acc + (sec.items?.length || 0),
+    0
+  );
+
+  const activeFilterMeta = DIETARY_FILTERS.find((f) => f.id === activeDietFilter);
 
   return (
     <div style={{ paddingTop: 120, minHeight: "100vh" }}>
@@ -56,7 +119,7 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
               display: "flex",
               gap: 8,
               justifyContent: "center",
-              marginBottom: 48,
+              marginBottom: 32,
               flexWrap: "wrap",
             }}
           >
@@ -121,10 +184,23 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
           </div>
         </FadeIn>
 
+        {/* Interactive Dietary & Lifestyle Filter Chips (BK-29) */}
+        {rawSections.length > 0 && (
+          <FadeIn delay={0.15}>
+            <DietaryFilterBar
+              activeFilter={activeDietFilter}
+              onSelectFilter={handleDietFilterChange}
+              counts={filterCounts}
+              theme={theme}
+              categoryTitle={data.title}
+            />
+          </FadeIn>
+        )}
+
         {/* Menu Content */}
         <div key={current}>
           <FadeIn>
-            <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <div style={{ textAlign: "center", marginBottom: 36 }}>
               <div style={{ fontSize: 32 }}>{data.icon}</div>
               <h2
                 style={{
@@ -141,8 +217,54 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
             </div>
           </FadeIn>
 
-          {sections.map((section, si) => (
-            <FadeIn key={section.name} delay={si * 0.1}>
+          {/* Active Filter Notification Banner */}
+          {activeDietFilter !== "all" && displaySections.length > 0 && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "12px 18px",
+                borderRadius: 14,
+                background: `${COLORS.mossGreen}12`,
+                border: `1px solid ${COLORS.mossGreen}35`,
+                marginBottom: 36,
+                fontSize: 13,
+                color: theme.heading,
+                flexWrap: "wrap",
+                gap: 8,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 16 }}>{activeFilterMeta?.icon}</span>
+                <span>
+                  Showing <strong>{totalFilteredDishes}</strong>{" "}
+                  {activeFilterMeta?.label} dishes in {data.title}
+                </span>
+              </div>
+              <button
+                onClick={() => handleDietFilterChange("all")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: theme.accent,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  fontSize: 12,
+                  padding: "4px 8px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                  fontFamily: "'Outfit', sans-serif",
+                }}
+              >
+                Show All Dishes ✕
+              </button>
+            </div>
+          )}
+
+          {displaySections.map((section, si) => (
+            <FadeIn key={section.name} delay={si * 0.08}>
               <div style={{ marginBottom: 48 }}>
                 <h3
                   style={{
@@ -160,7 +282,7 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
                 </h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {section.items.map((item, ii) => (
-                    <FadeIn key={item.name} delay={ii * 0.05}>
+                    <FadeIn key={item.name} delay={ii * 0.04}>
                       <div
                         style={{
                           display: "flex",
@@ -168,23 +290,36 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
                           alignItems: "flex-start",
                           padding: "16px 0",
                           borderBottom: ii < section.items.length - 1 ? `1px solid ${theme.muted}10` : "none",
+                          transition: "all 0.3s ease",
                         }}
                       >
                         <div style={{ flex: 1 }}>
-                          <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
-                            <span style={{ fontSize: 16, fontWeight: 500, color: theme.heading }}>{item.name}</span>
-                            {item.tags.map((t) => (
-                              <span
-                                key={t}
-                                className="menu-tag"
-                                style={{
-                                  background: t === "COMING SOON" ? `${theme.accent}20` : `${COLORS.mossGreen}15`,
-                                  color: t === "COMING SOON" ? theme.accent : COLORS.mossGreen,
-                                }}
-                              >
-                                {t}
-                              </span>
-                            ))}
+                          <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 4 }}>
+                            <span style={{ fontSize: 16, fontWeight: 500, color: theme.heading, marginRight: 6 }}>
+                              {item.name}
+                            </span>
+                            {item.tags.map((t) => {
+                              const badgeStyle = getTagStyle(t, theme);
+                              return (
+                                <span
+                                  key={t}
+                                  className="menu-tag"
+                                  style={{
+                                    background: badgeStyle.bg,
+                                    color: badgeStyle.color,
+                                    border: `1px solid ${badgeStyle.border}`,
+                                    borderRadius: 6,
+                                    padding: "2px 7px",
+                                    fontSize: 10,
+                                    fontWeight: 600,
+                                    letterSpacing: "0.05em",
+                                    lineHeight: 1.2,
+                                  }}
+                                >
+                                  {t}
+                                </span>
+                              );
+                            })}
                           </div>
                           {item.desc && (
                             <p
@@ -220,7 +355,67 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
             </FadeIn>
           ))}
 
-          {sections.length === 0 && (
+          {/* Option A Empty State when filter yields 0 items */}
+          {rawSections.length > 0 && displaySections.length === 0 && (
+            <FadeIn>
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "54px 24px",
+                  borderRadius: 20,
+                  background: `${theme.muted}08`,
+                  border: `1px solid ${theme.muted}18`,
+                  margin: "24px 0 48px",
+                }}
+              >
+                <div style={{ fontSize: 40, marginBottom: 12 }}>
+                  {activeFilterMeta?.icon || "🍽️"}
+                </div>
+                <h3
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: 26,
+                    fontWeight: 400,
+                    color: theme.heading,
+                    marginBottom: 8,
+                  }}
+                >
+                  No strictly tagged {activeFilterMeta?.label} items in {data.title}
+                </h3>
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: theme.muted,
+                    maxWidth: 460,
+                    margin: "0 auto 24px",
+                    lineHeight: 1.6,
+                    fontWeight: 300,
+                  }}
+                >
+                  Our kitchen prepares dishes fresh to order and can adapt several recipes to your dietary needs upon request. Speak with your server or add a note when booking.
+                </p>
+                <button
+                  onClick={() => handleDietFilterChange("all")}
+                  style={{
+                    padding: "10px 22px",
+                    borderRadius: 30,
+                    background: theme.accent,
+                    color: "#FAF8F0",
+                    border: "none",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    boxShadow: `0 4px 14px ${theme.accent}30`,
+                    fontFamily: "'Outfit', sans-serif",
+                  }}
+                >
+                  View All {data.title} Dishes
+                </button>
+              </div>
+            </FadeIn>
+          )}
+
+          {rawSections.length === 0 && (
             <FadeIn>
               <div
                 style={{
