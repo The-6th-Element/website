@@ -59,7 +59,7 @@ function ElementIcon({ name, color, size = 18 }) {
 export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
   return (
     <div>
-      {/* Hero */}
+      {/* Hero Viewport (reclaimed vertical space) */}
       <section
         style={{
           minHeight: "100vh",
@@ -70,7 +70,7 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           background: theme.hero,
           position: "relative",
           textAlign: "center",
-          padding: "120px 24px 80px",
+          padding: "calc(74px + env(safe-area-inset-top, 0px)) 24px 36px",
           overflow: "hidden",
         }}
       >
@@ -83,7 +83,7 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             backgroundImage: `url(${isAM ? "/day-cafe.jpg" : "/evening-lounge.jpg"})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            opacity: isAM ? 0.4 : 0.28,
+            opacity: isAM ? 0.35 : 0.22,
             pointerEvents: "none",
           }}
         />
@@ -94,30 +94,8 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             inset: 0,
             pointerEvents: "none",
             background: isAM
-              ? `linear-gradient(180deg, ${theme.bg}CC 0%, ${theme.bg}59 40%, ${theme.bg}CC 100%)`
-              : `linear-gradient(180deg, ${theme.bg}CC 0%, ${theme.bg}66 40%, ${theme.bg}CC 100%)`,
-          }}
-        />
-
-        {/* Faint oversized emblem for depth */}
-        <img
-          src="/elements-mark.png"
-          alt=""
-          aria-hidden="true"
-          className="rotate-emblem"
-          loading="eager"
-          decoding="async"
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            width: "min(90vw, 780px)",
-            height: "min(90vw, 780px)",
-            transform: "translate(-50%, -50%)",
-            opacity: isAM ? 0.12 : 0.1,
-            pointerEvents: "none",
-            zIndex: 0,
-            filter: isAM ? "brightness(0.5) contrast(1.1)" : "none",
+              ? `linear-gradient(180deg, ${theme.bg}D9 0%, ${theme.bg}66 40%, ${theme.bg}D9 100%)`
+              : `linear-gradient(180deg, ${theme.bg}E6 0%, ${theme.bg}77 40%, ${theme.bg}E6 100%)`,
           }}
         />
 
@@ -125,79 +103,183 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           .hero-grid-layout {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 36px;
+            gap: 28px;
             align-items: stretch;
             width: 100%;
-            max-width: 1180px;
+            max-width: 1240px;
             margin: 0 auto;
+            max-height: calc(100vh - 120px);
           }
           @media (min-width: 960px) {
             .hero-grid-layout {
-              grid-template-columns: 1fr 1fr;
-              gap: 48px;
+              grid-template-columns: 0.95fr 1.05fr;
+              gap: 32px;
             }
-            .hero-foundation-col {
+            .hero-poster-col {
               order: 1;
-              text-align: left;
-              display: flex;
-              flex-direction: column;
+              height: 100%;
             }
-            .hero-copy-col {
+            .hero-stack-col {
               order: 2;
-              text-align: left;
               display: flex;
               flex-direction: column;
+              justify-content: space-between;
+              gap: 16px;
+              height: 100%;
             }
           }
           @media (max-width: 959px) {
-            .hero-copy-col {
-              order: 1;
-              text-align: center;
-              margin-bottom: 8px;
+            .hero-grid-layout {
+              max-height: none;
             }
-            .hero-foundation-col {
+            .hero-poster-col {
+              order: 1;
+              max-height: 480px;
+            }
+            .hero-stack-col {
               order: 2;
-              text-align: left;
+              gap: 20px;
             }
             .hero-cta {
               justify-content: center;
             }
-            .hero-copy-col p {
-              margin-left: auto;
-              margin-right: auto;
-            }
           }
-          .element-badge-tile {
+
+          /* Showcase Poster Frame */
+          .showcase-frame {
+            position: relative;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid ${theme.accent}45;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 24px ${theme.accent}15;
+            background: ${theme.surface};
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .showcase-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+          .showcase-frame:hover img {
+            transform: scale(1.02);
+          }
+          .showcase-badge-overlay {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: rgba(15, 13, 10, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid ${theme.accent}40;
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: ${theme.accent};
+            font-weight: 600;
+            z-index: 2;
+          }
+
+          /* Pill Eyebrow */
+          .pill-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: ${theme.accent}18;
+            border: 1px solid ${theme.accent}35;
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: ${theme.accent};
+            font-weight: 600;
+            margin-bottom: 6px;
+          }
+
+          /* Section 1 Card: Foundation & 5 Elements */
+          .box-card-foundation {
+            background: ${theme.surface};
+            border: 1px solid ${theme.accent}25;
+            border-radius: 16px;
+            padding: 16px 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            text-align: left;
+            transition: all 0.3s ease;
+          }
+          .box-card-foundation:hover {
+            border-color: ${theme.accent}55;
+          }
+          .elements-matrix-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+          }
+          .elem-tile-compact {
             background: ${theme.surfaceAlt};
             border: 1px solid ${theme.muted}20;
-            border-radius: 14px;
-            padding: 16px 14px;
-            text-align: left;
-            transition: all 0.3s ease;
+            border-radius: 10px;
+            padding: 9px 8px;
+            text-align: center;
+            transition: all 0.25s ease;
           }
-          .element-badge-tile:hover {
-            border-color: ${theme.accent}60;
+          .elem-tile-compact:hover {
+            border-color: ${theme.accent}50;
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
           }
-          .sixth-element-panel {
+          .ether-span-compact {
+            grid-column: span 4;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            margin-top: 8px;
             background: ${isAM
-              ? `linear-gradient(135deg, ${theme.surfaceAlt} 0%, ${theme.surface} 100%)`
-              : `linear-gradient(135deg, rgba(191,138,47,0.1) 0%, rgba(20,18,16,0.92) 100%)`};
+              ? `linear-gradient(90deg, ${theme.surfaceAlt} 0%, ${theme.surface} 100%)`
+              : `linear-gradient(90deg, rgba(191,138,47,0.12) 0%, rgba(23,21,18,0.85) 100%)`};
+            border: 1px solid ${theme.accent}35;
+            border-radius: 10px;
+          }
+
+          /* Section 2 Card: The Sixth Element */
+          .box-card-sixth {
+            background: ${isAM
+              ? `linear-gradient(145deg, ${theme.surfaceAlt} 0%, ${theme.surface} 100%)`
+              : `linear-gradient(145deg, rgba(191,138,47,0.09) 0%, rgba(20,18,16,0.95) 100%)`};
             border: 1px solid ${theme.accent}35;
             border-radius: 16px;
-            padding: 24px 22px;
-            text-align: left;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+            padding: 18px 22px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             flex: 1;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+            text-align: left;
+            transition: all 0.3s ease;
           }
-          .sixth-element-panel:hover {
-            border-color: ${theme.accent}70;
-            box-shadow: 0 12px 36px rgba(0,0,0,0.28);
+          .box-card-sixth:hover {
+            border-color: ${theme.accent}65;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+          }
+          .dual-phase-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 8px 0 14px;
+          }
+          .phase-subcard {
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 2px solid ${theme.accent};
+            padding: 7px 10px;
+            border-radius: 0 8px 8px 0;
           }
         `}</style>
 
@@ -206,199 +288,179 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             position: "relative",
             zIndex: 1,
             width: "100%",
-            maxWidth: 1180,
+            maxWidth: 1240,
             margin: "0 auto",
-            padding: "20px 0 40px",
+            height: "100%",
           }}
         >
           <div className="hero-grid-layout">
-            {/* Left: The Five Elements */}
-            <div className="hero-foundation-col">
+            {/* Left: Vertical Showcase Poster Card */}
+            <div className="hero-poster-col">
               <FadeIn>
-                <div style={{ textAlign: "left", marginBottom: 18 }}>
-                  <div
-                    style={{
-                      display: "inline-block",
-                      padding: "4px 12px",
-                      borderRadius: 999,
-                      background: `${theme.accent}15`,
-                      border: `1px solid ${theme.accent}30`,
-                      fontSize: 11,
-                      letterSpacing: "0.25em",
-                      textTransform: "uppercase",
-                      color: theme.accent,
-                      marginBottom: 10,
-                      fontWeight: 600,
-                    }}
-                  >
-                    Our Foundation
-                  </div>
-                  <h1
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: "clamp(28px, 3.4vw, 42px)",
-                      fontWeight: 400,
-                      color: theme.heading,
-                      lineHeight: 1.15,
-                      marginBottom: 6,
-                    }}
-                  >
-                    The Five Elements
-                  </h1>
-                  <h2
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: "clamp(18px, 2.2vw, 24px)",
-                      fontWeight: 400,
-                      fontStyle: "italic",
-                      color: theme.accent,
-                      marginBottom: 20,
-                    }}
-                  >
-                    Earth · Water · Fire · Air · Ether
-                  </h2>
-                </div>
-
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)",
-                    gap: 12,
-                  }}
-                >
-                  {/* Four Elements 2x2 */}
-                  {ELEMENTS.slice(0, 4).map((el) => (
-                    <div key={el.name} className="element-badge-tile">
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                        <ElementIcon name={el.name} color={el.color} size={18} />
-                        <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18, fontWeight: 500, color: theme.heading }}>
-                          {el.name}
-                        </span>
-                      </div>
-                      <p style={{ fontSize: 12, lineHeight: 1.5, color: theme.muted, fontWeight: 300 }}>
-                        {el.name === "Earth" && "Honest provenance. Soil and season."}
-                        {el.name === "Water" && "Direct-trade coffee & ethical flow."}
-                        {el.name === "Fire" && "Evening warmth & natural wine."}
-                        {el.name === "Air" && "Morning lightness & specialty coffee."}
-                      </p>
-                    </div>
-                  ))}
-
-                  {/* Ether (The Fifth Element) — Spans 2 columns */}
-                  <div
-                    className="element-badge-tile"
-                    style={{
-                      gridColumn: "span 2",
-                      background: isAM
-                        ? `linear-gradient(135deg, ${theme.surfaceAlt} 0%, ${theme.surface} 100%)`
-                        : `linear-gradient(135deg, rgba(191,138,47,0.12) 0%, rgba(20,18,16,0.9) 100%)`,
-                      border: `1px solid ${theme.accent}35`,
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "16px 20px",
-                    }}
-                  >
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                        <ElementIcon name="Ether" color={theme.accent} size={18} />
-                        <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 500, color: theme.heading }}>
-                          Ether <span style={{ fontSize: 13, color: theme.accent, fontStyle: "italic", marginLeft: 4 }}>(The Fifth Element)</span>
-                        </span>
-                      </div>
-                      <p style={{ fontSize: 12, lineHeight: 1.5, color: theme.muted, fontWeight: 300 }}>
-                        The celestial atmosphere that binds all together — music, vibration, and space.
-                      </p>
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: "'Cormorant Garamond', serif",
-                        fontSize: 26,
-                        fontWeight: 600,
-                        color: theme.accent,
-                        letterSpacing: "0.05em",
-                        paddingLeft: 12,
-                        flexShrink: 0,
-                      }}
-                    >
-                      V
-                    </div>
-                  </div>
+                <div className="showcase-frame">
+                  <div className="showcase-badge-overlay">Richmond · London</div>
+                  <img
+                    src="/images/the-sixth-element-showcase.jpg"
+                    alt="The Sixth Element — All Day. Into The Evening."
+                  />
                 </div>
               </FadeIn>
             </div>
 
-            {/* Right: The Sixth Element — A Sense of Belonging */}
-            <div className="hero-copy-col">
+            {/* Right: Stacked Foundation & Sixth Element Cards */}
+            <div className="hero-stack-col">
+              {/* Top Box: Our Foundation · The Five Elements */}
               <FadeIn delay={0.1}>
-                <div style={{ textAlign: "left", marginBottom: 18 }}>
-                  <div
-                    style={{
-                      display: "inline-block",
-                      padding: "4px 12px",
-                      borderRadius: 999,
-                      background: `${theme.accent}15`,
-                      border: `1px solid ${theme.accent}30`,
-                      fontSize: 11,
-                      letterSpacing: "0.25em",
-                      textTransform: "uppercase",
-                      color: theme.accent,
-                      marginBottom: 10,
-                      fontWeight: 600,
-                    }}
-                  >
-                    Richmond-upon-Thames
-                  </div>
-                  <h1
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: "clamp(28px, 3.4vw, 42px)",
-                      fontWeight: 400,
-                      color: theme.heading,
-                      lineHeight: 1.15,
-                      marginBottom: 6,
-                    }}
-                  >
-                    The Sixth Element
-                  </h1>
-                  <h2
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: "clamp(18px, 2.2vw, 24px)",
-                      fontWeight: 400,
-                      fontStyle: "italic",
-                      color: theme.accent,
-                      marginBottom: 20,
-                    }}
-                  >
-                    A Sense of Belonging
-                  </h2>
-                </div>
-
-                <div className="sixth-element-panel">
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                      <div
+                <div className="box-card-foundation">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 6 }}>
+                    <div>
+                      <div className="pill-eyebrow">Our Foundation</div>
+                      <h2
                         style={{
-                          fontSize: 11,
-                          letterSpacing: "0.2em",
-                          textTransform: "uppercase",
-                          color: theme.accent,
-                          fontWeight: 600,
+                          fontFamily: "'Cormorant Garamond', serif",
+                          fontSize: "clamp(22px, 2.2vw, 28px)",
+                          fontWeight: 400,
+                          color: theme.heading,
+                          lineHeight: 1.1,
                         }}
                       >
-                        Our Purpose
+                        The Five Elements
+                      </h2>
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: 14,
+                        fontStyle: "italic",
+                        color: theme.accent,
+                      }}
+                    >
+                      Earth · Water · Air · Fire · Space
+                    </div>
+                  </div>
+
+                  {/* 4 Core Elements 4-Column Row */}
+                  <div className="elements-matrix-row">
+                    {/* Earth */}
+                    <div className="elem-tile-compact">
+                      <div style={{ display: "flex", justifyContent: "center", marginBottom: 4 }}>
+                        <ElementIcon name="Earth" color={COLORS.earthBrown} size={18} />
+                      </div>
+                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 14, fontWeight: 600, color: theme.heading }}>
+                        Earth
+                      </div>
+                      <div style={{ fontSize: 10, color: theme.muted, lineHeight: 1.25, fontWeight: 300 }}>
+                        Soil &amp; Season
+                      </div>
+                    </div>
+
+                    {/* Water */}
+                    <div className="elem-tile-compact">
+                      <div style={{ display: "flex", justifyContent: "center", marginBottom: 4 }}>
+                        <ElementIcon name="Water" color="#4A7C8F" size={18} />
+                      </div>
+                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 14, fontWeight: 600, color: theme.heading }}>
+                        Water
+                      </div>
+                      <div style={{ fontSize: 10, color: theme.muted, lineHeight: 1.25, fontWeight: 300 }}>
+                        Community Flow
+                      </div>
+                    </div>
+
+                    {/* Air */}
+                    <div className="elem-tile-compact">
+                      <div style={{ display: "flex", justifyContent: "center", marginBottom: 4 }}>
+                        <ElementIcon name="Air" color={COLORS.mossGreen} size={18} />
+                      </div>
+                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 14, fontWeight: 600, color: theme.heading }}>
+                        Air
+                      </div>
+                      <div style={{ fontSize: 10, color: theme.muted, lineHeight: 1.25, fontWeight: 300 }}>
+                        Morning Light
+                      </div>
+                    </div>
+
+                    {/* Fire */}
+                    <div className="elem-tile-compact">
+                      <div style={{ display: "flex", justifyContent: "center", marginBottom: 4 }}>
+                        <ElementIcon name="Fire" color={COLORS.warmAmber} size={18} />
+                      </div>
+                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 14, fontWeight: 600, color: theme.heading }}>
+                        Fire
+                      </div>
+                      <div style={{ fontSize: 10, color: theme.muted, lineHeight: 1.25, fontWeight: 300 }}>
+                        Evening Warmth
+                      </div>
+                    </div>
+
+                    {/* Space (The Fifth Element) */}
+                    <div className="ether-span-compact">
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <ElementIcon name="Ether" color={theme.accent} size={18} />
+                        <div>
+                          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, fontWeight: 600, color: theme.heading }}>
+                            Space <span style={{ fontSize: 12, color: theme.accent, fontStyle: "italic", fontWeight: "normal" }}>(The Fifth Element)</span>
+                          </div>
+                          <div style={{ fontSize: 10.5, color: theme.muted, fontWeight: 300 }}>
+                            The sanctuary atmosphere that connects every moment.
+                          </div>
+                        </div>
                       </div>
                       <div
                         style={{
                           fontFamily: "'Cormorant Garamond', serif",
-                          fontSize: 32,
+                          fontSize: 20,
+                          color: theme.accent,
+                          fontWeight: 600,
+                          paddingLeft: 10,
+                        }}
+                      >
+                        V
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </FadeIn>
+
+              {/* Bottom Box: The Sixth Element */}
+              <FadeIn delay={0.25}>
+                <div className="box-card-sixth">
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                      <div>
+                        <div className="pill-eyebrow">Where Life Slows Down</div>
+                        <h2
+                          style={{
+                            fontFamily: "'Cormorant Garamond', serif",
+                            fontSize: "clamp(24px, 2.4vw, 32px)",
+                            fontWeight: 400,
+                            color: theme.heading,
+                            lineHeight: 1.1,
+                          }}
+                        >
+                          The Sixth Element
+                        </h2>
+                        <div
+                          style={{
+                            fontFamily: "'Cormorant Garamond', serif",
+                            fontSize: 15,
+                            fontStyle: "italic",
+                            color: theme.accent,
+                            marginTop: 2,
+                          }}
+                        >
+                          A Sense of Belonging — You
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          fontFamily: "'Cormorant Garamond', serif",
+                          fontSize: 34,
                           fontWeight: 600,
                           color: theme.accent,
                           lineHeight: 1,
-                          letterSpacing: "0.08em",
+                          letterSpacing: "0.05em",
                           paddingLeft: 12,
-                          flexShrink: 0,
                         }}
                       >
                         VI
@@ -408,43 +470,38 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
                     <p
                       style={{
                         fontFamily: "'Cormorant Garamond', serif",
-                        fontSize: "clamp(17px, 1.9vw, 21px)",
-                        lineHeight: 1.45,
+                        fontSize: "clamp(15px, 1.6vw, 18px)",
+                        lineHeight: 1.4,
                         color: theme.heading,
                         fontStyle: "italic",
-                        marginBottom: 14,
+                        margin: "6px 0 8px",
                         fontWeight: 400,
                       }}
                     >
-                      "The five elements shape the physical world. We offer the sixth: a place where you belong."
+                      "Five elements shape life. The Sixth Element makes it extraordinary."
                     </p>
 
-                    <p
-                      style={{
-                        fontSize: 13,
-                        lineHeight: 1.65,
-                        color: theme.muted,
-                        marginBottom: 12,
-                        fontWeight: 300,
-                      }}
-                    >
-                      Specialty coffee and light-filled mornings transform effortlessly into warm evening light, shared plates, and low-intervention natural wine.
-                    </p>
-
-                    <p
-                      style={{
-                        fontSize: 13,
-                        lineHeight: 1.65,
-                        color: theme.muted,
-                        marginBottom: 22,
-                        fontWeight: 300,
-                      }}
-                    >
-                      More than a café, more than a wine bar — an intentional sanctuary created for genuine conversation, warmth, and neighborhood connection in Richmond.
-                    </p>
+                    <div className="dual-phase-grid">
+                      <div className="phase-subcard">
+                        <div style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 2 }}>
+                          ☀️ Modern Daytime Favourites
+                        </div>
+                        <div style={{ fontSize: 11, lineHeight: 1.4, color: theme.muted, fontWeight: 300 }}>
+                          Vibrant brunches, wholesome dishes, and barista-perfect specialty coffee.
+                        </div>
+                      </div>
+                      <div className="phase-subcard">
+                        <div style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: theme.accent, fontWeight: 600, marginBottom: 2 }}>
+                          🌙 Indian-Inspired Evenings
+                        </div>
+                        <div style={{ fontSize: 11, lineHeight: 1.4, color: theme.muted, fontWeight: 300 }}>
+                          Sharing plates, bold flavours, creative cocktails, and fine wines.
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="hero-cta" style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                  <div className="hero-cta" style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: "auto" }}>
                     {flags?.booking_enabled !== false && (
                       <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={theme} />
                     )}

@@ -33,8 +33,8 @@ export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, to
         borderBottom: scrolled ? `1px solid ${theme.muted}20` : "none",
         transition: "all 0.4s ease",
         padding: scrolled
-          ? "calc(12px + env(safe-area-inset-top, 0px)) 0 12px 0"
-          : "calc(20px + env(safe-area-inset-top, 0px)) 0 20px 0",
+          ? "calc(10px + env(safe-area-inset-top, 0px)) 0 10px 0"
+          : "calc(13px + env(safe-area-inset-top, 0px)) 0 13px 0",
       }}
     >
       <div

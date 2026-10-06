@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Sixth Element — Homepage Redesign Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --bg: #0F0D0A;
+      --surface: #171512;
+      --surface-alt: #1E1A15;
+      --heading: #F6F4E3;
+      --text: #FAF8F0;
+      --muted: #A89F91;
+      --accent: #BF8A2F;
+      --accent-glow: rgba(191, 138, 47, 0.25);
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Fixed Minimalist Navbar — Tightened to reclaim blank space */
+    header.mock-navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      padding: 0 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 13, 10, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(191, 138, 47, 0.15);
+      z-index: 100;
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--accent);
+      background: rgba(191, 138, 47, 0.08);
+    }
+    .brand-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      letter-spacing: 0.08em;
+      color: var(--heading);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    nav.nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    nav.nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    nav.nav-links a:hover, nav.nav-links a.active {
+      color: var(--accent);
+    }
+    .btn-reserve-nav {
+      padding: 7px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      background: rgba(191, 138, 47, 0.15);
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Fullscreen Viewport Hero Section */
+    section.hero-viewport {
+      height: 100vh;
+      min-height: 640px;
+      padding-top: 68px; /* Offset for tight navbar */
+      padding-bottom: 38px; /* Room for Live Moments scroll */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      background: radial-gradient(circle at 75% 25%, rgba(191, 138, 47, 0.07) 0%, transparent 60%),
+                  radial-gradient(circle at 25% 75%, rgba(96, 110, 61, 0.06) 0%, transparent 50%),
+                  var(--bg);
+    }
+
+    .hero-container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 28px;
+      height: 100%;
+      max-height: calc(100vh - 110px);
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 32px;
+      align-items: stretch;
+    }
+
+    /* Left Column: Portrait Showcase Poster Card */
+    .showcase-frame {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(191, 138, 47, 0.3);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(191, 138, 47, 0.12);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+    .showcase-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .showcase-frame:hover img {
+      transform: scale(1.02);
+    }
+    .showcase-badge-overlay {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(15, 13, 10, 0.75);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(191, 138, 47, 0.4);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      z-index: 2;
+    }
+
+    /* Right Column: Two Stacked Sections (Five Elements & Sixth Element) */
+    .right-content-stack {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      height: 100%;
+    }
+
+    /* Pill Badges */
+    .pill-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(191, 138, 47, 0.12);
+      border: 1px solid rgba(191, 138, 47, 0.3);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    /* Section 1 Card: The Five Elements */
+    .box-card-foundation {
+      background: var(--surface);
+      border: 1px solid rgba(191, 138, 47, 0.22);
+      border-radius: 16px;
+      padding: 16px 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 12px;
+    }
+    .title-foundation {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(22px, 2.2vw, 28px);
+      font-weight: 400;
+      color: var(--heading);
+      line-height: 1.1;
+    }
+    .subtitle-foundation {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    /* Elements 5-grid Matrix */
+    .elements-matrix-5 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .elem-tile {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 10px;
+      padding: 9px 8px;
+      text-align: center;
+      transition: all 0.25s ease;
+    }
+    .elem-tile:hover {
+      border-color: rgba(191, 138, 47, 0.5);
+      background: rgba(191, 138, 47, 0.06);
+      transform: translateY(-2px);
+    }
+    .elem-icon-svg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+    .elem-tile-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--heading);
+      margin-bottom: 2px;
+    }
+    .elem-tile-caption {
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.25;
+      font-weight: 300;
+    }
+
+    /* Full-width Ether (5th element) banner */
+    .ether-span-tile {
+      grid-column: span 4;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background: linear-gradient(90deg, rgba(191, 138, 47, 0.12) 0%, rgba(23, 21, 18, 0.8) 100%);
+      border: 1px solid rgba(191, 138, 47, 0.35);
+      border-radius: 10px;
+    }
+    .ether-left-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ether-roman {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Section 2 Card: The Sixth Element */
+    .box-card-sixth {
+      background: linear-gradient(145deg, rgba(191, 138, 47, 0.09) 0%, rgba(20, 18, 16, 0.95) 100%);
+      border: 1px solid rgba(191, 138, 47, 0.32);
+      border-radius: 16px;
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    }
+    .sixth-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .title-sixth {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(24px, 2.4vw, 32px);
+      font-weight: 400;
+      color: var(--heading);
+      line-height: 1.1;
+    }
+    .subtitle-sixth {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-style: italic;
+      color: var(--accent);
+      margin-top: 2px;
+    }
+    .roman-vi-emblem {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34px;
+      font-weight: 600;
+      color: var(--accent);
+      line-height: 1;
+      letter-spacing: 0.05em;
+    }
+
+    .lead-manifesto {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(15px, 1.6vw, 18px);
+      line-height: 1.4;
+      color: var(--heading);
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+    .dual-phase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 8px 0 14px;
+    }
+    .phase-subcard {
+      background: rgba(0, 0, 0, 0.25);
+      border-left: 2px solid var(--accent);
+      padding: 7px 10px;
+      border-radius: 0 8px 8px 0;
+    }
+    .phase-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .phase-text {
+      font-size: 11px;
+      line-height: 1.4;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* Buttons Row */
+    .cta-button-row {
+      display: flex;
+      gap: 12px;
+      margin-top: auto;
+    }
+    .btn-main {
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #0F0D0A;
+      border: 1px solid var(--accent);
+    }
+    .btn-primary:hover {
+      background: #D4AF37;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(191, 138, 47, 0.35);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--heading);
+      border: 1px solid rgba(246, 244, 227, 0.28);
+    }
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Scroll Prompt */
+    .scroll-indicator-container {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      opacity: 0.8;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .scroll-indicator-label {
+      font-size: 9.5px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .scroll-arrow {
+      color: var(--accent);
+      font-size: 13px;
+      animation: bounce 1.8s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(4px); }
+    }
+
+    /* Responsive Adaptation for smaller screens */
+    @media (max-width: 980px) {
+      section.hero-viewport {
+        height: auto;
+        min-height: 100vh;
+        padding-top: 80px;
+        padding-bottom: 60px;
+      }
+      .hero-container {
+        grid-template-columns: 1fr;
+        max-height: none;
+        gap: 28px;
+      }
+      .showcase-frame {
+        max-height: 480px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Reclaimed Minimalist Header -->
+  <header class="mock-navbar">
+    <div class="brand-lockup">
+      <div class="brand-logo-mark">VI</div>
+      <div class="brand-title">The Sixth Element</div>
+    </div>
+    <nav class="nav-links">
+      <a href="#" class="active">Home</a>
+      <a href="#">Menu</a>
+      <a href="#">Social Impact</a>
+      <a href="#">Our Story</a>
+      <a href="#">Contact</a>
+      <button class="btn-reserve-nav">Book Table</button>
+    </nav>
+  </header>
+
+  <!-- Hero Viewport (Fits 100vh) -->
+  <section class="hero-viewport">
+    <div class="hero-container">
+
+      <!-- LEFT COLUMN: Vertical Showcase Poster Card -->
+      <div class="showcase-frame">
+        <div class="showcase-badge-overlay">Richmond · London</div>
+        <img src="/images/the-sixth-element-showcase.jpg" alt="The Sixth Element — All Day. Into The Evening.">
+      </div>
+
+      <!-- RIGHT COLUMN: Stacked Foundation & Sixth Element Cards -->
+      <div class="right-content-stack">
+
+        <!-- Top Box: Our Foundation · The Five Elements -->
+        <div class="box-card-foundation">
+          <div class="card-header-row">
+            <div>
+              <div class="pill-eyebrow">Our Foundation</div>
+              <h2 class="title-foundation">The Five Elements</h2>
+            </div>
+            <div class="subtitle-foundation">Earth · Water · Air · Fire · Space</div>
+          </div>
+
+          <!-- 4 Core Elements 4-Column Row -->
+          <div class="elements-matrix-5">
+            <!-- Earth -->
+            <div class="elem-tile">
+              <div class="elem-icon-svg">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4B3621" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22v-9"/>
+                  <path d="M12 13c-4.5 0-7.5-3.5-7.5-7.5 4.5 0 7.5 3.5 7.5 7.5z"/>
+                  <path d="M12 13c4.5 0 7.5-3.5 7.5-7.5-4.5 0-7.5 3.5-7.5 7.5z"/>
+                </svg>
+              </div>
+              <div class="elem-tile-title">Earth</div>
+              <div class="elem-tile-caption">Soil &amp; Season</div>
+            </div>
+
+            <!-- Water -->
+            <div class="elem-tile">
+              <div class="elem-icon-svg">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A7C8F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2.5C12 2.5 5.5 11 5.5 16a6.5 6.5 0 0 0 13 0C18.5 11 12 2.5 12 2.5z"/>
+                  <path d="M9 16c0 1.66 1.34 3 3 3"/>
+                </svg>
+              </div>
+              <div class="elem-tile-title">Water</div>
+              <div class="elem-tile-caption">Community Flow</div>
+            </div>
+
+            <!-- Air -->
+            <div class="elem-tile">
+              <div class="elem-icon-svg">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#606E3D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"/>
+                  <path d="M9.5 5A2 2 0 1 1 11 8H2"/>
+                  <path d="M12.5 19a2 2 0 1 0 1.5-3.5H2"/>
+                </svg>
+              </div>
+              <div class="elem-tile-title">Air</div>
+              <div class="elem-tile-caption">Morning Light</div>
+            </div>
+
+            <!-- Fire -->
+            <div class="elem-tile">
+              <div class="elem-icon-svg">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BF8A2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 3z"/>
+                </svg>
+              </div>
+              <div class="elem-tile-title">Fire</div>
+              <div class="elem-tile-caption">Evening Warmth</div>
+            </div>
+
+            <!-- Fifth Element: Space / Ether Banner -->
+            <div class="ether-span-tile">
+              <div class="ether-left-content">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BF8A2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"/>
+                </svg>
+                <div>
+                  <div class="elem-tile-title" style="font-size: 15px;">Space <span style="font-size: 12px; color: var(--accent); font-style: italic; font-weight: normal;">(The Fifth Element)</span></div>
+                  <div class="elem-tile-caption" style="font-size: 10.5px;">The sanctuary atmosphere that connects every moment.</div>
+                </div>
+              </div>
+              <div class="ether-roman">V</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Box: The Sixth Element -->
+        <div class="box-card-sixth">
+          <div>
+            <div class="sixth-header-row">
+              <div>
+                <div class="pill-eyebrow">Where Life Slows Down</div>
+                <h2 class="title-sixth">The Sixth Element</h2>
+                <div class="subtitle-sixth">A Sense of Belonging — You</div>
+              </div>
+              <div class="roman-vi-emblem">VI</div>
+            </div>
+
+            <p class="lead-manifesto">
+              "Five elements shape life. The Sixth Element makes it extraordinary."
+            </p>
+
+            <div class="dual-phase-grid">
+              <div class="phase-subcard">
+                <div class="phase-label">☀️ Modern Daytime Favourites</div>
+                <div class="phase-text">Vibrant brunches, wholesome dishes, and barista-perfect specialty coffee.</div>
+              </div>
+              <div class="phase-subcard">
+                <div class="phase-label">🌙 Indian-Inspired Evenings</div>
+                <div class="phase-text">Sharing plates, bold flavours, creative cocktails, and fine wines.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cta-button-row">
+            <button class="btn-main btn-primary">Book a Table</button>
+            <button class="btn-main btn-secondary">Explore Menu</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Scroll Indicator pointing to Live Moments -->
+    <a href="#instagram-feed" class="scroll-indicator-container">
+      <span class="scroll-indicator-label">Live Moments</span>
+      <span class="scroll-arrow">↓</span>
+    </a>
+  </section>
+
+</body>
+</html>
