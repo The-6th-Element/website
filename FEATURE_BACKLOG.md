@@ -150,7 +150,7 @@ The following features have been scoped or requested for future exploration once
 ### 3.5 Quality Assurance & Automated Testing
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
-| **BK-14** | **Full Automated Regression Test Pack** | Build and maintain a comprehensive automated regression test pack (Vitest + Testing Library + jsdom) covering all critical user journeys: navigation routing, BK-29 dietary filter chips, daylight/evening theme switching, Menu Studio CSV import/export, and role-based access control (RBAC). Integrated into GitHub Actions CI/CD to run automatically on every push and PR to DEV/MAIN before deployment. | High | 🟡 In Progress (Phases 1–2 Complete · 25 Tests) |
+| **BK-14** | **Full Automated Regression Test Pack** | Build and maintain a comprehensive automated regression test pack (Vitest + Testing Library + jsdom) covering all critical user journeys: navigation routing, BK-29 dietary filter chips, Toast Tables modal, daylight/evening theme switching, Menu Studio CSV import/export, and role-based access control (RBAC). Integrated into GitHub Actions CI/CD to run automatically on every push and PR to DEV/MAIN with automated defect traceability before deployment. | High | 🟡 Ready to Deploy |
 
 ### 3.6 Search Engine Optimization (SEO) & Local Discoverability
 | ID | Feature | Description | Priority | Status |
