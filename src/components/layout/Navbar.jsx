@@ -52,31 +52,18 @@ export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, to
           onClick={() => navigate("home")}
           style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}
         >
-          <Logomark size={scrolled ? 36 : 42} color={theme.accent} />
-          <div>
-            <div
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 22,
-                fontWeight: 500,
-                color: theme.heading,
-                letterSpacing: "0.05em",
-                lineHeight: 1.1,
-              }}
-            >
-              THE SIXTH
-            </div>
-            <div
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 22,
-                fontWeight: 300,
-                color: theme.heading,
-                letterSpacing: "0.15em",
-              }}
-            >
-              ELEMENT
-            </div>
+          <Logomark size={scrolled ? 34 : 38} color={theme.accent} />
+          <div
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "clamp(20px, 2vw, 24px)",
+              fontWeight: 500,
+              color: theme.heading,
+              letterSpacing: "0.04em",
+              whiteSpace: "nowrap",
+            }}
+          >
+            The Sixth Element
           </div>
         </div>
 
