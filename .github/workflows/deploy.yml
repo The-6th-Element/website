@@ -35,7 +35,12 @@ jobs:
         run: npm ci
 
       - name: Run BK-14 Regression Test Pack
-        run: npm run test:run
+        id: run_tests
+        run: npm run test:ci
+        continue-on-error: true
+
+      - name: Defect Traceability Report & Pre-Deployment Gate Check
+        run: npm run test:report
 
       - name: Build Production Bundle
         run: npm run build

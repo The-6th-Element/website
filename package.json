@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:ci": "vitest run --reporter=default --reporter=json --outputFile=test-report.json",
+    "test:report": "node scripts/traceability-reporter.js"
   },
   "dependencies": {
     "react": "^18.3.1",

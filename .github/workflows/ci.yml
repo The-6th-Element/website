@@ -27,7 +27,12 @@ jobs:
         run: npm ci
 
       - name: Run BK-14 Automated Regression Suite
-        run: npm run test:run
+        id: run_tests
+        run: npm run test:ci
+        continue-on-error: true
+
+      - name: Defect Traceability Report & Gate Check
+        run: npm run test:report
 
       - name: Verify Production Bundle Build
         run: npm run build
