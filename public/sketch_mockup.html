@@ -107,10 +107,9 @@
 
     /* Fullscreen Viewport Hero Section */
     section.hero-viewport {
-      height: 100vh;
-      min-height: 640px;
-      padding-top: 68px; /* Offset for tight navbar */
-      padding-bottom: 38px; /* Room for Live Moments scroll */
+      min-height: 100vh;
+      padding-top: 92px; /* Full clearance below fixed header */
+      padding-bottom: 34px; /* Room for Live Moments scroll */
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -126,26 +125,28 @@
       max-width: 1240px;
       margin: 0 auto;
       padding: 0 28px;
-      height: 100%;
-      max-height: calc(100vh - 110px);
       display: grid;
-      grid-template-columns: 0.95fr 1.05fr;
-      gap: 32px;
-      align-items: stretch;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 28px;
+      align-items: center;
     }
 
-    /* Left Column: Portrait Showcase Poster Card */
+    /* Left Column: Portrait Showcase Poster Card (Restrained size, no overlap with top logo) */
     .showcase-frame {
       position: relative;
-      border-radius: 18px;
+      border-radius: 16px;
       overflow: hidden;
-      border: 1px solid rgba(191, 138, 47, 0.3);
+      border: 1px solid rgba(191, 138, 47, 0.35);
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(191, 138, 47, 0.12);
       background: var(--surface);
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100%;
+      max-height: min(58vh, 430px);
+      max-width: 310px;
+      aspect-ratio: 2 / 3;
+      width: 100%;
+      margin: 0 auto;
     }
     .showcase-frame img {
       width: 100%;
@@ -160,28 +161,27 @@
     }
     .showcase-badge-overlay {
       position: absolute;
-      top: 14px;
-      left: 14px;
-      padding: 4px 12px;
+      top: 12px;
+      left: 12px;
+      padding: 4px 10px;
       border-radius: 999px;
       background: rgba(15, 13, 10, 0.75);
       backdrop-filter: blur(8px);
       border: 1px solid rgba(191, 138, 47, 0.4);
-      font-size: 10px;
-      letter-spacing: 0.2em;
+      font-size: 9.5px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--accent);
       font-weight: 600;
       z-index: 2;
     }
 
-    /* Right Column: Two Stacked Sections (Five Elements & Sixth Element) */
+    /* Right Column: Two Stacked Sections (No artificial gap, flexible for revised content) */
     .right-content-stack {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       gap: 16px;
-      height: 100%;
+      justify-content: center;
     }
 
     /* Pill Badges */
@@ -198,7 +198,7 @@
       text-transform: uppercase;
       color: var(--accent);
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
 
     /* Section 1 Card: The Five Elements */
@@ -213,35 +213,37 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .title-foundation {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(22px, 2.2vw, 28px);
+      font-size: clamp(20px, 2vw, 26px);
       font-weight: 400;
       color: var(--heading);
-      line-height: 1.1;
-    }
-    .subtitle-foundation {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 14px;
-      font-style: italic;
-      color: var(--accent);
+      line-height: 1.15;
     }
 
-    /* Elements 5-grid Matrix */
+    /* Elements 5-grid Matrix (5 equal elements, expandable description block) */
     .elements-matrix-5 {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 8px;
+    }
+    @media (max-width: 680px) {
+      .elements-matrix-5 {
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      }
     }
     .elem-tile {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.07);
       border-radius: 10px;
-      padding: 9px 8px;
+      padding: 10px 8px;
       text-align: center;
       transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
     }
     .elem-tile:hover {
       border-color: rgba(191, 138, 47, 0.5);
@@ -252,43 +254,21 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
     }
     .elem-tile-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       color: var(--heading);
       margin-bottom: 2px;
     }
     .elem-tile-caption {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--muted);
-      line-height: 1.25;
+      line-height: 1.35;
       font-weight: 300;
-    }
-
-    /* Full-width Ether (5th element) banner */
-    .ether-span-tile {
-      grid-column: span 4;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 14px;
-      background: linear-gradient(90deg, rgba(191, 138, 47, 0.12) 0%, rgba(23, 21, 18, 0.8) 100%);
-      border: 1px solid rgba(191, 138, 47, 0.35);
-      border-radius: 10px;
-    }
-    .ether-left-content {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .ether-roman {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 20px;
-      color: var(--accent);
-      font-weight: 600;
+      margin-top: 2px;
     }
 
     /* Section 2 Card: The Sixth Element */
@@ -299,52 +279,61 @@
       padding: 18px 22px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      flex: 1;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
     }
     .sixth-header-row {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: flex-start;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .title-sixth {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(24px, 2.4vw, 32px);
+      font-size: clamp(22px, 2.2vw, 30px);
       font-weight: 400;
       color: var(--heading);
-      line-height: 1.1;
+      line-height: 1.15;
     }
     .subtitle-sixth {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 15px;
+      font-size: 14.5px;
       font-style: italic;
       color: var(--accent);
       margin-top: 2px;
     }
-    .roman-vi-emblem {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 34px;
-      font-weight: 600;
-      color: var(--accent);
-      line-height: 1;
-      letter-spacing: 0.05em;
-    }
 
     .lead-manifesto {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(15px, 1.6vw, 18px);
-      line-height: 1.4;
+      font-size: clamp(15px, 1.5vw, 17.5px);
+      line-height: 1.35;
       color: var(--heading);
       font-style: italic;
-      margin-bottom: 8px;
+      margin: 6px 0 8px;
     }
+
+    /* Dedicated story narrative box formatted for revised copy */
+    .sixth-story-box {
+      background: rgba(0, 0, 0, 0.16);
+      border: 1px solid rgba(191, 138, 47, 0.2);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin: 4px 0 10px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
     .dual-phase-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin: 8px 0 14px;
+      gap: 10px;
+      margin: 4px 0 12px;
+    }
+    @media (max-width: 580px) {
+      .dual-phase-grid {
+        grid-template-columns: 1fr;
+      }
     }
     .phase-subcard {
       background: rgba(0, 0, 0, 0.25);
@@ -371,7 +360,7 @@
     .cta-button-row {
       display: flex;
       gap: 12px;
-      margin-top: auto;
+      margin-top: 4px;
     }
     .btn-main {
       padding: 10px 22px;
@@ -401,6 +390,27 @@
     .btn-secondary:hover {
       border-color: var(--accent);
       color: var(--accent);
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .hero-viewport {
+        height: auto;
+        min-height: auto;
+        padding-top: 86px;
+        padding-bottom: 30px;
+      }
+      .hero-container {
+        grid-template-columns: 1fr;
+        max-height: none;
+        gap: 20px;
+      }
+      .showcase-frame {
+        max-height: 380px;
+      }
+      .cta-button-row {
+        justify-content: center;
+      }
     }
 
     /* Scroll Prompt */
@@ -491,10 +501,9 @@
               <div class="pill-eyebrow">Our Foundation</div>
               <h2 class="title-foundation">The Five Elements</h2>
             </div>
-            <div class="subtitle-foundation">Earth · Water · Air · Fire · Space</div>
           </div>
 
-          <!-- 4 Core Elements 4-Column Row -->
+          <!-- 5 Equal Elements: Earth, Water, Air, Fire, Space (Clean, no repetition, flexible for revised content) -->
           <div class="elements-matrix-5">
             <!-- Earth -->
             <div class="elem-tile">
@@ -545,37 +554,36 @@
               <div class="elem-tile-caption">Evening Warmth</div>
             </div>
 
-            <!-- Fifth Element: Space / Ether Banner -->
-            <div class="ether-span-tile">
-              <div class="ether-left-content">
+            <!-- Space (Clean label, no '(The Fifth Element)', no Roman numeral V) -->
+            <div class="elem-tile">
+              <div class="elem-icon-svg">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BF8A2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="9"/>
+                  <polygon points="12 2 14.8 9.2 22 12 14.8 14.8 12 22 9.2 14.8 2 12 9.2 9.2 12 2" fill="rgba(191, 138, 47, 0.2)"/>
                 </svg>
-                <div>
-                  <div class="elem-tile-title" style="font-size: 15px;">Space <span style="font-size: 12px; color: var(--accent); font-style: italic; font-weight: normal;">(The Fifth Element)</span></div>
-                  <div class="elem-tile-caption" style="font-size: 10.5px;">The sanctuary atmosphere that connects every moment.</div>
-                </div>
               </div>
-              <div class="ether-roman">V</div>
+              <div class="elem-tile-title">Space</div>
+              <div class="elem-tile-caption">The Sanctuary</div>
             </div>
           </div>
         </div>
 
-        <!-- Bottom Box: The Sixth Element -->
+        <!-- Bottom Box: The Sixth Element (No Roman numeral VI, expandable narrative area) -->
         <div class="box-card-sixth">
           <div>
             <div class="sixth-header-row">
-              <div>
-                <div class="pill-eyebrow">Where Life Slows Down</div>
-                <h2 class="title-sixth">The Sixth Element</h2>
-                <div class="subtitle-sixth">A Sense of Belonging — You</div>
-              </div>
-              <div class="roman-vi-emblem">VI</div>
+              <div class="pill-eyebrow">Where Life Slows Down</div>
+              <h2 class="title-sixth">The Sixth Element</h2>
+              <div class="subtitle-sixth">A Sense of Belonging — You</div>
             </div>
 
             <p class="lead-manifesto">
               "Five elements shape life. The Sixth Element makes it extraordinary."
             </p>
+
+            <!-- Story / Narrative container — styled flexibly for revised content -->
+            <div class="sixth-story-box">
+              Rooted in Richmond upon Thames, The Sixth Element harmonises mindful craft with genuine hospitality. From artisan morning roasts to atmospheric evenings, your presence completes our story.
+            </div>
 
             <div class="dual-phase-grid">
               <div class="phase-subcard">
