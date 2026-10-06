@@ -104,7 +104,7 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
-            align-items: center;
+            align-items: stretch;
             width: 100%;
             max-width: 1220px;
             margin: 0 auto;
@@ -112,29 +112,43 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           @media (min-width: 960px) {
             .hero-grid-layout {
               grid-template-columns: 0.85fr 1.15fr;
-              gap: 28px;
+              gap: 24px;
+              align-items: stretch;
             }
             .hero-poster-col {
               order: 1;
               display: flex;
-              align-items: center;
-              justify-content: center;
+              flex-direction: column;
+              height: 100%;
+              min-height: 0;
+            }
+            .hero-poster-col > div {
+              height: 100%;
+              display: flex;
+              flex-direction: column;
+              flex: 1;
+              min-height: 0;
             }
             .hero-stack-col {
               order: 2;
               display: flex;
               flex-direction: column;
               gap: 16px;
-              justify-content: center;
+              height: 100%;
+              justify-content: flex-start;
             }
           }
           @media (max-width: 959px) {
             .hero-grid-layout {
               max-height: none;
+              grid-template-columns: 1fr;
+              gap: 16px;
+              align-items: start;
             }
             .hero-poster-col {
               order: 1;
-              max-height: 380px;
+              height: 340px;
+              max-height: 360px;
             }
             .hero-stack-col {
               order: 2;
@@ -145,7 +159,7 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             }
           }
 
-          /* Showcase Poster Frame — restrained size to guarantee no overlap with top logo */
+          /* Showcase Poster Frame — matches exact combined height of the two cards */
           .showcase-frame {
             position: relative;
             border-radius: 16px;
@@ -153,14 +167,11 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             border: 1px solid ${theme.accent}45;
             box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45), 0 0 20px ${theme.accent}12;
             background: ${theme.surface};
-            max-height: min(58vh, 430px);
-            max-width: 310px;
-            aspect-ratio: 2 / 3;
+            height: 100%;
             width: 100%;
-            margin: 0 auto;
+            min-height: 0;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
           }
           .showcase-frame img {
             width: 100%;
@@ -168,6 +179,8 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             object-fit: cover;
             object-position: center;
             display: block;
+            flex: 1;
+            min-height: 0;
             transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
           }
           .showcase-frame:hover img {
@@ -175,16 +188,16 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           }
           .showcase-badge-overlay {
             position: absolute;
-            top: 12px;
-            left: 12px;
-            padding: 4px 10px;
+            top: 14px;
+            left: 14px;
+            padding: 4px 12px;
             border-radius: 999px;
             background: rgba(15, 13, 10, 0.82);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border: 1px solid ${theme.accent}40;
-            font-size: 9.5px;
-            letter-spacing: 0.18em;
+            font-size: 10px;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
             color: ${theme.accent};
             font-weight: 600;
@@ -313,9 +326,9 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           }}
         >
           <div className="hero-grid-layout">
-            {/* Left: Vertical Showcase Poster Card (Restrained size, no logo overlap) */}
+            {/* Left: Vertical Showcase Poster Card (Matches combined height of right cards) */}
             <div className="hero-poster-col">
-              <FadeIn>
+              <FadeIn style={{ height: "100%", display: "flex", flexDirection: "column", minHeight: 0 }}>
                 <div className="showcase-frame">
                   <div className="showcase-badge-overlay">Richmond · London</div>
                   <img
