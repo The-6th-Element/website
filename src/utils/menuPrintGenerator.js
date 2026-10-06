@@ -458,7 +458,7 @@ export function generatePrintableMenuHtml({
     <div class="brand-header">
       <div class="brand-eyebrow">Restaurant · Bar · Social Impact</div>
       <div class="brand-logo-text">The Sixth Element</div>
-      <div class="brand-address">210 Upper Richmond Road West · London SW14 8AH · 020 8878 1234</div>
+      <div class="brand-address">210 Upper Richmond Road West · London SW14 8AH · 020 3518 8688</div>
 
       <div class="header-service-info">
         <div class="service-title">${headerServiceTitle}</div>

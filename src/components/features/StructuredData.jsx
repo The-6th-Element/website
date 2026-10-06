@@ -21,7 +21,7 @@ export function StructuredData() {
       "https://the6thelement.co.uk/hero-cocktail.jpg",
       "https://the6thelement.co.uk/cocktails-trio.jpg",
     ],
-    telephone: "+44 20 8878 1234",
+    telephone: "+44 20 3518 8688",
     email: "info@the6thelement.co.uk",
     address: {
       "@type": "PostalAddress",

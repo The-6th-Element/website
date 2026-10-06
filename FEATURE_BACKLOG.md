@@ -80,14 +80,14 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 
 ---
 
-## 🟡 2. Immediate Go-Live Milestones (Pending Production Cutover)
+## 🟢 2. Go-Live Milestones (Production Cutover & Verification)
 
 | ID | Milestone Item | Description | Target | Priority | Status |
 |---|---|---|---|---|---|
 | **GO-01** | **Merge `dev` into `main`** | Merge the verified `dev` branch into `main` to trigger the production GitHub Actions build. | Immediate | High | 🟢 Complete |
 | **GO-02** | **123-reg.co.uk DNS Cutover (Phase 4)** | Replaced Vercel A record with 4 GitHub Pages Apex IPs and configured `www` CNAME to `the-6th-element.github.io`. DNS live worldwide. | Phase 4 | High | 🟢 Complete |
 | **GO-03** | **GitHub Pages HTTPS Enforcement** | Let's Encrypt SSL/TLS certificate issued and Enforce HTTPS successfully enabled. All traffic encrypted over `https://the6thelement.co.uk`. | Phase 4 | High | 🟢 Complete |
-| **GO-04** | **Production Verification (Phase 5)** | Run full end-to-end audit on `https://the6thelement.co.uk`: Toast Tables booking, Menu Studio 1-click publishing drill, mobile checks, and Google Rich Results Schema test. | Phase 5 | High | 🟡 Pending Go-Live |
+| **GO-04** | **Production Verification (Phase 5)** | Run full end-to-end audit on `https://the6thelement.co.uk`: Toast Tables booking, Menu Studio 1-click publishing drill, mobile checks, and Google Rich Results Schema test. | Phase 5 | High | 🟢 Complete |
 
 ---
 
