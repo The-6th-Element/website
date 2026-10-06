@@ -1,13 +1,29 @@
 // src/components/features/ReservationModal.jsx
-import React from "react";
+import React, { useEffect } from "react";
 import { TOAST_CONFIG } from "../../data/config";
 import { Logomark } from "../ui/Logomark";
 
 export function ReservationModal({ theme, onClose }) {
   const url = TOAST_CONFIG.reservationUrl;
 
+  // Lock body scroll and listen for Escape key to close dialog
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="reservation-modal-title"
       style={{
         position: "fixed",
         inset: 0,
@@ -51,6 +67,7 @@ export function ReservationModal({ theme, onClose }) {
         >
           <div>
             <h2
+              id="reservation-modal-title"
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
                 fontSize: 24,
@@ -67,17 +84,18 @@ export function ReservationModal({ theme, onClose }) {
           </div>
           <button
             onClick={onClose}
+            aria-label="Close reservation dialog"
             style={{
               background: "none",
               border: "none",
               fontSize: 26,
               color: theme.muted,
               cursor: "pointer",
-              padding: 4,
+              padding: 0,
               lineHeight: 1,
               borderRadius: "50%",
-              width: 38,
-              height: 38,
+              width: 44,
+              height: 44,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -165,7 +183,7 @@ export function ReservationModal({ theme, onClose }) {
               . In the meantime, please call us to book.
             </p>
             <a
-              href="tel:+44(0)20 35188688"
+              href="tel:+442035188688"
               style={{
                 display: "inline-block",
                 padding: "12px 28px",
@@ -175,9 +193,11 @@ export function ReservationModal({ theme, onClose }) {
                 fontSize: 14,
                 fontWeight: 500,
                 textDecoration: "none",
+                minHeight: 44,
+                lineHeight: "20px",
               }}
             >
-              +44(0)20 35188688
+              +44 (0) 20 3518 8688
             </a>
           </div>
         )}

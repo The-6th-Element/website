@@ -11,6 +11,18 @@ export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, to
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
+  // Lock body scroll when mobile navigation drawer is open (prevents iOS rubber-banding)
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
   const links = [
     { id: "home", label: "Home" },
     { id: "menu", label: "Menu" },
@@ -98,6 +110,8 @@ export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, to
           className="mobile-trigger"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? "Close menu" : "Open navigation menu"}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-nav-drawer"
           style={{
             display: "none",
             background: "none",
@@ -111,6 +125,7 @@ export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, to
             width: 44,
             height: 44,
             WebkitTapHighlightColor: "transparent",
+            touchAction: "manipulation",
           }}
         >
           {[0, 1, 2].map((i) => (
@@ -138,6 +153,9 @@ export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, to
       {/* Mobile Dropdown */}
       {menuOpen && (
         <div
+          id="mobile-nav-drawer"
+          role="region"
+          aria-label="Mobile Navigation"
           style={{
             position: "absolute",
             top: "100%",
@@ -156,18 +174,22 @@ export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, to
               key={l.id}
               onClick={() => navigate(l.id)}
               style={{
-                display: "block",
+                display: "flex",
+                alignItems: "center",
                 width: "100%",
+                minHeight: 44,
                 textAlign: "left",
                 background: "none",
                 border: "none",
                 cursor: "pointer",
                 fontFamily: "'Outfit', sans-serif",
-                fontSize: 15,
-                padding: "12px 0",
+                fontSize: 16,
+                padding: "8px 0",
                 color: currentPage === l.id ? theme.accent : theme.text,
                 borderBottom: i < links.length - 1 ? `1px solid ${theme.muted}15` : "none",
                 letterSpacing: "0.05em",
+                WebkitTapHighlightColor: "transparent",
+                touchAction: "manipulation",
               }}
             >
               {l.label}

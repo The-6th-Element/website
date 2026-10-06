@@ -59,7 +59,7 @@ export function ContactPage({ theme }) {
               {[
                 { icon: "📍", label: "Address", value: "210 Upper Richmond Road West\nLondon, SW14 8AH" },
                 { icon: "🕐", label: "Hours", value: "Mon–Fri: 8am – 10pm\nSat–Sun: 9am – 11pm" },
-                { icon: "📞", label: "Phone", value: "+44(0)20 35188688", href: "tel:+442035188688", type: "phone" },
+                { icon: "📞", label: "Phone", value: "+44 (0) 20 3518 8688", href: "tel:+442035188688", type: "phone" },
                 { icon: "📧", label: "Email", value: "info@the6thelement.co.uk", href: "mailto:info@the6thelement.co.uk", type: "email" },
               ].map((item) => (
                 <div key={item.label} style={{ display: "flex", gap: 16, marginBottom: 24 }}>

@@ -146,8 +146,8 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             }
             .hero-poster-col {
               order: 1;
-              height: 340px;
-              max-height: 360px;
+              height: 320px;
+              max-height: 340px;
             }
             .hero-stack-col {
               order: 2;
@@ -155,6 +155,15 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             }
             .hero-cta {
               justify-content: center;
+            }
+          }
+          @media (max-width: 480px) {
+            .hero-poster-col {
+              height: 260px;
+              max-height: 280px;
+            }
+            .box-card-foundation, .box-card-sixth {
+              padding: 18px 16px !important;
             }
           }
 
@@ -242,6 +251,15 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           @media (max-width: 680px) {
             .elements-matrix-5col {
               grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+            }
+          }
+          @media (max-width: 480px) {
+            .elements-matrix-5col {
+              grid-template-columns: repeat(2, 1fr);
+              gap: 8px;
+            }
+            .elements-matrix-5col > :last-child:nth-child(odd) {
+              grid-column: span 2;
             }
           }
           .elem-tile-compact {

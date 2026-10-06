@@ -67,6 +67,10 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
                   trackMenuTab(tab.id);
                 }}
                 style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  minHeight: 44,
                   padding: "10px 20px",
                   borderRadius: 30,
                   border: "none",
@@ -78,6 +82,8 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
                   background: current === tab.id ? theme.accent : `${theme.muted}15`,
                   color: current === tab.id ? "#fff" : theme.text,
                   transition: "all 0.3s ease",
+                  WebkitTapHighlightColor: "transparent",
+                  touchAction: "manipulation",
                 }}
               >
                 {tab.icon} {tab.label}
@@ -88,6 +94,10 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
             <button
               onClick={() => setShowPrintModal(true)}
               style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: 44,
                 padding: "10px 18px",
                 borderRadius: 30,
                 border: `1.5px solid ${theme.accent}50`,
@@ -99,9 +109,9 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
                 background: `${theme.accent}16`,
                 color: theme.heading,
                 transition: "all 0.3s ease",
-                display: "inline-flex",
-                alignItems: "center",
                 gap: 6,
+                WebkitTapHighlightColor: "transparent",
+                touchAction: "manipulation",
               }}
               title="Generate print-ready physical A4/A5 PDF menu for table service"
             >
