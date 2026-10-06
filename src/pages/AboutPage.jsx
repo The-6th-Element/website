@@ -45,7 +45,7 @@ export function AboutPage({ theme }) {
               fontStyle: "italic",
             }}
           >
-            "In ancient philosophy, five elements compose all of existence — Earth, Water, Fire, Air, and Space.
+            "In ancient philosophy, five elements compose all of existence — Earth, Water, Fire, Air, and Ether.
             We believe there is a sixth: the feeling of belonging."
           </div>
         </FadeIn>

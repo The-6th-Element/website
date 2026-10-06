@@ -9,11 +9,11 @@ export const TOAST_CONFIG = {
 
 // ── Elements Data ──────────────────────────────────────────────────
 export const ELEMENTS = [
-  { name: "Earth", symbol: "🜃", color: COLORS.earthBrown, desc: "Our foundation. Honest ingredients, grounded in provenance. Every plate tells a story of soil and season." },
-  { name: "Water", symbol: "🜄", color: "#4A7C8F", desc: "The flow of community. Social impact coffee that connects Richmond to farming communities worldwide." },
-  { name: "Fire", symbol: "🜂", color: COLORS.warmAmber, desc: "Evening warmth. As the sun sets, the space transforms — natural wines, craft beers, and curated cocktails." },
-  { name: "Air", symbol: "🜁", color: "#B8C4A0", desc: "Morning lightness. Bright, breathable mornings filled with specialty coffee and sunlit brunch." },
-  { name: "Space", symbol: "✦", color: COLORS.mossGreen, desc: "The sixth element. The intangible feeling of belonging — the reason you return. This is what we create." },
+  { name: "Earth", symbol: "🜃", color: COLORS.earthBrown, desc: "Honest ingredients, grounded in provenance. Every plate tells a story of soil and season." },
+  { name: "Water", symbol: "🜄", color: "#4A7C8F", desc: "The flow of community. Direct-trade coffee that connects Richmond to ethical growers worldwide." },
+  { name: "Fire", symbol: "🜂", color: COLORS.warmAmber, desc: "Evening warmth. Low-intervention natural wines, craft beers, and intimate amber glow." },
+  { name: "Air", symbol: "🜁", color: COLORS.mossGreen, desc: "Morning lightness. Sunlit mornings, vibrant brunch plates, and artisan specialty coffee." },
+  { name: "Ether", symbol: "✦", color: COLORS.warmAmber, desc: "The fifth element. The celestial atmosphere that binds all together — sound, resonance, and space." },
 ];
 
 // ── Promotions (browser-managed via admin panel) ───────────────────
