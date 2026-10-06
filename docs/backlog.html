@@ -193,6 +193,50 @@
     display: flex;
     justify-content: space-between;
   }
+
+  /* Interactive Filter Toolbar */
+  .filter-toolbar {
+    background: #FAF7F0;
+    border: 1px solid #E2D9C5;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin: 14px 0 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .filter-checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 8.5pt;
+    font-weight: 600;
+    color: #4B3621;
+    user-select: none;
+  }
+  .filter-checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #606E3D;
+  }
+  .filter-indicator {
+    font-size: 7.5pt;
+    background: #FEF7E0;
+    color: #B06000;
+    border: 1px solid #FEEFC3;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    display: none;
+  }
+  @media print {
+    .no-print { display: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -231,7 +275,22 @@
     </div>
   </div>
 
+  <!-- Interactive Filter Controls (no-print) -->
+  <div class="filter-toolbar no-print">
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <label class="filter-checkbox-label" for="hide-completed-checkbox">
+        <input type="checkbox" id="hide-completed-checkbox" onchange="updateCompletedVisibility(this.checked)">
+        <span>Hide Completed items (🟢 36)</span>
+      </label>
+      <span id="filter-indicator" class="filter-indicator">Hiding 36 Completed items</span>
+    </div>
+    <div style="font-size: 7.5pt; color: #8C8070;">
+      Active focus: <strong style="color: #B06000;">1 Ready to Deploy (BK-29)</strong> · <strong style="color: #1A73E8;">23 Prioritised Candidates</strong>
+    </div>
+  </div>
+
   <!-- SECTION 1: SHIPPED FEATURES -->
+  <div id="sec-completed-features">
   <h2>
     <span>1. Completed Features</span>
     <span style="font-size: 8pt; font-weight: normal; color: #137333;">🟢 32 Features Live &amp; Verified</span>
@@ -547,11 +606,13 @@
       </tr>
     </tbody>
   </table>
+  </div> <!-- end #sec-completed-features -->
 
   <!-- Page Break for Clean Printing -->
-  <div class="page-break"></div>
+  <div id="page-break-1" class="page-break"></div>
 
   <!-- SECTION 2: GO-LIVE MILESTONES -->
+  <div id="sec-golive-milestones">
   <h2>
     <span>2. Go-Live Milestones (Production Cutover &amp; Verification)</span>
     <span style="font-size: 8pt; font-weight: normal; color: #137333;">🟢 All 4 Milestones Verified &amp; Complete</span>
@@ -597,6 +658,7 @@
       </tr>
     </tbody>
   </table>
+  </div> <!-- end #sec-golive-milestones -->
 
   <!-- SECTION 3: ACTIVE & PRIORITIZED BACKLOG -->
   <h2>
@@ -1002,5 +1064,56 @@
     <div>Confidential • For Internal Management & Development Planning</div>
   </div>
 
+  <!-- Interactive Filter Logic (Client-Side Only) -->
+  <script>
+    function updateCompletedVisibility(hide) {
+      // 1. Toggle row visibility across all tables for completed items
+      var completeBadges = document.querySelectorAll('.badge-complete');
+      completeBadges.forEach(function(badge) {
+        var row = badge.closest('tr');
+        if (row) {
+          row.style.display = hide ? 'none' : '';
+        }
+      });
+
+      // 2. Hide Section 1 (Completed Features) container
+      var sec1 = document.getElementById('sec-completed-features');
+      if (sec1) sec1.style.display = hide ? 'none' : '';
+
+      // 3. Hide Section 2 (Go-Live Milestones) container
+      var sec2 = document.getElementById('sec-golive-milestones');
+      if (sec2) sec2.style.display = hide ? 'none' : '';
+
+      // 4. Hide print page break before Section 2
+      var pageBreak1 = document.getElementById('page-break-1');
+      if (pageBreak1) pageBreak1.style.display = hide ? 'none' : '';
+
+      // 5. Update indicator pill
+      var indicator = document.getElementById('filter-indicator');
+      if (indicator) {
+        indicator.style.display = hide ? 'inline-block' : 'none';
+        indicator.textContent = hide ? 'Hiding 36 Completed items' : '';
+      }
+
+      // 6. Save user preference
+      try {
+        localStorage.setItem('tse_backlog_hide_completed', hide ? '1' : '0');
+      } catch (e) {}
+    }
+
+    // Restore saved toggle state on load
+    document.addEventListener('DOMContentLoaded', function () {
+      try {
+        var saved = localStorage.getItem('tse_backlog_hide_completed');
+        if (saved === '1') {
+          var checkbox = document.getElementById('hide-completed-checkbox');
+          if (checkbox) {
+            checkbox.checked = true;
+            updateCompletedVisibility(true);
+          }
+        }
+      } catch (e) {}
+    });
+  </script>
 </body>
 </html>
