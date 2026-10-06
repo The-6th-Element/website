@@ -179,7 +179,7 @@
     .right-content-stack {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
       height: 100%;
       justify-content: flex-start;
     }
@@ -188,57 +188,58 @@
     .pill-eyebrow {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 2px 8px;
+      gap: 6px;
+      padding: 4px 12px;
       border-radius: 999px;
-      background: rgba(191, 138, 47, 0.12);
-      border: 1px solid rgba(191, 138, 47, 0.3);
-      font-size: 9px;
-      letter-spacing: 0.2em;
+      background: rgba(191, 138, 47, 0.15);
+      border: 1px solid rgba(191, 138, 47, 0.35);
+      font-size: 11px;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--accent);
       font-weight: 600;
-      margin-bottom: 3px;
+      margin-bottom: 6px;
     }
 
-    /* Section 1 Card: The Five Elements (Compact & Streamlined) */
+    /* Section 1 Card: The Five Elements (Generous Real Estate & Proportional Typography) */
     .box-card-foundation {
       background: var(--surface);
-      border: 1px solid rgba(191, 138, 47, 0.22);
-      border-radius: 14px;
-      padding: 12px 16px;
+      border: 1px solid rgba(191, 138, 47, 0.25);
+      border-radius: 16px;
+      padding: 22px 26px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     }
     .card-header-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .title-foundation {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(18px, 1.8vw, 22px);
+      font-size: clamp(26px, 2.6vw, 32px);
       font-weight: 400;
       color: var(--heading);
-      line-height: 1.1;
+      line-height: 1.15;
     }
 
     /* Elements 5-grid Matrix (5 equal elements, expandable description block) */
     .elements-matrix-5 {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 6px;
+      gap: 10px;
+      margin-top: 12px;
     }
     @media (max-width: 680px) {
       .elements-matrix-5 {
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
       }
     }
     .elem-tile {
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 8px;
-      padding: 6px 4px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 13px 8px;
       text-align: center;
       transition: all 0.25s ease;
       display: flex;
@@ -254,72 +255,77 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 3px;
+      margin-bottom: 6px;
+    }
+    .elem-icon-svg svg {
+      width: 23px;
+      height: 23px;
     }
     .elem-tile-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 13.5px;
+      font-size: 18px;
       font-weight: 600;
       color: var(--heading);
-      margin-bottom: 1px;
+      letter-spacing: 0.03em;
+      margin-bottom: 2px;
     }
     .elem-tile-caption {
-      font-size: 10px;
+      font-size: 13px;
       color: var(--muted);
-      line-height: 1.25;
+      line-height: 1.4;
       font-weight: 300;
-      margin-top: 1px;
+      margin-top: 2px;
     }
 
-    /* Section 2 Card: The Sixth Element (Compact & Streamlined) */
+    /* Section 2 Card: The Sixth Element (Generous & High Readability) */
     .box-card-sixth {
       background: linear-gradient(145deg, rgba(191, 138, 47, 0.09) 0%, rgba(20, 18, 16, 0.95) 100%);
-      border: 1px solid rgba(191, 138, 47, 0.32);
-      border-radius: 14px;
-      padding: 14px 18px;
+      border: 1px solid rgba(191, 138, 47, 0.35);
+      border-radius: 16px;
+      padding: 22px 26px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
     }
     .sixth-header-row {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .title-sixth {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(20px, 2vw, 24px);
+      font-size: clamp(28px, 2.8vw, 36px);
       font-weight: 400;
       color: var(--heading);
-      line-height: 1.1;
+      line-height: 1.15;
     }
     .subtitle-sixth {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 13px;
+      font-size: 17px;
       font-style: italic;
       color: var(--accent);
-      margin-top: 1px;
+      margin-top: 2px;
     }
 
     .lead-manifesto {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(13px, 1.3vw, 15px);
-      line-height: 1.3;
+      font-size: clamp(16px, 1.6vw, 19.5px);
+      line-height: 1.4;
       color: var(--heading);
       font-style: italic;
-      margin: 4px 0 6px;
+      margin: 7px 0 9px;
     }
 
     /* Dedicated story narrative box formatted for revised copy */
     .sixth-story-box {
       background: rgba(0, 0, 0, 0.16);
       border: 1px solid rgba(191, 138, 47, 0.2);
-      border-radius: 8px;
-      padding: 6px 12px;
-      margin: 4px 0 6px;
-      font-size: 11px;
-      line-height: 1.35;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin: 8px 0 12px;
+      font-size: 13.5px;
+      line-height: 1.55;
       color: var(--muted);
       font-weight: 300;
     }
@@ -327,8 +333,8 @@
     .dual-phase-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin: 4px 0 8px;
+      gap: 12px;
+      margin: 8px 0 12px;
     }
     @media (max-width: 580px) {
       .dual-phase-grid {
@@ -336,22 +342,22 @@
       }
     }
     .phase-subcard {
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.2);
       border-left: 2px solid var(--accent);
-      padding: 6px 10px;
-      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
     }
     .phase-label {
-      font-size: 9.5px;
+      font-size: 11.5px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--accent);
       font-weight: 600;
-      margin-bottom: 1px;
+      margin-bottom: 3px;
     }
     .phase-text {
-      font-size: 10.5px;
-      line-height: 1.3;
+      font-size: 12.5px;
+      line-height: 1.45;
       color: var(--muted);
       font-weight: 300;
     }
@@ -359,13 +365,13 @@
     /* Buttons Row */
     .cta-button-row {
       display: flex;
-      gap: 10px;
-      margin-top: 4px;
+      gap: 12px;
+      margin-top: 8px;
     }
     .btn-main {
-      padding: 8px 18px;
+      padding: 10px 22px;
       border-radius: 999px;
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       font-weight: 600;
