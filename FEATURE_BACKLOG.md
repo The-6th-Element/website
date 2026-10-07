@@ -37,7 +37,7 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 |---|---|---|---|
 | **FEAT-09** | **Role-Based Access Control (RBAC)** | Multi-user credential store with 5 roles: `Owner` (Pooja Somani), `Admin` (Deepak), `Manager`, `Shift Lead`, and `Chef / Kitchen`. | 🟢 Complete |
 | **FEAT-10** | **Granular Publishing Permissions** | Only `Admin` and `Owner` accounts can publish updates to the live site; other staff roles can edit menus and save local drafts. | 🟢 Complete |
-| **FEAT-11** | **User Management UI** | Dedicated Admin tab to view staff, add new team members with custom titles/roles, update credentials, and delete staff accounts (with Owner deletion protection). | 🟢 Complete |
+| **FEAT-11** | **User Management UI & Security Question Recovery (BK-38)** | Dedicated Admin tab to view staff, add new team members with custom titles/roles, update credentials, delete staff accounts (with Owner deletion protection), and configure secret security questions & answers for self-service password recovery. | 🟡 In Progress |
 | **FEAT-12** | **Cross-Network Auth & Fallback** | Secure SHA-256 password hashing with a pure JavaScript cryptographic fallback to allow testing across local WiFi/LAN (`http://192.168.1.195:5173/`). | 🟢 Complete |
 
 ### 1.4 Hosting, CI/CD & Infrastructure (Phase 3)
@@ -149,6 +149,7 @@ The following features have been scoped or requested for future exploration once
 | **BK-12** | ~~**Menu Item Availability / 86 Toggle**~~ | *Scrapped / Cancelled per operational review.* Full dining and beverage menu remains permanently viewable online; physical 86 / stock availability is handled live at till point without modifying guest-facing digital menus. All companion code rolled back from DEV. | Low | ❌ Cancelled |
 | **BK-13** | **Audit Log of Menu Changes** | Visual timestamped history in Staff Portal recording which user made what price or item modification. | Medium | ⚪ Backlog |
 | **BK-23** | **1-Click Print-Ready PDF Menu Generator** | Export magazine-grade, formatted A4/A5 PDF physical menus directly from the in-browser Menu Studio with 1 click, eliminating manual InDesign/Word formatting when dishes or prices change. | High | 🟢 Complete |
+| **BK-38** | **Self-Service Password Reset via Secret Security Questions** | Secure self-service account recovery under FEAT-11 allowing staff to reset forgotten passwords by answering a pre-configured secret question and answer (SHA-256 hashed). Features multi-step verification modal on Staff Portal login, fallback to seeded defaults, and Admin Console question/answer management. | High | 🟡 In Progress |
 
 ### 3.5 Quality Assurance & Automated Testing
 | ID | Feature | Description | Priority | Status |

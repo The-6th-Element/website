@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { COLORS } from "../../theme/tokens";
 import {
   ROLES,
+  SECURITY_QUESTIONS,
   getStaffUsers,
   addStaffUser,
   updateStaffUser,
@@ -15,10 +16,20 @@ export function UserManager({ theme, currentUser }) {
   const [editingUser, setEditingUser] = useState(null); // user object or null
   const [passwordModalUser, setPasswordModalUser] = useState(null); // user object or null
   const [newPassword, setNewPassword] = useState("");
+  const [modalQuestion, setModalQuestion] = useState(SECURITY_QUESTIONS[0]);
+  const [modalAnswer, setModalAnswer] = useState("");
   const [feedback, setFeedback] = useState(null);
 
   // New user form state
-  const blankForm = { username: "", name: "", title: "", role: "manager", password: "" };
+  const blankForm = {
+    username: "",
+    name: "",
+    title: "",
+    role: "manager",
+    password: "",
+    securityQuestion: SECURITY_QUESTIONS[0],
+    securityAnswer: "",
+  };
   const [form, setForm] = useState(blankForm);
 
   useEffect(() => {
@@ -58,13 +69,24 @@ export function UserManager({ theme, currentUser }) {
   };
 
   const handleUpdatePassword = async () => {
-    if (!passwordModalUser || !newPassword) return;
+    if (!passwordModalUser) return;
     try {
-      await updateStaffUser(passwordModalUser.username, { newPassword });
+      const patch = {};
+      if (newPassword) patch.newPassword = newPassword;
+      if (modalQuestion) patch.securityQuestion = modalQuestion;
+      if (modalAnswer) patch.newSecurityAnswer = modalAnswer;
+
+      if (!newPassword && !modalAnswer && modalQuestion === passwordModalUser.securityQuestion) {
+        setFeedback({ type: "error", message: "Please enter a new password or update the security answer." });
+        return;
+      }
+
+      await updateStaffUser(passwordModalUser.username, patch);
       setUsers(getStaffUsers());
       setPasswordModalUser(null);
       setNewPassword("");
-      setFeedback({ type: "success", message: `Updated password for '${passwordModalUser.name}'!` });
+      setModalAnswer("");
+      setFeedback({ type: "success", message: `Updated credentials for '${passwordModalUser.name}'!` });
       setTimeout(() => setFeedback(null), 3000);
     } catch (err) {
       setFeedback({ type: "error", message: err.message });
@@ -132,8 +154,13 @@ export function UserManager({ theme, currentUser }) {
                       <span style={{ fontSize: 10, color: theme.muted, fontWeight: 400 }}>(You)</span>
                     )}
                   </div>
-                  <div style={{ fontSize: 11, color: theme.muted, marginTop: 1 }}>
-                    @{u.username} {u.title ? `· ${u.title}` : ""}
+                  <div style={{ fontSize: 11, color: theme.muted, marginTop: 1, display: "flex", alignItems: "center", gap: 6 }}>
+                    <span>@{u.username} {u.title ? `· ${u.title}` : ""}</span>
+                    {u.securityQuestion && (
+                      <span title={`Security Question: ${u.securityQuestion}`} style={{ fontSize: 10, color: COLORS.mossGreen, fontWeight: 500 }}>
+                        🔒 Question Set
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -147,14 +174,19 @@ export function UserManager({ theme, currentUser }) {
                 </span>
 
                 <button
-                  onClick={() => { setPasswordModalUser(u); setNewPassword(""); }}
-                  title="Change Password"
+                  onClick={() => {
+                    setPasswordModalUser(u);
+                    setNewPassword("");
+                    setModalQuestion(u.securityQuestion || SECURITY_QUESTIONS[0]);
+                    setModalAnswer("");
+                  }}
+                  title="Manage Password & Recovery Question"
                   style={{
                     background: "none", border: `1px solid ${theme.muted}25`, borderRadius: 6,
                     padding: "4px 8px", fontSize: 11, color: theme.muted, cursor: "pointer",
                   }}
                 >
-                  🔑 Password
+                  🔑 Credentials
                 </button>
 
                 {!u.isProtected && u.username !== "pooja" && (
@@ -252,6 +284,34 @@ export function UserManager({ theme, currentUser }) {
             />
           </div>
 
+          <div>
+            <label style={{ fontSize: 10, textTransform: "uppercase", color: theme.muted, fontWeight: 600 }}>
+              Secret Security Question (BK-38)
+            </label>
+            <select
+              value={form.securityQuestion}
+              onChange={(e) => setForm(p => ({ ...p, securityQuestion: e.target.value }))}
+              style={inputStyle}
+            >
+              {SECURITY_QUESTIONS.map((q) => (
+                <option key={q} value={q}>{q}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label style={{ fontSize: 10, textTransform: "uppercase", color: theme.muted, fontWeight: 600 }}>
+              Secret Security Answer (for password reset)
+            </label>
+            <input
+              type="text"
+              value={form.securityAnswer}
+              onChange={(e) => setForm(p => ({ ...p, securityAnswer: e.target.value }))}
+              placeholder="e.g. Richmond Park"
+              style={inputStyle}
+            />
+          </div>
+
           <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
             <button
               onClick={handleCreate}
@@ -289,7 +349,7 @@ export function UserManager({ theme, currentUser }) {
         </button>
       )}
 
-      {/* Password Reset Modal */}
+      {/* Password & Credentials Modal */}
       {passwordModalUser && (
         <div style={{
           position: "fixed", inset: 0, zIndex: 4000,
@@ -297,36 +357,66 @@ export function UserManager({ theme, currentUser }) {
           padding: 24,
         }} onClick={() => setPasswordModalUser(null)}>
           <div onClick={e => e.stopPropagation()} style={{
-            width: "100%", maxWidth: 360, background: theme.bg,
+            width: "100%", maxWidth: 380, background: theme.bg,
             borderRadius: 14, padding: 24, border: `1px solid ${theme.muted}25`,
             boxShadow: "0 20px 50px rgba(0,0,0,0.3)",
           }}>
             <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, color: theme.heading }}>
-              Update Password
+              Update Credentials
             </h4>
             <p style={{ fontSize: 12, color: theme.muted, marginTop: 4, marginBottom: 14 }}>
-              Setting new password for <strong>{passwordModalUser.name}</strong> (@{passwordModalUser.username})
+              Managing security for <strong>{passwordModalUser.name}</strong> (@{passwordModalUser.username})
             </p>
+
+            <label style={{ fontSize: 10, textTransform: "uppercase", color: theme.muted, fontWeight: 600, display: "block", marginBottom: 2 }}>
+              New Password (leave blank to keep current)
+            </label>
             <input
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="New password (min 6 characters)"
-              autoFocus
               style={inputStyle}
             />
-            <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+
+            <div style={{ marginTop: 12 }}>
+              <label style={{ fontSize: 10, textTransform: "uppercase", color: theme.muted, fontWeight: 600, display: "block", marginBottom: 2 }}>
+                Secret Security Question (BK-38)
+              </label>
+              <select
+                value={modalQuestion}
+                onChange={(e) => setModalQuestion(e.target.value)}
+                style={inputStyle}
+              >
+                {SECURITY_QUESTIONS.map((q) => (
+                  <option key={q} value={q}>{q}</option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ marginTop: 12 }}>
+              <label style={{ fontSize: 10, textTransform: "uppercase", color: theme.muted, fontWeight: 600, display: "block", marginBottom: 2 }}>
+                New Secret Answer (leave blank to keep current)
+              </label>
+              <input
+                type="text"
+                value={modalAnswer}
+                onChange={(e) => setModalAnswer(e.target.value)}
+                placeholder="Enter new secret answer..."
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
               <button
                 onClick={handleUpdatePassword}
-                disabled={!newPassword || newPassword.length < 6}
                 style={{
                   flex: 1, padding: "9px", borderRadius: 6, border: "none",
                   background: theme.accent, color: "#fff", cursor: "pointer",
                   fontSize: 12, fontWeight: 600,
-                  opacity: newPassword.length >= 6 ? 1 : 0.6,
                 }}
               >
-                Save Password
+                Save Credentials
               </button>
               <button
                 onClick={() => setPasswordModalUser(null)}

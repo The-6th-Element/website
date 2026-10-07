@@ -1,7 +1,12 @@
 // src/pages/StaffPage.jsx
 import React, { useState } from "react";
 import { COLORS } from "../theme/tokens";
-import { ROLES, hasPermission } from "../utils/userManager";
+import {
+  ROLES,
+  hasPermission,
+  getSecurityQuestionForUser,
+  verifySecurityAnswerAndResetPassword,
+} from "../utils/userManager";
 import { UserManager } from "../components/admin/UserManager";
 import { PromotionsManager } from "../components/admin/PromotionsManager";
 import { FadeIn } from "../components/ui/FadeIn";
@@ -59,6 +64,79 @@ export function StaffPage({
     } finally {
       setLoginLoading(false);
     }
+  };
+
+  // ── Self-Service Password Reset (BK-38 / FEAT-11) ─────────────────
+  const [showResetDrawer, setShowResetDrawer] = useState(false);
+  const [resetUsername, setResetUsername] = useState("");
+  const [resetQuestionData, setResetQuestionData] = useState(null);
+  const [resetAnswer, setResetAnswer] = useState("");
+  const [resetNewPassword, setResetNewPassword] = useState("");
+  const [resetConfirmPassword, setResetConfirmPassword] = useState("");
+  const [resetError, setResetError] = useState("");
+  const [resetSuccessMsg, setResetSuccessMsg] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
+
+  const handleFindQuestion = (e) => {
+    if (e) e.preventDefault();
+    setResetError("");
+    try {
+      const qData = getSecurityQuestionForUser(resetUsername);
+      setResetQuestionData(qData);
+    } catch (err) {
+      setResetError(err.message);
+    }
+  };
+
+  const handleExecuteReset = async (e) => {
+    if (e) e.preventDefault();
+    if (!resetAnswer.trim()) {
+      setResetError("Please enter your secret answer.");
+      return;
+    }
+    if (!resetNewPassword || resetNewPassword.length < 6) {
+      setResetError("New password must be at least 6 characters.");
+      return;
+    }
+    if (resetNewPassword !== resetConfirmPassword) {
+      setResetError("Passwords do not match. Please re-enter.");
+      return;
+    }
+
+    setResetLoading(true);
+    setResetError("");
+    try {
+      await verifySecurityAnswerAndResetPassword(
+        resetQuestionData.username,
+        resetAnswer,
+        resetNewPassword
+      );
+      setResetSuccessMsg(`Password reset successfully for '${resetQuestionData.name}'!`);
+      setUsername(resetQuestionData.username);
+      setPassword("");
+      setTimeout(() => {
+        setShowResetDrawer(false);
+        setResetQuestionData(null);
+        setResetAnswer("");
+        setResetNewPassword("");
+        setResetConfirmPassword("");
+        setResetSuccessMsg("");
+      }, 2500);
+    } catch (err) {
+      setResetError(err.message || "Failed to reset password.");
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  const handleCancelReset = () => {
+    setShowResetDrawer(false);
+    setResetQuestionData(null);
+    setResetAnswer("");
+    setResetNewPassword("");
+    setResetConfirmPassword("");
+    setResetError("");
+    setResetSuccessMsg("");
   };
 
   const toggleStyle = (active) => ({
@@ -276,44 +354,268 @@ export function StaffPage({
                 </button>
               </form>
 
-              {/* Forgot Password Notice */}
-              <div style={{ marginTop: 20, textAlign: "center" }}>
-                <button
-                  type="button"
-                  onClick={() => setShowHelp((h) => !h)}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: theme.muted,
-                    fontSize: 12,
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                    textUnderlineOffset: 3,
-                    fontFamily: "'Outfit', sans-serif",
-                    padding: "4px 8px",
-                    transition: "color 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = theme.accent)}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = theme.muted)}
-                >
-                  {showHelp ? "Close help" : "Forgot your password?"}
-                </button>
-
-                {showHelp && (
+              {/* Self-Service Password Reset Drawer (BK-38 / FEAT-11) */}
+              <div style={{ marginTop: 22, textAlign: "center" }}>
+                {!showResetDrawer ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowResetDrawer(true);
+                      setResetUsername(username || "");
+                      setResetError("");
+                      setResetSuccessMsg("");
+                    }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: theme.muted,
+                      fontSize: 12,
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                      textUnderlineOffset: 3,
+                      fontFamily: "'Outfit', sans-serif",
+                      padding: "4px 8px",
+                      transition: "color 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = theme.accent)}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = theme.muted)}
+                  >
+                    Forgot your password? Reset via Secret Question
+                  </button>
+                ) : (
                   <div
                     style={{
-                      marginTop: 14,
-                      padding: "16px 20px",
-                      borderRadius: 12,
+                      marginTop: 10,
+                      padding: "20px 22px",
+                      borderRadius: 14,
                       background: theme.surfaceAlt,
-                      border: `1px solid ${theme.muted}20`,
-                      textAlign: "center",
-                      fontSize: 12,
-                      color: theme.muted,
-                      lineHeight: 1.6,
+                      border: `1px solid ${theme.accent}35`,
+                      textAlign: "left",
+                      boxShadow: "0 6px 24px rgba(0,0,0,0.08)",
                     }}
                   >
-                    To reset your staff credentials, please contact a venue Administrator or General Manager.
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                      <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: theme.heading, fontFamily: "'Outfit', sans-serif" }}>
+                        🔑 Reset Password via Secret Question
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={handleCancelReset}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: theme.muted,
+                          fontSize: 12,
+                          cursor: "pointer",
+                          padding: "2px 6px",
+                        }}
+                      >
+                        ✕ Close
+                      </button>
+                    </div>
+
+                    <p style={{ margin: "0 0 14px 0", fontSize: 12, color: theme.muted, lineHeight: 1.5 }}>
+                      Answer your pre-registered security question to set a new password.
+                    </p>
+
+                    {resetError && (
+                      <div
+                        style={{
+                          padding: "10px 12px",
+                          borderRadius: 8,
+                          marginBottom: 12,
+                          background: "#FEE2E2",
+                          color: "#991B1B",
+                          border: "1px solid #FCA5A5",
+                          fontSize: 12,
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        ⚠️ {resetError}
+                      </div>
+                    )}
+
+                    {resetSuccessMsg && (
+                      <div
+                        style={{
+                          padding: "10px 12px",
+                          borderRadius: 8,
+                          marginBottom: 12,
+                          background: `${COLORS.mossGreen}18`,
+                          color: COLORS.mossGreen,
+                          border: `1px solid ${COLORS.mossGreen}40`,
+                          fontSize: 12,
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        ✓ {resetSuccessMsg}
+                      </div>
+                    )}
+
+                    {!resetQuestionData ? (
+                      <form onSubmit={handleFindQuestion}>
+                        <label style={{ display: "block", fontSize: 11, fontWeight: 500, color: theme.muted, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          Step 1: Enter Username
+                        </label>
+                        <input
+                          type="text"
+                          value={resetUsername}
+                          onChange={(e) => setResetUsername(e.target.value)}
+                          placeholder="e.g. deepak, pooja, manager, chef..."
+                          autoFocus
+                          style={{
+                            width: "100%",
+                            padding: "10px 14px",
+                            borderRadius: 8,
+                            border: `1px solid ${theme.muted}30`,
+                            background: theme.surface,
+                            color: theme.text,
+                            fontFamily: "'Outfit', sans-serif",
+                            fontSize: 13,
+                            marginBottom: 12,
+                            boxSizing: "border-box",
+                          }}
+                        />
+                        <button
+                          type="submit"
+                          disabled={!resetUsername.trim()}
+                          style={{
+                            width: "100%",
+                            padding: "10px",
+                            borderRadius: 8,
+                            border: "none",
+                            background: resetUsername.trim() ? theme.accent : `${theme.muted}30`,
+                            color: resetUsername.trim() ? "#fff" : theme.muted,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            cursor: resetUsername.trim() ? "pointer" : "not-allowed",
+                          }}
+                        >
+                          Find My Secret Question →
+                        </button>
+                      </form>
+                    ) : (
+                      <form onSubmit={handleExecuteReset}>
+                        <div
+                          style={{
+                            padding: "10px 14px",
+                            borderRadius: 8,
+                            background: `${theme.accent}12`,
+                            border: `1px solid ${theme.accent}30`,
+                            marginBottom: 14,
+                            fontSize: 12,
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          <div style={{ fontSize: 11, color: theme.muted, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>
+                            Account: <strong>{resetQuestionData.name}</strong> (@{resetQuestionData.username})
+                          </div>
+                          <div style={{ color: theme.heading, fontWeight: 500 }}>
+                            ❓ {resetQuestionData.question}
+                          </div>
+                        </div>
+
+                        <label style={{ display: "block", fontSize: 11, fontWeight: 500, color: theme.muted, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          Step 2: Secret Answer
+                        </label>
+                        <input
+                          type="text"
+                          value={resetAnswer}
+                          onChange={(e) => setResetAnswer(e.target.value)}
+                          placeholder="Enter your secret answer..."
+                          autoFocus
+                          style={{
+                            width: "100%",
+                            padding: "10px 14px",
+                            borderRadius: 8,
+                            border: `1px solid ${theme.muted}30`,
+                            background: theme.surface,
+                            color: theme.text,
+                            fontFamily: "'Outfit', sans-serif",
+                            fontSize: 13,
+                            marginBottom: 12,
+                            boxSizing: "border-box",
+                          }}
+                        />
+
+                        <label style={{ display: "block", fontSize: 11, fontWeight: 500, color: theme.muted, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          Step 3: New Password (min 6 characters)
+                        </label>
+                        <input
+                          type="password"
+                          value={resetNewPassword}
+                          onChange={(e) => setResetNewPassword(e.target.value)}
+                          placeholder="Enter new password..."
+                          style={{
+                            width: "100%",
+                            padding: "10px 14px",
+                            borderRadius: 8,
+                            border: `1px solid ${theme.muted}30`,
+                            background: theme.surface,
+                            color: theme.text,
+                            fontFamily: "'Outfit', sans-serif",
+                            fontSize: 13,
+                            marginBottom: 10,
+                            boxSizing: "border-box",
+                          }}
+                        />
+
+                        <input
+                          type="password"
+                          value={resetConfirmPassword}
+                          onChange={(e) => setResetConfirmPassword(e.target.value)}
+                          placeholder="Confirm new password..."
+                          style={{
+                            width: "100%",
+                            padding: "10px 14px",
+                            borderRadius: 8,
+                            border: `1px solid ${theme.muted}30`,
+                            background: theme.surface,
+                            color: theme.text,
+                            fontFamily: "'Outfit', sans-serif",
+                            fontSize: 13,
+                            marginBottom: 14,
+                            boxSizing: "border-box",
+                          }}
+                        />
+
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <button
+                            type="submit"
+                            disabled={resetLoading || !resetAnswer.trim() || !resetNewPassword}
+                            style={{
+                              flex: 1,
+                              padding: "10px",
+                              borderRadius: 8,
+                              border: "none",
+                              background: theme.accent,
+                              color: "#fff",
+                              fontSize: 12,
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              opacity: resetLoading || !resetAnswer.trim() || !resetNewPassword ? 0.6 : 1,
+                            }}
+                          >
+                            {resetLoading ? "Verifying..." : "Verify & Save Password"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setResetQuestionData(null)}
+                            style={{
+                              padding: "10px 14px",
+                              borderRadius: 8,
+                              border: `1px solid ${theme.muted}30`,
+                              background: "transparent",
+                              color: theme.muted,
+                              fontSize: 12,
+                              cursor: "pointer",
+                            }}
+                          >
+                            Back
+                          </button>
+                        </div>
+                      </form>
+                    )}
                   </div>
                 )}
               </div>
