@@ -121,6 +121,7 @@ The following features have been scoped or requested for future exploration once
 | **BK-30** | **Frosted Mobile Hospitality Quick-Action Bar** | Sticky frosted bottom action bar on mobile devices offering 1-tap Book Table, Call, Directions, and Opening Hours with glassmorphic styling. | High | 🔵 Prioritised |
 | **BK-31** | **Real-Time Kitchen & Service Status Pill** | Dynamic navbar pill indicating live kitchen state (e.g., "🟢 Open Now · Serving Daytime Brunch" / "🌙 Evening Plates from 5:30pm") based on current London time. | High | 🔵 Prioritised |
 | **BK-33** | **Signature Dish Visual Peek & Lightbox Drawer** | Discrete photo indicator and modal lightbox for signature menu items (e.g., Cardamom French Toast, Old Delhi Butter Chicken, V60 Pour-Over). | Medium | ⚪ Backlog |
+| **BK-36** | **Omnichannel Opening Hours Synchronization (Toast, Website & Google)** | Audit, align, and synchronize venue operating hours and service schedules across all guest touchpoints: Toast ePOS & Toast Tables booking slots, website UI (Footer, Contact page, Schema.org JSON-LD `openingHoursSpecification`, real-time service pill BK-31), and Google Business Profile (Google Maps, Search Local Pack, and Holiday Hours). Ensures consistent daytime café hours, evening dining hours, kitchen last-call times, and bank holiday schedules. | High | 🔵 Prioritised |
 
 ### 3.3 Marketing & Community Growth
 | ID | Feature | Description | Priority | Status |
