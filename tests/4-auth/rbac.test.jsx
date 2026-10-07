@@ -5,12 +5,14 @@ import {
   getStaffUsers,
   deleteStaffUser,
   resetStaffUsersToDefault,
+  SECURITY_QUESTIONS,
+  setupSecurityQuestion,
   getSecurityQuestionForUser,
   verifySecurityAnswerAndResetPassword,
   authenticateStaff,
 } from '../../src/utils/userManager'
 
-describe('BK-14: RBAC & User Management Regression Suite', () => {
+describe('BK-14 & BK-38: RBAC & User Management Regression Suite', () => {
   beforeEach(() => {
     resetStaffUsersToDefault()
   })
@@ -40,7 +42,7 @@ describe('BK-14: RBAC & User Management Regression Suite', () => {
     expect(() => deleteStaffUser('pooja')).toThrow(/Owner account cannot be deleted/i)
   })
 
-  it('provides default seeded users with correct roles', () => {
+  it('provides default seeded users with correct roles and NO predefined security answers', () => {
     const users = getStaffUsers()
     const owner = users.find(u => u.username === 'pooja')
     const manager = users.find(u => u.username === 'manager')
@@ -48,38 +50,63 @@ describe('BK-14: RBAC & User Management Regression Suite', () => {
     expect(owner).toBeDefined()
     expect(owner.role).toBe('admin')
     expect(owner.isProtected).toBe(true)
+    expect(owner.securityQuestion).toBeNull()
+    expect(owner.securityAnswerHash).toBeNull()
 
     expect(manager).toBeDefined()
     expect(manager.role).toBe('manager')
+    expect(manager.securityQuestion).toBeNull()
+    expect(manager.securityAnswerHash).toBeNull()
   })
 
-  it('BK-38: retrieves configured security questions for users and aliases', () => {
-    const deepakQ = getSecurityQuestionForUser('deepak')
-    expect(deepakQ.question).toBe('What is your favorite dish at The Sixth Element?')
+  it('BK-38: populates 6-8 predefined questions for dropdown selection', () => {
+    expect(SECURITY_QUESTIONS.length).toBeGreaterThanOrEqual(6)
+    expect(SECURITY_QUESTIONS.length).toBeLessThanOrEqual(8)
+    SECURITY_QUESTIONS.forEach(q => {
+      expect(typeof q).toBe('string')
+      expect(q.length).toBeGreaterThan(10)
+    })
+  })
 
-    const adminQ = getSecurityQuestionForUser('admin')
-    expect(adminQ.question).toBe('What is your favorite dish at The Sixth Element?')
-
-    const poojaQ = getSecurityQuestionForUser('pooja')
-    expect(poojaQ.question).toBe('What city or town was your mother born in?')
-
+  it('BK-38: rejects password reset when user has not completed one-time security setup', () => {
+    expect(() => getSecurityQuestionForUser('deepak')).toThrow(
+      /No security question has been set up for 'deepak' yet/i
+    )
     expect(() => getSecurityQuestionForUser('nonexistent_user')).toThrow(/No account found/i)
   })
 
-  it('BK-38: rejects incorrect security answers during password reset', async () => {
-    await expect(
-      verifySecurityAnswerAndResetPassword('deepak', 'Wrong Answer', 'NewPass123!')
-    ).rejects.toThrow(/Incorrect answer to secret question/i)
-  })
+  it('BK-38: allows user to select a question and complete one-time setup, then reset password', async () => {
+    // 1. One-time setup: user selects a question from dropdown and submits their secret answer
+    const chosenQuestion = SECURITY_QUESTIONS[0]
+    const setupRes = await setupSecurityQuestion('deepak', chosenQuestion, 'Greenwood High')
+    expect(setupRes.success).toBe(true)
+    expect(setupRes.question).toBe(chosenQuestion)
 
-  it('BK-38: allows successful password reset with valid security answer and enables login', async () => {
-    // Reset Deepak's password using the seeded secret answer ('Spiced Brunch')
-    const resetRes = await verifySecurityAnswerAndResetPassword('deepak', 'Spiced Brunch', 'MyBrandNewPass2026!')
+    // 2. Querying user's security question now retrieves their chosen question
+    const deepakQ = getSecurityQuestionForUser('deepak')
+    expect(deepakQ.question).toBe(chosenQuestion)
+
+    // Alias 'admin' resolves to deepak's question
+    const adminQ = getSecurityQuestionForUser('admin')
+    expect(adminQ.question).toBe(chosenQuestion)
+
+    // 3. Rejects incorrect answers
+    await expect(
+      verifySecurityAnswerAndResetPassword('deepak', 'Wrong School', 'NewPass123!')
+    ).rejects.toThrow(/Incorrect answer to secret question/i)
+
+    // 4. Accepts valid answer (case-insensitive & trimmed) and resets password
+    const resetRes = await verifySecurityAnswerAndResetPassword(
+      'deepak',
+      '  greenwood high  ',
+      'MyBrandNewPass2026!'
+    )
     expect(resetRes.success).toBe(true)
 
-    // Verify user can now log in with the new password
+    // 5. User logs in with newly reset password
     const loginRes = await authenticateStaff('deepak', 'MyBrandNewPass2026!')
     expect(loginRes.username).toBe('deepak')
+    expect(loginRes.hasSecurityQuestion).toBe(true)
     expect(loginRes.token).toBeDefined()
   })
 })

@@ -1,9 +1,12 @@
 // src/pages/StaffPage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { COLORS } from "../theme/tokens";
 import {
   ROLES,
   hasPermission,
+  SECURITY_QUESTIONS,
+  getStaffUsers,
+  setupSecurityQuestion,
   getSecurityQuestionForUser,
   verifySecurityAnswerAndResetPassword,
 } from "../utils/userManager";
@@ -51,6 +54,62 @@ export function StaffPage({
   ].filter(Boolean);
 
   const [activeTab, setActiveTab] = useState(() => (canManageUsers ? "users" : availableTabs[0]?.id || "promos"));
+
+  // ── One-Time Security Question Setup (BK-38) ─────────────────────
+  const [staffUsersList, setStaffUsersList] = useState(() => getStaffUsers());
+  useEffect(() => {
+    const handleSync = () => setStaffUsersList(getStaffUsers());
+    window.addEventListener("tse_staff_users_updated", handleSync);
+    return () => window.removeEventListener("tse_staff_users_updated", handleSync);
+  }, []);
+
+  const currentUserData = staffUsersList.find(
+    (u) => u.username?.toLowerCase() === adminAuth.username?.toLowerCase()
+  );
+  const hasSecuritySetup = Boolean(
+    currentUserData?.securityQuestion && currentUserData?.securityAnswerHash
+  );
+
+  const [showSetupModal, setShowSetupModal] = useState(false);
+  const [setupQuestion, setSetupQuestion] = useState(SECURITY_QUESTIONS[0]);
+  const [setupAnswer, setSetupAnswer] = useState("");
+  const [setupConfirmAnswer, setSetupConfirmAnswer] = useState("");
+  const [setupError, setSetupError] = useState("");
+  const [setupSuccess, setSetupSuccess] = useState("");
+  const [setupLoading, setSetupLoading] = useState(false);
+
+  const handleSaveSecuritySetup = async (e) => {
+    if (e) e.preventDefault();
+    if (!setupQuestion) {
+      setSetupError("Please select a security question from the dropdown list.");
+      return;
+    }
+    if (!setupAnswer || setupAnswer.trim().length < 2) {
+      setSetupError("Secret answer must be at least 2 characters.");
+      return;
+    }
+    if (setupConfirmAnswer && setupAnswer.trim().toLowerCase() !== setupConfirmAnswer.trim().toLowerCase()) {
+      setSetupError("Answers do not match. Please verify and re-enter.");
+      return;
+    }
+
+    setSetupLoading(true);
+    setSetupError("");
+    try {
+      await setupSecurityQuestion(adminAuth.username, setupQuestion, setupAnswer);
+      setSetupSuccess("Security recovery question saved successfully!");
+      setSetupAnswer("");
+      setSetupConfirmAnswer("");
+      setTimeout(() => {
+        setSetupSuccess("");
+        setShowSetupModal(false);
+      }, 2000);
+    } catch (err) {
+      setSetupError(err.message || "Failed to save security setup.");
+    } finally {
+      setSetupLoading(false);
+    }
+  };
 
   const handleLoginSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -733,6 +792,65 @@ export function StaffPage({
                   {roleDef.label} {adminAuth.title ? `· ${adminAuth.title}` : ""}
                 </div>
               </div>
+              {hasSecuritySetup ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSetupQuestion(currentUserData?.securityQuestion || SECURITY_QUESTIONS[0]);
+                    setSetupAnswer("");
+                    setSetupConfirmAnswer("");
+                    setSetupError("");
+                    setShowSetupModal(true);
+                  }}
+                  title="Security question configured. Click to review or update."
+                  style={{
+                    marginLeft: 6,
+                    background: `${COLORS.mossGreen}18`,
+                    border: `1px solid ${COLORS.mossGreen}50`,
+                    borderRadius: 16,
+                    padding: "5px 11px",
+                    fontSize: 11,
+                    color: COLORS.mossGreen,
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    fontFamily: "'Outfit', sans-serif",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 4,
+                  }}
+                >
+                  🔒 Question Set
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSetupQuestion(SECURITY_QUESTIONS[0]);
+                    setSetupAnswer("");
+                    setSetupConfirmAnswer("");
+                    setSetupError("");
+                    setShowSetupModal(true);
+                  }}
+                  title="No security question configured yet. Click to complete one-time setup."
+                  style={{
+                    marginLeft: 6,
+                    background: `${COLORS.warmAmber}22`,
+                    border: `1px solid ${COLORS.warmAmber}70`,
+                    borderRadius: 16,
+                    padding: "5px 11px",
+                    fontSize: 11,
+                    color: COLORS.warmAmber,
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    fontFamily: "'Outfit', sans-serif",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 4,
+                  }}
+                >
+                  ⚠️ Setup Question
+                </button>
+              )}
               <button
                 onClick={onLogout}
                 style={{
@@ -762,6 +880,245 @@ export function StaffPage({
             </div>
           </div>
         </FadeIn>
+
+        {/* One-Time Security Question Setup Card (BK-38) */}
+        {!hasSecuritySetup && (
+          <FadeIn delay={0.05}>
+            <div
+              style={{
+                marginBottom: 28,
+                padding: "22px 26px",
+                borderRadius: 16,
+                background: theme.surfaceAlt,
+                border: `1.5px solid ${COLORS.warmAmber}70`,
+                boxShadow: "0 6px 24px rgba(0,0,0,0.06)",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 22 }}>🛡️</span>
+                    <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: theme.heading, fontFamily: "'Outfit', sans-serif" }}>
+                      One-Time Security Question Setup Required
+                    </h3>
+                    <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 10, background: `${COLORS.warmAmber}25`, color: COLORS.warmAmber }}>
+                      BK-38
+                    </span>
+                  </div>
+                  <p style={{ margin: "6px 0 0 0", fontSize: 13, color: theme.muted, lineHeight: 1.5, maxWidth: 760 }}>
+                    Your account does not have a secret question configured. Please select one of the predefined questions below and submit your secret answer as a one-time setup to enable self-service password recovery.
+                  </p>
+                </div>
+              </div>
+
+              {setupError && (
+                <div style={{ padding: "10px 14px", borderRadius: 8, marginBottom: 12, background: "#FEE2E2", color: "#991B1B", border: "1px solid #FCA5A5", fontSize: 12 }}>
+                  ⚠️ {setupError}
+                </div>
+              )}
+              {setupSuccess && (
+                <div style={{ padding: "10px 14px", borderRadius: 8, marginBottom: 12, background: `${COLORS.mossGreen}18`, color: COLORS.mossGreen, border: `1px solid ${COLORS.mossGreen}40`, fontSize: 12 }}>
+                  ✓ {setupSuccess}
+                </div>
+              )}
+
+              <form onSubmit={handleSaveSecuritySetup} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div>
+                  <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: theme.muted, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+                    Choose Security Question (Dropdown)
+                  </label>
+                  <select
+                    value={setupQuestion}
+                    onChange={(e) => setSetupQuestion(e.target.value)}
+                    style={{
+                      width: "100%", padding: "11px 14px", borderRadius: 8,
+                      border: `1px solid ${theme.muted}30`, background: theme.surface,
+                      color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 13,
+                    }}
+                  >
+                    {SECURITY_QUESTIONS.map((q) => (
+                      <option key={q} value={q}>{q}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: theme.muted, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+                      Secret Answer
+                    </label>
+                    <input
+                      type="text"
+                      value={setupAnswer}
+                      onChange={(e) => setSetupAnswer(e.target.value)}
+                      placeholder="Enter your secret answer..."
+                      style={{
+                        width: "100%", padding: "11px 14px", borderRadius: 8,
+                        border: `1px solid ${theme.muted}30`, background: theme.surface,
+                        color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 13,
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: theme.muted, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+                      Confirm Secret Answer
+                    </label>
+                    <input
+                      type="text"
+                      value={setupConfirmAnswer}
+                      onChange={(e) => setSetupConfirmAnswer(e.target.value)}
+                      placeholder="Confirm your secret answer..."
+                      style={{
+                        width: "100%", padding: "11px 14px", borderRadius: 8,
+                        border: `1px solid ${theme.muted}30`, background: theme.surface,
+                        color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 13,
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+                  <button
+                    type="submit"
+                    disabled={setupLoading || !setupAnswer.trim()}
+                    style={{
+                      padding: "11px 22px", borderRadius: 8, border: "none",
+                      background: theme.accent, color: "#fff",
+                      fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 600,
+                      cursor: setupLoading || !setupAnswer.trim() ? "not-allowed" : "pointer",
+                      opacity: setupLoading || !setupAnswer.trim() ? 0.6 : 1,
+                    }}
+                  >
+                    {setupLoading ? "Saving Security Setup..." : "Save One-Time Security Question"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </FadeIn>
+        )}
+
+        {/* Security Question Update Modal */}
+        {showSetupModal && (
+          <div
+            style={{
+              position: "fixed", inset: 0, zIndex: 4000,
+              background: "rgba(0,0,0,0.65)", display: "flex", alignItems: "center", justifyContent: "center",
+              padding: 24,
+            }}
+            onClick={() => setShowSetupModal(false)}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: "100%", maxWidth: 440, background: theme.bg,
+                borderRadius: 14, padding: 26, border: `1px solid ${theme.muted}25`,
+                boxShadow: "0 20px 50px rgba(0,0,0,0.3)",
+              }}
+            >
+              <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, color: theme.heading, margin: 0 }}>
+                🛡️ Secret Recovery Question Setup
+              </h4>
+              <p style={{ fontSize: 12, color: theme.muted, marginTop: 6, marginBottom: 16, lineHeight: 1.5 }}>
+                Select one of the {SECURITY_QUESTIONS.length} predefined security questions and set your secret answer.
+              </p>
+
+              {setupError && (
+                <div style={{ padding: "10px 12px", borderRadius: 8, marginBottom: 12, background: "#FEE2E2", color: "#991B1B", border: "1px solid #FCA5A5", fontSize: 12 }}>
+                  ⚠️ {setupError}
+                </div>
+              )}
+              {setupSuccess && (
+                <div style={{ padding: "10px 12px", borderRadius: 8, marginBottom: 12, background: `${COLORS.mossGreen}18`, color: COLORS.mossGreen, border: `1px solid ${COLORS.mossGreen}40`, fontSize: 12 }}>
+                  ✓ {setupSuccess}
+                </div>
+              )}
+
+              <form onSubmit={handleSaveSecuritySetup} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div>
+                  <label style={{ display: "block", fontSize: 10, textTransform: "uppercase", color: theme.muted, fontWeight: 600, marginBottom: 4 }}>
+                    Choose Security Question
+                  </label>
+                  <select
+                    value={setupQuestion}
+                    onChange={(e) => setSetupQuestion(e.target.value)}
+                    style={{
+                      width: "100%", padding: "10px 12px", borderRadius: 6,
+                      border: `1px solid ${theme.muted}25`, background: theme.surfaceAlt,
+                      color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 12,
+                    }}
+                  >
+                    {SECURITY_QUESTIONS.map((q) => (
+                      <option key={q} value={q}>{q}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: 10, textTransform: "uppercase", color: theme.muted, fontWeight: 600, marginBottom: 4 }}>
+                    Secret Answer
+                  </label>
+                  <input
+                    type="text"
+                    value={setupAnswer}
+                    onChange={(e) => setSetupAnswer(e.target.value)}
+                    placeholder="Enter secret answer..."
+                    style={{
+                      width: "100%", padding: "10px 12px", borderRadius: 6,
+                      border: `1px solid ${theme.muted}25`, background: theme.surfaceAlt,
+                      color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 12,
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: 10, textTransform: "uppercase", color: theme.muted, fontWeight: 600, marginBottom: 4 }}>
+                    Confirm Secret Answer
+                  </label>
+                  <input
+                    type="text"
+                    value={setupConfirmAnswer}
+                    onChange={(e) => setSetupConfirmAnswer(e.target.value)}
+                    placeholder="Confirm secret answer..."
+                    style={{
+                      width: "100%", padding: "10px 12px", borderRadius: 6,
+                      border: `1px solid ${theme.muted}25`, background: theme.surfaceAlt,
+                      color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 12,
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                  <button
+                    type="submit"
+                    disabled={setupLoading || !setupAnswer.trim()}
+                    style={{
+                      flex: 1, padding: "10px", borderRadius: 6, border: "none",
+                      background: theme.accent, color: "#fff", cursor: "pointer",
+                      fontSize: 12, fontWeight: 600,
+                    }}
+                  >
+                    {setupLoading ? "Saving..." : "Save Security Setup"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowSetupModal(false)}
+                    style={{
+                      padding: "10px 14px", borderRadius: 6, border: `1px solid ${theme.muted}25`,
+                      background: "transparent", color: theme.muted, cursor: "pointer", fontSize: 12,
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Staff Access Notice if non-admin */}
         {!canEditSettings && (

@@ -63,14 +63,18 @@ export const ROLES = {
 
 // Standard security questions for self-service password recovery (BK-38)
 export const SECURITY_QUESTIONS = [
-  "What is your favorite dish at The Sixth Element?",
-  "What street did you grow up on as a child?",
-  "What was the name of your first pet?",
+  "What was the name of your first school or college?",
   "What city or town was your mother born in?",
-  "What was the model of your first car or bicycle?",
+  "What was the make and model of your first car or bicycle?",
+  "What was the name of your first childhood pet?",
+  "What street did you grow up on as a child?",
+  "What is your favorite dish or drink at The Sixth Element?",
+  "What was the name of your favorite teacher or mentor?",
+  "In what city did you attend your first live concert?",
 ];
 
 // Initial seeded accounts (hashed using SHA-256)
+// Security questions & answers are not pre-seeded; users choose a question and set their answer during one-time setup.
 export const DEFAULT_USERS = [
   {
     username: "pooja",
@@ -78,8 +82,8 @@ export const DEFAULT_USERS = [
     title: "Owner",
     role: "admin",
     passwordHash: "b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4",
-    securityQuestion: "What city or town was your mother born in?",
-    securityAnswerHash: "6089854c94ca5454b76be6752c562901a985f64c9a946f62976aeab593b83161", // london
+    securityQuestion: null,
+    securityAnswerHash: null,
     isProtected: true, // Primary owner account
     createdAt: "2026-10-04",
   },
@@ -89,8 +93,8 @@ export const DEFAULT_USERS = [
     title: "Administrator",
     role: "admin",
     passwordHash: "b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4",
-    securityQuestion: "What is your favorite dish at The Sixth Element?",
-    securityAnswerHash: "93de61d668f23712794e65cbba363c8465d2c61b3dc742433315bc3b0b4cdcb1", // spiced brunch
+    securityQuestion: null,
+    securityAnswerHash: null,
     isProtected: true,
     createdAt: "2026-10-04",
   },
@@ -100,8 +104,8 @@ export const DEFAULT_USERS = [
     title: "General Manager",
     role: "manager",
     passwordHash: "32730f193cd7a81697cf9d63fb33c8f72442de952e511ea152f8d81a9bc7244c",
-    securityQuestion: "What is your favorite dish at The Sixth Element?",
-    securityAnswerHash: "d8e2ac35716b3c8d8dd0ca6cfdb47ea5b9a783db5e0be44ef9e6126d882e95cb", // truffle toast
+    securityQuestion: null,
+    securityAnswerHash: null,
     isProtected: false,
     createdAt: "2026-10-04",
   },
@@ -111,8 +115,8 @@ export const DEFAULT_USERS = [
     title: "Head Chef",
     role: "kitchen",
     passwordHash: "eb95682c0d9d8896842b70c71ce6af9a430f22231cdbcb709cb51fb63dbc5fd8",
-    securityQuestion: "What is your favorite dish at The Sixth Element?",
-    securityAnswerHash: "075fded5c97d2f2981ff1a017bb2e440a009d6db8de7bb22fe6029af27154027", // chef special
+    securityQuestion: null,
+    securityAnswerHash: null,
     isProtected: false,
     createdAt: "2026-10-04",
   },
@@ -127,7 +131,6 @@ export function getStaffUsers() {
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        // Guarantee seeded accounts have fallback questions/answers if missing in local storage
         return parsed.map((user) => {
           const defaultMatch = DEFAULT_USERS.find(
             (d) => d.username.toLowerCase() === user.username.toLowerCase()
@@ -136,8 +139,8 @@ export function getStaffUsers() {
             return {
               ...defaultMatch,
               ...user,
-              securityQuestion: user.securityQuestion || defaultMatch.securityQuestion,
-              securityAnswerHash: user.securityAnswerHash || defaultMatch.securityAnswerHash,
+              securityQuestion: user.securityQuestion || null,
+              securityAnswerHash: user.securityAnswerHash || null,
             };
           }
           return user;
@@ -207,6 +210,8 @@ export async function authenticateStaff(username, password) {
     username: found.username,
     role: found.role,
     title: found.title || "",
+    hasSecurityQuestion: Boolean(found.securityQuestion && found.securityAnswerHash),
+    securityQuestion: found.securityQuestion || null,
     token: token,
   };
 }
@@ -234,6 +239,8 @@ export function verifyStaffSession(token) {
       username: found.username,
       role: found.role,
       title: found.title || "",
+      hasSecurityQuestion: Boolean(found.securityQuestion && found.securityAnswerHash),
+      securityQuestion: found.securityQuestion || null,
     };
   } catch {
     return null;
@@ -272,9 +279,10 @@ export function getSecurityQuestionForUser(username) {
   }
 
   const question = found.securityQuestion;
-  if (!question) {
+  const answerHash = found.securityAnswerHash;
+  if (!question || !answerHash) {
     throw new Error(
-      `No security question is configured for '${found.name || found.username}'. Please contact an Administrator to reset your credentials.`
+      `No security question has been set up for '${found.name || found.username}' yet. Please log in with your credentials to complete your one-time security setup, or contact an Administrator.`
     );
   }
 
@@ -282,6 +290,71 @@ export function getSecurityQuestionForUser(username) {
     username: found.username,
     name: found.name || found.username,
     question: question,
+  };
+}
+
+/**
+ * One-time setup or update of security question & answer for a staff user (BK-38).
+ * Accepts any question selected from the predefined list and securely hashes the answer.
+ */
+export async function setupSecurityQuestion(username, question, answer) {
+  if (!username || !username.trim()) {
+    throw new Error("Username is required.");
+  }
+  if (!question || !question.trim()) {
+    throw new Error("Please select a security question from the dropdown list.");
+  }
+  if (!answer || answer.trim().length < 2) {
+    throw new Error("Please provide a secret answer of at least 2 characters.");
+  }
+
+  let cleanUser = username.trim().toLowerCase();
+  if (cleanUser === "admin" || cleanUser === "administrator") cleanUser = "deepak";
+  if (cleanUser === "owner") cleanUser = "pooja";
+
+  const users = getStaffUsers();
+  let index = users.findIndex(
+    (u) =>
+      u.username.toLowerCase() === cleanUser ||
+      (u.name && u.name.toLowerCase() === cleanUser)
+  );
+
+  let targetUser = index !== -1 ? users[index] : null;
+
+  if (!targetUser) {
+    targetUser = DEFAULT_USERS.find(
+      (u) =>
+        u.username.toLowerCase() === cleanUser ||
+        (u.name && u.name.toLowerCase() === cleanUser)
+    );
+  }
+
+  if (!targetUser) {
+    throw new Error(`Account '${username}' not found.`);
+  }
+
+  const answerHash = await sha256(answer.trim().toLowerCase());
+  const updatedUser = {
+    ...targetUser,
+    securityQuestion: question.trim(),
+    securityAnswerHash: answerHash,
+  };
+
+  let updatedList;
+  if (index !== -1) {
+    updatedList = [...users];
+    updatedList[index] = updatedUser;
+  } else {
+    updatedList = [...users, updatedUser];
+  }
+
+  saveStaffUsers(updatedList);
+
+  return {
+    success: true,
+    username: targetUser.username,
+    name: targetUser.name || targetUser.username,
+    question: question.trim(),
   };
 }
 
@@ -324,14 +397,16 @@ export async function verifySecurityAnswerAndResetPassword(username, answer, new
     throw new Error(`Account '${username}' not found.`);
   }
 
-  const defaultAccount = DEFAULT_USERS.find(
-    (d) => d.username.toLowerCase() === targetUser.username.toLowerCase()
-  );
+  const expectedHash = targetUser.securityAnswerHash;
+  if (!expectedHash) {
+    throw new Error(
+      `No security question has been configured for '${targetUser.name || targetUser.username}'. Please contact an Administrator to reset your credentials.`
+    );
+  }
 
   const answerHash = await sha256(answer.trim().toLowerCase());
-  const expectedHash = targetUser.securityAnswerHash || defaultAccount?.securityAnswerHash;
 
-  if (!expectedHash || answerHash !== expectedHash) {
+  if (answerHash !== expectedHash) {
     throw new Error("Incorrect answer to secret question. Please try again.");
   }
 
@@ -385,7 +460,7 @@ export async function addStaffUser({ username, name, role, title, password, secu
     role: role || "staff",
     title: (title || "").trim(),
     passwordHash: hash,
-    securityQuestion: (securityQuestion || (securityAnswer ? SECURITY_QUESTIONS[0] : "")).trim(),
+    securityQuestion: (securityQuestion && answerHash) ? securityQuestion.trim() : null,
     securityAnswerHash: answerHash,
     isProtected: false,
     createdAt: new Date().toISOString().slice(0, 10),

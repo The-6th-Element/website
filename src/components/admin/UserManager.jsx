@@ -27,7 +27,7 @@ export function UserManager({ theme, currentUser }) {
     title: "",
     role: "manager",
     password: "",
-    securityQuestion: SECURITY_QUESTIONS[0],
+    securityQuestion: "",
     securityAnswer: "",
   };
   const [form, setForm] = useState(blankForm);
@@ -156,9 +156,13 @@ export function UserManager({ theme, currentUser }) {
                   </div>
                   <div style={{ fontSize: 11, color: theme.muted, marginTop: 1, display: "flex", alignItems: "center", gap: 6 }}>
                     <span>@{u.username} {u.title ? `· ${u.title}` : ""}</span>
-                    {u.securityQuestion && (
+                    {u.securityQuestion && u.securityAnswerHash ? (
                       <span title={`Security Question: ${u.securityQuestion}`} style={{ fontSize: 10, color: COLORS.mossGreen, fontWeight: 500 }}>
-                        🔒 Question Set
+                        🔒 Question Configured
+                      </span>
+                    ) : (
+                      <span title="No security question configured yet. User will be prompted upon login." style={{ fontSize: 10, color: COLORS.warmAmber, fontWeight: 500 }}>
+                        ⚠️ Setup Pending
                       </span>
                     )}
                   </div>
@@ -286,13 +290,14 @@ export function UserManager({ theme, currentUser }) {
 
           <div>
             <label style={{ fontSize: 10, textTransform: "uppercase", color: theme.muted, fontWeight: 600 }}>
-              Secret Security Question (BK-38)
+              Secret Security Question (Optional — or user completes on first login)
             </label>
             <select
               value={form.securityQuestion}
               onChange={(e) => setForm(p => ({ ...p, securityQuestion: e.target.value }))}
               style={inputStyle}
             >
+              <option value="">-- Let user configure during one-time setup --</option>
               {SECURITY_QUESTIONS.map((q) => (
                 <option key={q} value={q}>{q}</option>
               ))}
@@ -301,13 +306,13 @@ export function UserManager({ theme, currentUser }) {
 
           <div>
             <label style={{ fontSize: 10, textTransform: "uppercase", color: theme.muted, fontWeight: 600 }}>
-              Secret Security Answer (for password reset)
+              Secret Security Answer (Optional)
             </label>
             <input
               type="text"
               value={form.securityAnswer}
               onChange={(e) => setForm(p => ({ ...p, securityAnswer: e.target.value }))}
-              placeholder="e.g. Richmond Park"
+              placeholder="Leave blank for user one-time setup"
               style={inputStyle}
             />
           </div>
