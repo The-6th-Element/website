@@ -11,7 +11,6 @@ import {
   matchesDietaryFilter,
   DIETARY_FILTERS,
 } from "../components/menu/DietaryFilterBar";
-import { useItemAvailability } from "../hooks/useItemAvailability";
 
 /**
  * Returns curated background and accent colors for dietary badges.
@@ -34,7 +33,6 @@ function getTagStyle(t, theme) {
 
 export function MenuPage({ theme, flags, onOpenStudio }) {
   const { menu } = useMenu();
-  const { isSoldOut } = useItemAvailability();
   const tabs = Object.keys(menu).map((id) => ({ id, label: menu[id].title || id, icon: menu[id].icon || "" }));
   const [activeTab, setActiveTab] = useState(() => defaultMenuTab(flags));
   const [activeDietFilter, setActiveDietFilter] = useState("all");
@@ -283,109 +281,75 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
                   {section.name}
                 </h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  {section.items.map((item, ii) => {
-                    const soldOut = isSoldOut(item.name);
-                    return (
-                      <FadeIn key={item.name} delay={ii * 0.04}>
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "flex-start",
-                            padding: "16px 0",
-                            borderBottom: ii < section.items.length - 1 ? `1px solid ${theme.muted}10` : "none",
-                            opacity: soldOut ? 0.58 : 1,
-                            transition: "all 0.3s ease",
-                          }}
-                        >
-                          <div style={{ flex: 1 }}>
-                            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
-                              <span
-                                style={{
-                                  fontSize: 16,
-                                  fontWeight: 500,
-                                  color: theme.heading,
-                                  marginRight: 4,
-                                  textDecoration: soldOut ? "line-through" : "none",
-                                }}
-                              >
-                                {item.name}
-                              </span>
-                              {soldOut && (
+                  {section.items.map((item, ii) => (
+                    <FadeIn key={item.name} delay={ii * 0.04}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          padding: "16px 0",
+                          borderBottom: ii < section.items.length - 1 ? `1px solid ${theme.muted}10` : "none",
+                          transition: "all 0.3s ease",
+                        }}
+                      >
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 4 }}>
+                            <span style={{ fontSize: 16, fontWeight: 500, color: theme.heading, marginRight: 6 }}>
+                              {item.name}
+                            </span>
+                            {item.tags.map((t) => {
+                              const badgeStyle = getTagStyle(t, theme);
+                              return (
                                 <span
-                                  className="sold-out-badge"
+                                  key={t}
+                                  className="menu-tag"
                                   style={{
-                                    background: "rgba(197, 48, 48, 0.12)",
-                                    color: "#C53030",
-                                    border: "1px solid rgba(197, 48, 48, 0.35)",
+                                    background: badgeStyle.bg,
+                                    color: badgeStyle.color,
+                                    border: `1px solid ${badgeStyle.border}`,
                                     borderRadius: 6,
                                     padding: "2px 7px",
                                     fontSize: 10,
-                                    fontWeight: 700,
-                                    letterSpacing: "0.06em",
-                                    textTransform: "uppercase",
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: 4,
+                                    fontWeight: 600,
+                                    letterSpacing: "0.05em",
+                                    lineHeight: 1.2,
                                   }}
                                 >
-                                  🔴 Sold Out Today
+                                  {t}
                                 </span>
-                              )}
-                              {item.tags.map((t) => {
-                                const badgeStyle = getTagStyle(t, theme);
-                                return (
-                                  <span
-                                    key={t}
-                                    className="menu-tag"
-                                    style={{
-                                      background: badgeStyle.bg,
-                                      color: badgeStyle.color,
-                                      border: `1px solid ${badgeStyle.border}`,
-                                      borderRadius: 6,
-                                      padding: "2px 7px",
-                                      fontSize: 10,
-                                      fontWeight: 600,
-                                      letterSpacing: "0.05em",
-                                      lineHeight: 1.2,
-                                    }}
-                                  >
-                                    {t}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                            {item.desc && (
-                              <p
-                                style={{
-                                  fontSize: 13,
-                                  color: theme.muted,
-                                  fontWeight: 300,
-                                  marginTop: 4,
-                                  lineHeight: 1.5,
-                                }}
-                              >
-                                {item.desc}
-                              </p>
-                            )}
+                              );
+                            })}
                           </div>
-                          <div
-                            style={{
-                              fontSize: 16,
-                              fontWeight: 500,
-                              color: soldOut ? theme.muted : theme.accent,
-                              textDecoration: soldOut ? "line-through" : "none",
-                              marginLeft: 20,
-                              whiteSpace: "nowrap",
-                              fontFamily: "'Cormorant Garamond', serif",
-                            }}
-                          >
-                            {item.price === "TBA" ? "TBA" : `£${item.price}`}
-                          </div>
+                          {item.desc && (
+                            <p
+                              style={{
+                                fontSize: 13,
+                                color: theme.muted,
+                                fontWeight: 300,
+                                marginTop: 4,
+                                lineHeight: 1.5,
+                              }}
+                            >
+                              {item.desc}
+                            </p>
+                          )}
                         </div>
-                      </FadeIn>
-                    );
-                  })}
+                        <div
+                          style={{
+                            fontSize: 16,
+                            fontWeight: 500,
+                            color: theme.accent,
+                            marginLeft: 20,
+                            whiteSpace: "nowrap",
+                            fontFamily: "'Cormorant Garamond', serif",
+                          }}
+                        >
+                          {item.price === "TBA" ? "TBA" : `£${item.price}`}
+                        </div>
+                      </div>
+                    </FadeIn>
+                  ))}
                 </div>
               </div>
             </FadeIn>

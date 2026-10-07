@@ -6,10 +6,11 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 
 ## 📌 Standardized Status Lifecycle
 - 🟢 **Complete**: Fully implemented, tested, verified, and live in the codebase.
-- 🟡 **Pending Go-Live**: Implementation complete; awaiting external operational action (e.g. 123-reg.co.uk DNS cutover).
+- 🟡 **Pending Go-Live / Ready to Deploy**: Implementation complete; awaiting deployment or operational release.
 - 🔵 **Prioritised**: High priority; scoped, agreed upon, and queued as immediate next priorities.
 - ⚪ **Backlog**: Validated enhancements scheduled for subsequent roadmap phases.
 - 💡 **Discovery**: Early concepts under research or viability/API feasibility assessment.
+- ❌ **Cancelled**: Deprecated, superseded, or formally scrapped per management review.
 
 ---
 
@@ -143,7 +144,7 @@ The following features have been scoped or requested for future exploration once
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
 | **BK-11** | **Toast POS Direct Menu Integration** | Explore direct sync between Toast POS API and website menu to eliminate manual dual-entry of menu items and pricing. | High (Future) | 🔵 Prioritised |
-| **BK-12** | **Menu Item Availability / 86 Toggle** | Quick-action switch in Staff Portal allowing kitchen/floor staff to 86 / mark individual dishes as "Sold Out for Today" without deleting them. Features luxury guest-facing "🔴 Sold Out Today" badge on `/menu` with dimmed opacity and strikethrough price, real-time cross-tab sync via local storage & broadcast event, search & category filtering, and companion regression tests in BK-14. | High | 🟡 Ready to Deploy |
+| **BK-12** | ~~**Menu Item Availability / 86 Toggle**~~ | *Scrapped / Cancelled per operational review.* Full dining and beverage menu remains permanently viewable online; physical 86 / stock availability is handled live at till point without modifying guest-facing digital menus. All companion code rolled back from DEV. | Low | ❌ Cancelled |
 | **BK-13** | **Audit Log of Menu Changes** | Visual timestamped history in Staff Portal recording which user made what price or item modification. | Medium | ⚪ Backlog |
 | **BK-23** | **1-Click Print-Ready PDF Menu Generator** | Export magazine-grade, formatted A4/A5 PDF physical menus directly from the in-browser Menu Studio with 1 click, eliminating manual InDesign/Word formatting when dishes or prices change. | High | 🟢 Complete |
 

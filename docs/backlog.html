@@ -126,7 +126,12 @@
     white-space: nowrap;
   }
   .badge-shipped { background: #E6F4EA; color: #137333; border: 1px solid #CEEAD6; }
+  .badge-complete { background: #E6F4EA; color: #137333; border: 1px solid #CEEAD6; }
   .badge-pending { background: #FEF7E0; color: #B06000; border: 1px solid #FEEFC3; }
+  .badge-prioritised { background: #E8F0FE; color: #1A73E8; border: 1px solid #D2E3FC; }
+  .badge-backlog { background: #F1F3F4; color: #5F6368; border: 1px solid #DADCE0; }
+  .badge-discovery { background: #F3E8FD; color: #7B1FA2; border: 1px solid #E1BEE7; }
+  .badge-cancelled { background: #FDE8E8; color: #9B1C1C; border: 1px solid #F8B4B4; }
   .badge-high { background: #FCE8E6; color: #C5221F; border: 1px solid #FAD2CF; }
   .badge-med { background: #E8F0FE; color: #1A73E8; border: 1px solid #D2E3FC; }
   .badge-low { background: #F1F3F4; color: #5F6368; border: 1px solid #DADCE0; }
@@ -248,10 +253,10 @@
       <div class="brand-subtitle">Master Product & Feature Backlog · Richmond, London</div>
     </div>
     <div class="meta-box">
-      <div><strong>Document Version:</strong> v3.1 (BK-12, BK-14, BK-29 Ready to Deploy)</div>
-      <div><strong>Date:</strong> October 6, 2026</div>
+      <div><strong>Document Version:</strong> v3.2 (BK-12 Cancelled · BK-14 &amp; BK-29 Ready to Deploy)</div>
+      <div><strong>Date:</strong> October 7, 2026</div>
       <div><strong>Branch:</strong> <code>main</code> (GitHub Pages Live) &amp; <code>dev</code></div>
-      <div><strong>Status:</strong> Phases 1–3 Complete · 3 Ready to Deploy (BK-29, BK-14, BK-12) · 21 Prioritised</div>
+      <div><strong>Status:</strong> Phases 1–3 Complete · 2 Ready to Deploy (BK-29, BK-14) · 21 Prioritised · 1 Cancelled</div>
     </div>
   </div>
 
@@ -262,7 +267,7 @@
       <div class="summary-label">Complete (🟢)</div>
     </div>
     <div class="summary-card">
-      <div class="summary-num">3</div>
+      <div class="summary-num">2</div>
       <div class="summary-label">Ready to Deploy (🟡)</div>
     </div>
     <div class="summary-card">
@@ -285,7 +290,7 @@
       <span id="filter-indicator" class="filter-indicator">Hiding 36 Completed items</span>
     </div>
     <div style="font-size: 7.5pt; color: #8C8070;">
-      Active focus: <strong style="color: #B06000;">3 Ready to Deploy (BK-29, BK-14, BK-12)</strong> · <strong style="color: #1A73E8;">21 Prioritised Candidates</strong>
+      Active focus: <strong style="color: #B06000;">2 Ready to Deploy (BK-29, BK-14)</strong> · <strong style="color: #1A73E8;">21 Prioritised Candidates</strong> · <strong style="color: #9B1C1C;">1 Cancelled (BK-12)</strong>
     </div>
   </div>
 
@@ -668,9 +673,9 @@
 
   <div class="callout" style="margin: 10px 0 14px; background: #F3F8FD; border-left-color: #1A73E8;">
     <strong>✨ Newly Added Modernization Candidates &amp; Ready Deployments:</strong><br>
-    • <strong>BK-12:</strong> Menu Item Availability &amp; 86 Toggle (Kitchen Manager Tab + "Sold Out Today" Badging) · <span style="color: #B06000; font-weight: 600;">🟡 Ready to Deploy</span><br>
-    • <strong>BK-14:</strong> Full Automated Regression Test Pack (32 tests across 8 suites + pre-deployment defect gating) · <span style="color: #B06000; font-weight: 600;">🟡 Ready to Deploy</span><br>
+    • <strong>BK-14:</strong> Full Automated Regression Test Pack (28 tests across 7 suites + pre-deployment defect gating) · <span style="color: #B06000; font-weight: 600;">🟡 Ready to Deploy</span><br>
     • <strong>BK-29:</strong> Interactive Dietary &amp; Lifestyle Filter Chips (🌿 Vegetarian, 🌱 Vegan, 🌾 Gluten-Friendly, 🌙 Halal) · <span style="color: #B06000; font-weight: 600;">🟡 Ready to Deploy</span><br>
+    • <strong>BK-12:</strong> Menu Item Availability / 86 Toggle · <span style="color: #9B1C1C; font-weight: 600;">❌ Cancelled per operational review</span><br>
     • <strong>BK-30:</strong> Frosted Mobile Hospitality Quick-Action Bar (1-tap Book, Call, Directions, Hours)<br>
     • <strong>BK-31:</strong> Real-Time Kitchen &amp; Service Status Pill (🟢 Open Now · Serving Brunch / 🌙 Evening Plates)<br>
     • <strong>BK-32:</strong> Subtle Tactile Paper Grain &amp; Glassmorphic Noise Texture Overlay<br>
@@ -727,12 +732,12 @@
         <td class="col-priority"><span class="badge badge-high">High (Future)</span></td>
         <td class="col-status"><span class="badge badge-prioritised">Prioritised</span></td>
       </tr>
-      <tr>
-        <td class="col-id">BK-12</td>
-        <td class="col-name">Menu Item Availability / 86 Toggle</td>
-        <td class="col-desc">Quick-action switch in Staff Portal allowing kitchen and floor staff to mark individual dishes as "Sold Out for Today" without deleting them from the master menu. Displays luxury "Sold Out Today" badge on guest-facing menu with dimmed styling and strikethrough price. Includes real-time cross-tab sync and companion BK-14 regression test suite.</td>
-        <td class="col-priority"><span class="badge badge-high">High</span></td>
-        <td class="col-status"><span class="badge badge-pending">Ready to Deploy</span></td>
+      <tr style="opacity: 0.65; background: #FFF8F8;">
+        <td class="col-id" style="text-decoration: line-through; color: #9B1C1C;">BK-12</td>
+        <td class="col-name" style="text-decoration: line-through;">Menu Item Availability / 86 Toggle</td>
+        <td class="col-desc"><em>Cancelled per operational review.</em> Master menu remains permanently viewable online; physical 86 / stock availability is managed live at till point without altering digital guest experience. All related code rolled back from DEV.</td>
+        <td class="col-priority"><span class="badge badge-low">Low</span></td>
+        <td class="col-status"><span class="badge badge-cancelled">Cancelled</span></td>
       </tr>
       <tr>
         <td class="col-id">BK-13</td>
