@@ -27,7 +27,22 @@ function parseBacklog() {
   const lines = content.split('\n');
 
   for (const line of lines) {
-    // Matches markdown table rows like: | **BK-29** | **Title** | Desc | ... |
+    // Matches v4.0 format: | **FEATURE-01** | `FEAT-01` | Category | **Title** | Desc | ... |
+    const v4Match = line.match(/\|\s*\*\*([A-Z]+-\d+)\*\*\s*\|\s*`?([^`|]*)`?\s*\|\s*([^|]+)\|\s*\*\*([^*]+)\*\*\s*\|\s*([^|]+)\|/);
+    if (v4Match) {
+      const id = v4Match[1].trim();
+      const legacyId = v4Match[2].trim();
+      const category = v4Match[3].trim();
+      const title = v4Match[4].trim();
+      const desc = v4Match[5].trim();
+      map.set(id, { id, title, desc, category });
+      if (legacyId && legacyId !== '-') {
+        map.set(legacyId, { id, title, desc, category });
+      }
+      continue;
+    }
+
+    // Matches legacy format: | **BK-29** | **Title** | Desc | ... |
     const match = line.match(/\|\s*\*\*([A-Z]+-\d+)\*\*\s*\|\s*\*\*([^*]+)\*\*\s*\|\s*([^|]+)\|/);
     if (match) {
       const id = match[1].trim();
@@ -46,7 +61,7 @@ function getGitMeta() {
   const commitMsg = runCmd('git log -1 --pretty=format:"%s"') || '';
   const author = runCmd('git log -1 --pretty=format:"%an"') || '';
 
-  // Extract Backlog ID from commit message e.g. "feat(BK-29): ..."
+  // Extract Backlog ID from commit message e.g. "feat(FEATURE-75): ..." or "feat(BK-29): ..."
   const commitIdMatch = commitMsg.match(/\b([A-Z]+-\d+)\b/);
   const commitBacklogId = commitIdMatch ? commitIdMatch[1] : null;
 
@@ -77,7 +92,7 @@ function main() {
     for (const test of fileResult.assertionResults || []) {
       if (test.status === 'failed') {
         const fullTitle = `${(test.ancestorTitles || []).join(' > ')} > ${test.title}`;
-        // Extract backlog ID from test name
+        // Extract backlog ID from test name e.g. FEATURE-75, BK-14, SEC-01
         const idMatch = fullTitle.match(/\b([A-Z]+-\d+)\b/);
         const backlogId = idMatch ? idMatch[1] : gitMeta.commitBacklogId;
 
@@ -93,14 +108,14 @@ function main() {
 
   // If no tests failed, output clean success
   if (failedTests.length === 0) {
-    console.log(`\n✅ [BK-14 Traceability] All ${data.numTotalTests || 0} regression tests passed!`);
-    console.log(`🛡️ Branch: ${gitMeta.branch} (${gitMeta.hash}) · Live deployment gate cleared.\n`);
+    console.log(`\n✅ [Quality & Security Gate] All ${data.numTotalTests || 0} consolidated tests passed!`);
+    console.log(`🛡️ Branch: ${gitMeta.branch} (${gitMeta.hash}) · Pre-deployment gate cleared.\n`);
 
-    const summaryMd = `### 🟢 BK-14 Automated Regression Suite: PASSED
-- **Total Tests Verified**: ${data.numTotalTests || 0}
+    const summaryMd = `### 🟢 Consolidated Quality & Security Gate: PASSED
+- **Total Tests Verified**: ${data.numTotalTests || 0} (Functional Regression BK-14 + Security & Vulnerability FEATURE-75)
 - **Branch**: \`${gitMeta.branch}\` (\`${gitMeta.hash}\`)
 - **Commit**: \`${gitMeta.commitMsg}\` by ${gitMeta.author}
-- **Status**: Deployment gate cleared. Zero regressions detected across the website.
+- **Status**: Deployment gate cleared. Zero regressions or vulnerabilities detected.
 `;
     if (process.env.GITHUB_STEP_SUMMARY) {
       try {
@@ -111,9 +126,9 @@ function main() {
   }
 
   // If tests failed, build high-visibility markdown defect & traceability report
-  let reportMd = `# 🚨 BK-14 Quality Gate: Regression Failure Detected
+  let reportMd = `# 🚨 Quality & Security Gate: Failure Detected
 
-> **DEPLOYMENT ABORTED**: One or more automated regression tests failed. Production deployment on \`${gitMeta.branch}\` has been blocked to protect live site stability.
+> **DEPLOYMENT ABORTED**: One or more automated regression or security tests failed. Production deployment on \`${gitMeta.branch}\` has been blocked to protect live site security and stability.
 
 ---
 
@@ -124,7 +139,7 @@ function main() {
 | **Triggering Commit** | \`${gitMeta.hash}\` — *${gitMeta.commitMsg}* |
 | **Author** | ${gitMeta.author} |
 | **Active Branch** | \`${gitMeta.branch}\` |
-| **Suspected Originating Backlog ID** | **${failedTests[0]?.backlogId || gitMeta.commitBacklogId || 'UNASSIGNED'}** |
+| **Suspected Originating Feature/Backlog ID** | **${failedTests[0]?.backlogId || gitMeta.commitBacklogId || 'UNASSIGNED'}** |
 | **Total Failures** | **${failedTests.length}** failing test(s) |
 
 ---

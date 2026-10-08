@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
+    "test:security": "vitest run tests/6-security",
+    "security:audit": "npm audit --audit-level=high",
     "test:ci": "vitest run --reporter=default --reporter=json --outputFile=test-report.json",
     "test:report": "node scripts/traceability-reporter.js"
   },

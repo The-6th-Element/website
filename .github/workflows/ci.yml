@@ -26,12 +26,15 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run BK-14 Automated Regression Suite
+      - name: Dependency Vulnerability Audit (FEATURE-75 / SEC-01)
+        run: npm run security:audit
+
+      - name: Run Consolidated Regression & Security Suite (BK-14 & FEATURE-75)
         id: run_tests
         run: npm run test:ci
         continue-on-error: true
 
-      - name: Defect Traceability Report & Gate Check
+      - name: Defect & Security Traceability Report Gate
         run: npm run test:report
 
       - name: Verify Production Bundle Build
