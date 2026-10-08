@@ -18,11 +18,11 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 ## 📊 Backlog Summary Metrics
 - 🟢 **Complete**: 42 items
 - 🟡 **Ready to Deploy**: 0 item
-- 🔵 **Prioritised**: 11 items
+- 🔵 **Prioritised**: 12 items
 - ⚪ **Backlog**: 15 items
 - 💡 **Discovery**: 5 items
 - ❌ **Cancelled**: 1 item
-- **Total Tracked**: 74 items across 13 Categories
+- **Total Tracked**: 75 items across 13 Categories
 
 ---
 
@@ -104,6 +104,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-72** | `BK-35` | Technical Performance, PWA & SEO | **Progressive Web App (PWA) Manifest** | Complete manifest.json with brand icons, standalone mobile windowing, and splash styling for 1-tap installation on iPhone and Android. | Low | 💡 Discovery |
 | **FEATURE-73** | `DATA-03` | Data Hub & Financial Pipelines | **Tender Reconciliation Alerting** | Flag discrepancies between declared cash drawer totals in Toast and physical bank deposits. | Low | 💡 Discovery |
 | **FEATURE-74** | `BK-12` | Menu Management & In-Browser Studio | **Menu Item Availability / 86 Toggle** | Scrapped / Cancelled per operational review. Full dining and beverage menu remains permanently viewable online; physical 86 / stock availability is handled live at till point without modifying digital menus. | Low | ❌ Cancelled |
+| **FEATURE-75** | `SEC-01` | Quality Assurance & Automated Testing | **Automated Security, SAST & Vulnerability Test Suite** | Automated security testing integrated into CI/CD quality gates: dependency CVE vulnerability audits (npm audit), client-side XSS injection sanitization tests, sensitive credential/secret leakage checks before bundling, and RBAC privilege escalation resistance tests. | High | 🔵 Prioritised |
 
 ---
 
