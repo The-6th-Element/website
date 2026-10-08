@@ -1,6 +1,12 @@
 import '@testing-library/jest-dom'
 import { afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
+import workerThreads from 'node:worker_threads'
+
+// Polyfill markAsUncloneable for undici CacheStorage compatibility in older Node versions
+if (workerThreads && typeof workerThreads.markAsUncloneable !== 'function') {
+  workerThreads.markAsUncloneable = () => {}
+}
 
 // Automatically cleanup after each test
 afterEach(() => {

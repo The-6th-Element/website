@@ -71,8 +71,11 @@ function getGitMeta() {
 // 3. Process test results and generate defect report
 function main() {
   if (!fs.existsSync(REPORT_PATH)) {
-    console.log('⚠️ [Traceability] No test-report.json found. Skipping traceability analysis.');
-    process.exit(0);
+    console.error('\n' + '='.repeat(70));
+    console.error('🚨 [Quality & Security Gate] FAILED: No test-report.json found!');
+    console.error('Test execution failed before producing a report.');
+    console.error('='.repeat(70) + '\n');
+    process.exit(1);
   }
 
   const raw = fs.readFileSync(REPORT_PATH, 'utf-8');
@@ -80,12 +83,25 @@ function main() {
   try {
     data = JSON.parse(raw);
   } catch (err) {
-    console.error('⚠️ [Traceability] Failed to parse test-report.json:', err.message);
-    process.exit(0);
+    console.error('\n' + '='.repeat(70));
+    console.error('🚨 [Quality & Security Gate] FAILED: Malformed test-report.json:', err.message);
+    console.error('='.repeat(70) + '\n');
+    process.exit(1);
   }
 
   const backlogMap = parseBacklog();
   const gitMeta = getGitMeta();
+
+  // Fail gate immediately if vitest indicated runner or suite failure, or if 0 tests were executed
+  if (!data.success || !data.numTotalTests || data.numTotalTests === 0 || (data.numFailedTestSuites && data.numFailedTestSuites > 0)) {
+    console.error('\n' + '='.repeat(70));
+    console.error('🚨 [Quality & Security Gate] FAILED: Vitest test runner reported failure!');
+    console.error(`- Total tests executed: ${data.numTotalTests || 0}`);
+    console.error(`- Success status: ${data.success}`);
+    console.error(`- Failed test suites: ${data.numFailedTestSuites || 0}`);
+    console.error('='.repeat(70) + '\n');
+    process.exit(1);
+  }
 
   const failedTests = [];
   for (const fileResult of data.testResults || []) {
@@ -106,9 +122,9 @@ function main() {
     }
   }
 
-  // If no tests failed, output clean success
-  if (failedTests.length === 0) {
-    console.log(`\n✅ [Quality & Security Gate] All ${data.numTotalTests || 0} consolidated tests passed!`);
+  // If no tests failed and tests ran successfully, output clean success
+  if (failedTests.length === 0 && data.numTotalTests > 0) {
+    console.log(`\n✅ [Quality & Security Gate] All ${data.numTotalTests} consolidated tests passed!`);
     console.log(`🛡️ Branch: ${gitMeta.branch} (${gitMeta.hash}) · Pre-deployment gate cleared.\n`);
 
     const summaryMd = `### 🟢 Consolidated Quality & Security Gate: PASSED
