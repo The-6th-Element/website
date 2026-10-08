@@ -16,8 +16,8 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 ---
 
 ## 📊 Backlog Summary Metrics
-- 🟢 **Complete**: 41 items
-- 🟡 **Ready to Deploy**: 1 item
+- 🟢 **Complete**: 42 items
+- 🟡 **Ready to Deploy**: 0 item
 - 🔵 **Prioritised**: 11 items
 - ⚪ **Backlog**: 15 items
 - 💡 **Discovery**: 5 items
@@ -71,7 +71,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-39** | `BK-14` | Quality Assurance & Automated Testing | **Full Automated Regression Test Pack** | Comprehensive automated regression test pack (Vitest + Testing Library + jsdom) with 31/31 unit, component, and RBAC tests passing. Integrated into GitHub Actions CI/CD to run automatically on every push with pre-deployment quality gates. | High | 🟢 Complete |
 | **FEATURE-40** | `BK-38` | Staff & Role-Based Access Control (RBAC) | **Self-Service Password Reset via Secret Questions** | Secure self-service account recovery allowing staff to reset forgotten passwords by answering a chosen security question from 8 predefined options. Features one-time setup on login, SHA-256 hashed answers, interactive Forgot Password drawer, and Admin Console credential management. | High | 🟢 Complete |
 | **FEATURE-41** | `BK-39` | Operations & System Health | **Guaranteed 05:15 AM External Scheduler** | Replaced delayed GitHub Actions scheduled cron queue with dedicated external webhook trigger (cron-job.org) targeting /actions/workflows/daily_sync.yml/dispatches at 05:15 AM Europe/London with sub-second precision. Delivers daily financial & footfall telemetry reports on time. | High | 🟢 Complete |
-| **FEATURE-42** | `BK-29` | Guest Experience & Mobile Optimizations | **Interactive Dietary & Lifestyle Filter Chips (Menu UX)** | Instant client-side filter chips on the Menu page (Vegetarian, Vegan, Gluten-Friendly, Halal) with badge counts, Option A dish filtering, and telemetry integration. Gated by BK-14 automated regression pack. | High | 🟡 Ready to Deploy |
+| **FEATURE-42** | `BK-29` | Guest Experience & Mobile Optimizations | **Interactive Dietary & Lifestyle Filter Chips (Menu UX)** | Instant client-side filter chips on the Menu page (Vegetarian, Vegan, Gluten-Friendly, Halal) with badge counts, Option A dish filtering, and telemetry integration. Fully tested and verified live in production via BK-14 regression test pack. | High | 🟢 Complete |
 | **FEATURE-43** | `BK-24` | Guest Experience & Mobile Optimizations | **Context-Aware WhatsApp Hospitality Concierge** | Floating WhatsApp concierge button with pre-populated contextual messages based on user intent (e.g. large parties of 6+ on Reservations, daily dietary queries on Menu, dog-friendly or table walk-in queries on Contact). | High | 🔵 Prioritised |
 | **FEATURE-44** | `BK-06` | Guest Experience & Mobile Optimizations | **Digital Gift Cards Integration** | Integration with digital gift voucher provider (e.g. Toast Gift Cards, Square, or Stripe) for custom-amount vouchers with instant email delivery. | High | 🔵 Prioritised |
 | **FEATURE-45** | `BK-19` | Guest Experience & Mobile Optimizations | **Live Walk-in & Table Availability Indicator** | Real-time 1-tap status switch in Staff Portal allowing staff to signal Walk-ins Welcome / Short Wait / Bookings Only to eliminate customer hesitation and drive spontaneous visits. | Medium | 🔵 Prioritised |
