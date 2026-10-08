@@ -37,7 +37,7 @@ A living backlog and product roadmap for **The Sixth Element** website and digit
 |---|---|---|---|
 | **FEAT-09** | **Role-Based Access Control (RBAC)** | Multi-user credential store with 5 roles: `Owner` (Pooja Somani), `Admin` (Deepak), `Manager`, `Shift Lead`, and `Chef / Kitchen`. | 🟢 Complete |
 | **FEAT-10** | **Granular Publishing Permissions** | Only `Admin` and `Owner` accounts can publish updates to the live site; other staff roles can edit menus and save local drafts. | 🟢 Complete |
-| **FEAT-11** | **User Management UI & Security Question Recovery (BK-38)** | Dedicated Admin tab to view staff, add new team members with custom titles/roles, update credentials, delete staff accounts (with Owner deletion protection), and configure secret security questions & answers for self-service password recovery. | 🟡 In Progress |
+| **FEAT-11** | **User Management UI & Security Question Recovery (BK-38)** | Dedicated Admin tab to view staff, add new team members with custom titles/roles, update credentials, delete staff accounts (with Owner deletion protection), and configure secret security questions & answers for self-service password recovery. | 🟢 Complete |
 | **FEAT-12** | **Cross-Network Auth & Fallback** | Secure SHA-256 password hashing with a pure JavaScript cryptographic fallback to allow testing across local WiFi/LAN (`http://192.168.1.195:5173/`). | 🟢 Complete |
 
 ### 1.4 Hosting, CI/CD & Infrastructure (Phase 3)
@@ -149,11 +149,12 @@ The following features have been scoped or requested for future exploration once
 | **BK-12** | ~~**Menu Item Availability / 86 Toggle**~~ | *Scrapped / Cancelled per operational review.* Full dining and beverage menu remains permanently viewable online; physical 86 / stock availability is handled live at till point without modifying guest-facing digital menus. All companion code rolled back from DEV. | Low | ❌ Cancelled |
 | **BK-13** | **Audit Log of Menu Changes** | Visual timestamped history in Staff Portal recording which user made what price or item modification. | Medium | ⚪ Backlog |
 | **BK-38** | **Self-Service Password Reset via Secret Security Questions** | Secure self-service account recovery under FEAT-11 allowing staff to reset forgotten passwords by answering a chosen security question from 8 predefined dropdown options. Features a one-time setup upon login (zero pre-seeded Q&A), SHA-256 hashed secret answers, interactive Forgot Password recovery drawer, and Admin Console credential management. | High | 🟢 Complete |
+| **BK-39** | **Guaranteed 05:15 AM External Scheduler (Option A)** | Replaced unreliable GitHub Actions scheduled cron queue with a dedicated external webhook trigger (cron-job.org) targeting the GitHub API `/actions/workflows/daily_sync.yml/dispatches` at 05:15 AM Europe/London with sub-second precision. Bypasses runner delays, includes failure alerting, and delivers daily morning financial & footfall telemetry reports on time. | High | 🟢 Complete |
 
 ### 3.5 Quality Assurance & Automated Testing
 | ID | Feature | Description | Priority | Status |
 |---|---|---|---|---|
-| **BK-14** | **Full Automated Regression Test Pack** | Build and maintain a comprehensive automated regression test pack (Vitest + Testing Library + jsdom) covering all critical user journeys: navigation routing, BK-29 dietary filter chips, Toast Tables modal, daylight/evening theme switching, Menu Studio CSV import/export, and role-based access control (RBAC). Integrated into GitHub Actions CI/CD to run automatically on every push and PR to DEV/MAIN with automated defect traceability before deployment. | High | 🟡 Ready to Deploy |
+| **BK-14** | **Full Automated Regression Test Pack** | Build and maintain a comprehensive automated regression test pack (Vitest + Testing Library + jsdom) covering all critical user journeys: navigation routing, BK-29 dietary filter chips, Toast Tables modal, daylight/evening theme switching, Menu Studio CSV import/export, and role-based access control (RBAC). Integrated into GitHub Actions CI/CD to run automatically on every push and PR to DEV/MAIN with automated defect traceability before deployment. | High | 🟢 Complete |
 
 ### 3.6 Search Engine Optimization (SEO) & Local Discoverability
 | ID | Feature | Description | Priority | Status |
