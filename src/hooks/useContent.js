@@ -21,7 +21,15 @@ export function usePromotions() {
       const saved = localStorage.getItem("tse_promotions");
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // If christmas-2026 is missing from user's cached storage, prepend it
+          const hasXmas = parsed.some((p) => p.id === "christmas-2026");
+          if (!hasXmas) {
+            const xmas = DEFAULT_PROMOTIONS.find((p) => p.id === "christmas-2026");
+            if (xmas) return [xmas, ...parsed];
+          }
+          return parsed;
+        }
       }
     } catch {}
     return DEFAULT_PROMOTIONS;
@@ -34,10 +42,17 @@ export function usePromotions() {
         const saved = localStorage.getItem("tse_promotions");
         if (saved) {
           const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) setPromotions(parsed);
-        } else {
-          setPromotions(DEFAULT_PROMOTIONS);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const hasXmas = parsed.some((p) => p.id === "christmas-2026");
+            if (!hasXmas) {
+              const xmas = DEFAULT_PROMOTIONS.find((p) => p.id === "christmas-2026");
+              if (xmas) return setPromotions([xmas, ...parsed]);
+            }
+            setPromotions(parsed);
+            return;
+          }
         }
+        setPromotions(DEFAULT_PROMOTIONS);
       } catch {}
     };
     window.addEventListener("tse_promotions_updated", handleSync);
@@ -51,7 +66,13 @@ export function usePromotions() {
       localStorage.setItem("tse_promotions", JSON.stringify(next));
       window.dispatchEvent(new Event("tse_promotions_updated"));
       setSaveState("saved");
-      setTimeout(() => setSaveState("idle"), 2500);
+      if (typeof window !== "undefined") {
+        setTimeout(() => {
+          try {
+            if (typeof window !== "undefined") setSaveState("idle");
+          } catch {}
+        }, 2500);
+      }
     } catch {
       setSaveState("error");
     }
