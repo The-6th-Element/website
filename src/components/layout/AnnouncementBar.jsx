@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { COLORS } from "../../theme/tokens";
 import { usePromotions, isPromoLive } from "../../hooks/useContent";
 import { trackPromoClick } from "../../utils/analytics";
+import { GroupEnquiryModal } from "../features/GroupEnquiryModal";
 
 export const ANNOUNCEMENT_BAR_H = 40;
 
@@ -26,6 +27,7 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
 
   const [isPaused, setIsPaused] = useState(false);
   const [activeModalPromo, setActiveModalPromo] = useState(null);
+  const [groupEnquiryOpen, setGroupEnquiryOpen] = useState(false);
 
   const [speedSetting, setSpeedSetting] = useState(() => {
     try {
@@ -53,14 +55,19 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
     if (onToggle) onToggle(visible);
   }, [visible, onToggle]);
 
-  // Close modal on Escape
+  // Close modal on Escape and prevent background scrolling while open
   useEffect(() => {
     if (!activeModalPromo) return;
     const handleKeyDown = (e) => {
       if (e.key === "Escape") setActiveModalPromo(null);
     };
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = origOverflow;
+    };
   }, [activeModalPromo]);
 
   if (!visible) return null;
@@ -265,6 +272,32 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
           box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
         }
 
+        /* Festive Offers Grid */
+        .tse-festive-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
+          margin: 8px 0;
+        }
+
+        @media (max-width: 580px) {
+          .tse-festive-grid {
+            grid-template-columns: 1fr;
+            gap: 6px;
+          }
+        }
+
+        /* Suppress scrollbars completely across all engines */
+        .tse-promo-modal-scroll {
+          scrollbar-width: none !important;
+          -ms-overflow-style: none !important;
+        }
+        .tse-promo-modal-scroll::-webkit-scrollbar {
+          display: none !important;
+          width: 0 !important;
+          height: 0 !important;
+        }
+
         /* Respect accessibility preferences */
         @media (prefers-reduced-motion: reduce) {
           .tse-ticker-track {
@@ -389,15 +422,20 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
           }}
         >
           <div
+            className="tse-promo-modal-scroll"
             onClick={(e) => e.stopPropagation()}
             style={{
               position: "relative",
               width: "100%",
-              maxWidth: 520,
+              maxWidth: activeModalPromo.packages ? 600 : 500,
+              maxHeight: activeModalPromo.packages ? "94vh" : "auto",
+              overflowY: activeModalPromo.packages ? "auto" : "visible",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
               background: theme.surfaceAlt || "#FFFFFF",
-              border: `1px solid ${COLORS.warmAmber}50`,
+              border: `1px solid ${COLORS.warmAmber}${activeModalPromo.packages ? "80" : "50"}`,
               borderRadius: 20,
-              padding: "36px 32px 30px",
+              padding: activeModalPromo.packages ? "20px 22px 16px" : "30px 26px 22px",
               boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
               color: theme.text,
               fontFamily: "'Outfit', sans-serif",
@@ -410,13 +448,13 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
               aria-label="Close offer details"
               style={{
                 position: "absolute",
-                top: 18,
-                right: 18,
+                top: 14,
+                right: 14,
                 background: "rgba(0,0,0,0.06)",
                 border: "none",
                 borderRadius: "50%",
-                width: 32,
-                height: 32,
+                width: 30,
+                height: 30,
                 cursor: "pointer",
                 fontSize: 18,
                 lineHeight: 1,
@@ -425,30 +463,44 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
                 alignItems: "center",
                 justifyContent: "center",
                 transition: "background 0.2s ease",
+                zIndex: 10,
               }}
             >
               ×
             </button>
 
+            {/* Festive Top Flourish if Packages */}
+            {activeModalPromo.packages && (
+              <div style={{ textAlign: "center", marginBottom: 6 }}>
+                <div style={{ fontSize: 12, color: COLORS.warmAmber, letterSpacing: "0.22em", marginBottom: 2 }}>
+                  ✦ ✧ ✦
+                </div>
+                <div style={{ fontSize: 9.5, letterSpacing: "0.18em", fontWeight: 700, color: COLORS.warmAmber, textTransform: "uppercase" }}>
+                  The Sixth Element · Modern Indian · East Sheen
+                </div>
+              </div>
+            )}
+
             {/* Badge */}
             {activeModalPromo.badge_text && (
-              <span
-                style={{
-                  display: "inline-block",
-                  fontSize: 10,
-                  fontWeight: 700,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  background: `${COLORS.warmAmber}22`,
-                  color: COLORS.warmAmber,
-                  border: `1px solid ${COLORS.warmAmber}50`,
-                  padding: "4px 10px",
-                  borderRadius: 20,
-                  marginBottom: 14,
-                }}
-              >
-                {activeModalPromo.badge_text}
-              </span>
+              <div style={{ textAlign: activeModalPromo.packages ? "center" : "left", marginBottom: 6 }}>
+                <span
+                  style={{
+                    display: "inline-block",
+                    fontSize: 9.5,
+                    fontWeight: 700,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    background: `${COLORS.warmAmber}22`,
+                    color: COLORS.warmAmber,
+                    border: `1px solid ${COLORS.warmAmber}50`,
+                    padding: "3px 9px",
+                    borderRadius: 20,
+                  }}
+                >
+                  {activeModalPromo.badge_text}
+                </span>
+              </div>
             )}
 
             {/* Title */}
@@ -456,53 +508,190 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
               id="tse-promo-modal-title"
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 32,
+                fontSize: activeModalPromo.packages ? 25 : 28,
                 fontWeight: 600,
                 color: theme.heading,
-                margin: "0 0 10px",
+                margin: "0 0 3px",
                 lineHeight: 1.15,
+                textAlign: activeModalPromo.packages ? "center" : "left",
               }}
             >
               {activeModalPromo.title}
             </h3>
 
-            {/* Discount / Highlight */}
-            {activeModalPromo.discount_text && (
+            {/* Discount / Highlight (for standard promos) */}
+            {!activeModalPromo.packages && activeModalPromo.discount_text && (
               <div
                 style={{
-                  fontSize: 16,
+                  fontSize: 15,
                   fontWeight: 600,
                   color: COLORS.mossGreen,
-                  marginBottom: 14,
+                  marginBottom: 12,
                 }}
               >
                 {activeModalPromo.discount_text}
               </div>
             )}
 
-            {/* Description */}
+            {/* Description / Intro */}
             {activeModalPromo.description && (
               <p
                 style={{
-                  fontSize: 14.5,
-                  lineHeight: 1.7,
+                  fontSize: activeModalPromo.packages ? 12 : 14,
+                  lineHeight: 1.45,
                   color: theme.muted,
-                  margin: "0 0 20px",
+                  margin: activeModalPromo.packages ? "0 auto 8px" : "0 0 16px",
                   fontWeight: 300,
+                  textAlign: activeModalPromo.packages ? "center" : "left",
+                  maxWidth: activeModalPromo.packages ? 520 : "100%",
                 }}
               >
                 {activeModalPromo.description}
               </p>
             )}
 
-            {/* Validity details */}
-            {activeModalPromo.end_date && activeModalPromo.end_date < "2030-01-01" && (
+            {/* Early Bird Prosecco Perk */}
+            {activeModalPromo.early_bird && (
+              <div
+                style={{
+                  background: "linear-gradient(135deg, rgba(191, 138, 47, 0.12), rgba(191, 138, 47, 0.04))",
+                  border: `1px solid ${COLORS.warmAmber}55`,
+                  borderRadius: 10,
+                  padding: "6px 12px",
+                  marginBottom: 8,
+                  textAlign: "center",
+                }}
+              >
+                <div style={{ fontSize: 12, fontWeight: 700, color: COLORS.warmAmber, marginBottom: 1 }}>
+                  🥂 Book by 31st October
+                </div>
+                <div style={{ fontSize: 11, color: theme.text, opacity: 0.9 }}>
+                  Enjoy a complimentary glass of Prosecco for every guest
+                  <span style={{ display: "block", fontSize: 10, color: theme.muted, marginTop: 1 }}>
+                    (On Festive Dinner & Christmas Feast bookings)
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Rich Festive Offers Grid */}
+            {activeModalPromo.packages && (
+              <div className="tse-festive-grid">
+                {activeModalPromo.packages.map((pkg, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      background: theme.surface || "rgba(0,0,0,0.02)",
+                      border: `1px solid ${COLORS.warmAmber}35`,
+                      borderRadius: 10,
+                      padding: "8px 10px",
+                      display: "flex",
+                      flexDirection: "column",
+                      position: "relative",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 2 }}>
+                      <h4
+                        style={{
+                          fontFamily: "'Cormorant Garamond', serif",
+                          fontSize: 15,
+                          fontWeight: 700,
+                          color: theme.heading,
+                          margin: 0,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.03em",
+                        }}
+                      >
+                        {pkg.name}
+                      </h4>
+                      <span
+                        style={{
+                          fontSize: 9,
+                          fontWeight: 600,
+                          color: COLORS.mossGreen,
+                          background: `${COLORS.mossGreen}15`,
+                          padding: "1px 5px",
+                          borderRadius: 6,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {pkg.guests}
+                      </span>
+                    </div>
+
+                    <div style={{ margin: "2px 0 4px", display: "flex", alignItems: "baseline", gap: 3 }}>
+                      <span
+                        style={{
+                          fontFamily: "'Cormorant Garamond', serif",
+                          fontSize: 20,
+                          fontWeight: 700,
+                          color: COLORS.warmAmber,
+                        }}
+                      >
+                        {pkg.price}
+                      </span>
+                      {pkg.unit && (
+                        <span style={{ fontSize: 10.5, color: theme.muted, fontWeight: 500 }}>
+                          {pkg.unit}
+                        </span>
+                      )}
+                    </div>
+
+                    <p style={{ fontSize: 11, lineHeight: 1.35, color: theme.text, margin: "0 0 3px", flex: 1, opacity: 0.88 }}>
+                      {pkg.description}
+                    </p>
+
+                    {pkg.extra && (
+                      <div
+                        style={{
+                          fontSize: 9.5,
+                          fontStyle: "italic",
+                          color: COLORS.warmAmber,
+                          borderTop: `1px dashed ${COLORS.warmAmber}25`,
+                          paddingTop: 3,
+                          marginTop: "auto",
+                        }}
+                      >
+                        ✦ {pkg.extra}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Notes / Terms */}
+            {activeModalPromo.notes && (
+              <div
+                style={{
+                  fontSize: 10,
+                  color: theme.muted,
+                  lineHeight: 1.35,
+                  textAlign: "center",
+                  margin: "6px 0 8px",
+                  padding: "5px 8px",
+                  background: "rgba(0,0,0,0.02)",
+                  borderRadius: 6,
+                  border: "1px dashed rgba(0,0,0,0.08)",
+                }}
+              >
+                {activeModalPromo.served_from && (
+                  <div style={{ fontWeight: 600, color: COLORS.warmAmber, marginBottom: 1 }}>
+                    Festive menus served from {activeModalPromo.served_from}
+                  </div>
+                )}
+                <div>{activeModalPromo.notes}</div>
+              </div>
+            )}
+
+            {/* Validity details (for standard promos) */}
+            {!activeModalPromo.packages && activeModalPromo.end_date && activeModalPromo.end_date < "2030-01-01" && (
               <div
                 style={{
                   fontSize: 12,
                   color: theme.muted,
-                  marginBottom: 24,
-                  padding: "8px 12px",
+                  marginBottom: 18,
+                  padding: "6px 10px",
                   borderRadius: 8,
                   background: "rgba(0,0,0,0.03)",
                   display: "inline-block",
@@ -524,8 +713,8 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
               style={{
                 display: "flex",
                 flexWrap: "wrap",
-                gap: 12,
-                marginTop: 10,
+                gap: 8,
+                marginTop: 4,
               }}
             >
               {setBookingOpen && (
@@ -536,24 +725,54 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
                     setBookingOpen(true);
                   }}
                   style={{
-                    flex: "1 1 180px",
+                    flex: "1 1 170px",
                     background: `linear-gradient(135deg, ${COLORS.mossGreen}, #4B5A2C)`,
                     color: "#FFFFFF",
                     border: "none",
-                    borderRadius: 12,
-                    padding: "12px 20px",
-                    fontSize: 14,
+                    borderRadius: 10,
+                    padding: "10px 18px",
+                    fontSize: 13.5,
                     fontWeight: 600,
                     cursor: "pointer",
                     boxShadow: "0 4px 14px rgba(96, 110, 61, 0.35)",
                     transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 6,
                   }}
                 >
-                  Book a Table
+                  <span>Book a Table</span>
+                  <span aria-hidden="true">›</span>
                 </button>
               )}
 
-              {navigate && (
+              {activeModalPromo.email && (
+                <button
+                  type="button"
+                  onClick={() => setGroupEnquiryOpen(true)}
+                  style={{
+                    flex: "1 1 150px",
+                    background: "transparent",
+                    color: theme.heading,
+                    border: `1px solid ${COLORS.warmAmber}70`,
+                    borderRadius: 10,
+                    padding: "10px 14px",
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    textAlign: "center",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "background 0.2s ease",
+                  }}
+                >
+                  Group Enquiries
+                </button>
+              )}
+
+              {navigate && !activeModalPromo.packages && (
                 <button
                   type="button"
                   onClick={() => {
@@ -565,9 +784,9 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
                     background: "transparent",
                     color: theme.heading,
                     border: `1px solid ${theme.heading}40`,
-                    borderRadius: 12,
-                    padding: "12px 20px",
-                    fontSize: 14,
+                    borderRadius: 10,
+                    padding: "10px 16px",
+                    fontSize: 13,
                     fontWeight: 500,
                     cursor: "pointer",
                     transition: "background 0.2s ease",
@@ -577,9 +796,49 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
                 </button>
               )}
             </div>
+
+            {/* Direct Phone / Contact info for packages */}
+            {activeModalPromo.phone && (
+              <div style={{ textAlign: "center", marginTop: 6 }}>
+                <a
+                  href={`tel:${activeModalPromo.phone.replace(/\s+/g, "")}`}
+                  style={{
+                    fontSize: 11,
+                    color: theme.muted,
+                    textDecoration: "none",
+                  }}
+                >
+                  Questions? Call <strong>{activeModalPromo.phone}</strong>
+                </a>
+              </div>
+            )}
+
+            {activeModalPromo.packages && (
+              <div
+                style={{
+                  fontSize: 8.5,
+                  letterSpacing: "0.15em",
+                  color: COLORS.warmAmber,
+                  textAlign: "center",
+                  marginTop: 6,
+                  opacity: 0.85,
+                  fontWeight: 600,
+                }}
+              >
+                GOOD FOOD · GOOD ENERGY · GOOD DAY
+              </div>
+            )}
           </div>
         </div>
       )}
+
+      {/* Group & Office Christmas Enquiry Modal */}
+      <GroupEnquiryModal
+        isOpen={groupEnquiryOpen}
+        onClose={() => setGroupEnquiryOpen(false)}
+        theme={theme}
+        defaultPackage="Christmas Feast (£37.95 pp · 9+ guests)"
+      />
     </>
   );
 }

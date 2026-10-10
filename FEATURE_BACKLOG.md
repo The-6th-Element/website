@@ -19,10 +19,10 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 - 🟢 **Complete**: 43 items
 - 🟡 **Ready to Deploy**: 0 item
 - 🔵 **Prioritised**: 11 items
-- ⚪ **Backlog**: 15 items
+- ⚪ **Backlog**: 16 items
 - 💡 **Discovery**: 5 items
 - ❌ **Cancelled**: 1 item
-- **Total Tracked**: 75 items across 13 Categories
+- **Total Tracked**: 76 items across 13 Categories
 
 ---
 
@@ -105,6 +105,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-73** | `DATA-03` | Data Hub & Financial Pipelines | **Tender Reconciliation Alerting** | Flag discrepancies between declared cash drawer totals in Toast and physical bank deposits. | Low | 💡 Discovery |
 | **FEATURE-74** | `BK-12` | Menu Management & In-Browser Studio | **Menu Item Availability / 86 Toggle** | Scrapped / Cancelled per operational review. Full dining and beverage menu remains permanently viewable online; physical 86 / stock availability is handled live at till point without modifying digital menus. | Low | ❌ Cancelled |
 | **FEATURE-75** | `SEC-01` | Quality Assurance & Automated Testing | **Automated Security, SAST & Vulnerability Test Suite** | Automated security testing integrated into CI/CD quality gates: dependency CVE vulnerability audits (npm audit), client-side XSS injection sanitization tests, sensitive credential/secret leakage checks before bundling, and RBAC privilege escalation resistance tests. | High | 🟢 Complete |
+| **FEATURE-76** | `BK-40` | Guest Experience & Mobile Optimizations | **Dedicated Festivities Hub & Seasonal Offers Page (`FESTIVITIES` Navigation)** | Add top-level navigation item 'FESTIVITIES' situated between 'MENU' and 'SOCIAL IMPACT' routing to a dedicated seasonal portal (/festivities) displaying active festive offerings (Christmas, New Year, Diwali, etc.) with package tiers, early bird perks, Toast table reservations, and group booking enquiry dialogs. Supported by a streamlined festive campaign manager in the Staff Portal. | High | ⚪ Backlog |
 
 ---
 

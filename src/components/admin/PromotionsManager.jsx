@@ -6,6 +6,8 @@ import { usePromotions, isPromoLive } from "../../hooks/useContent";
 export function PromotionsManager({ theme }) {
   const { promotions, saveState, addPromotion, updatePromotion, deletePromotion, resetPromotions } = usePromotions();
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
   const blank = {
     title: "", description: "", discount_text: "", badge_text: "NEW",
     start_date: new Date().toISOString().slice(0, 10),
@@ -35,11 +37,42 @@ export function PromotionsManager({ theme }) {
     color: theme.text, fontFamily: "'Outfit', sans-serif", fontSize: 12,
   };
 
+  const startEdit = (promo) => {
+    setEditingId(promo.id);
+    setDraft({
+      title: promo.title || "",
+      discount_text: promo.discount_text || "",
+      description: promo.description || "",
+      badge_text: promo.badge_text || "",
+      start_date: promo.start_date || "",
+      end_date: promo.end_date || "",
+      is_active: promo.is_active !== undefined ? promo.is_active : true,
+      early_bird: promo.early_bird || "",
+      served_from: promo.served_from || "",
+      notes: promo.notes || "",
+      phone: promo.phone || "",
+      email: promo.email || "",
+      packages: promo.packages ? JSON.parse(JSON.stringify(promo.packages)) : null,
+    });
+    setShowForm(true);
+  };
+
   const save = () => {
     if (!draft.title) return;
-    addPromotion(draft);
+    if (editingId) {
+      updatePromotion(editingId, draft);
+      setEditingId(null);
+    } else {
+      addPromotion(draft);
+    }
     setDraft(blank);
     setShowForm(false);
+  };
+
+  const cancel = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setDraft(blank);
   };
 
   return (
@@ -106,12 +139,16 @@ export function PromotionsManager({ theme }) {
 
       {promotions.map(promo => {
         const live = isPromoLive(promo);
+        const isEditingThis = editingId === promo.id;
         return (
           <div key={promo.id} style={{
             padding: 12, borderRadius: 10, marginBottom: 8,
-            background: theme.surfaceAlt, border: `1px solid ${theme.muted}10`,
+            background: theme.surfaceAlt,
+            border: isEditingThis ? `1px solid ${theme.accent}` : `1px solid ${theme.muted}10`,
+            boxShadow: isEditingThis ? `0 0 0 1px ${theme.accent}40` : "none",
+            transition: "all 0.2s ease",
           }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 500, color: theme.heading }}>
                   {promo.badge_text && <span style={{
@@ -126,15 +163,63 @@ export function PromotionsManager({ theme }) {
                 <div style={{ fontSize: 10, color: theme.muted, marginTop: 3 }}>
                   {promo.start_date} → {promo.end_date} · {live ? "🟢 Live now" : "⚫ Not live"}
                 </div>
+                {promo.packages && (
+                  <div style={{ fontSize: 10, color: theme.accent, marginTop: 4, fontWeight: 500 }}>
+                    🎁 {promo.packages.length} Festive Packages ({promo.packages.map(p => p.name).join(", ")})
+                  </div>
+                )}
               </div>
               <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                <button onClick={() => updatePromotion(promo.id, { is_active: !promo.is_active })} title="Toggle active" style={{
-                  background: "none", border: `1px solid ${theme.muted}30`, borderRadius: 6,
-                  padding: "3px 8px", fontSize: 10, cursor: "pointer", color: theme.muted,
-                }}>{promo.is_active ? "Active" : "Paused"}</button>
-                <button onClick={() => deletePromotion(promo.id)} style={{
-                  background: "none", border: "none", color: "#EF4444", cursor: "pointer", fontSize: 16,
-                }}>×</button>
+                <button
+                  type="button"
+                  onClick={() => startEdit(promo)}
+                  title="Edit promotion details"
+                  style={{
+                    background: isEditingThis ? theme.accent : `${theme.accent}15`,
+                    border: `1px solid ${theme.accent}50`,
+                    borderRadius: 6,
+                    padding: "3px 9px",
+                    fontSize: 10.5,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    color: isEditingThis ? "#fff" : theme.accent,
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  Edit ✎
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updatePromotion(promo.id, { is_active: !promo.is_active })}
+                  title="Toggle active"
+                  style={{
+                    background: "none",
+                    border: `1px solid ${theme.muted}30`,
+                    borderRadius: 6,
+                    padding: "3px 8px",
+                    fontSize: 10,
+                    cursor: "pointer",
+                    color: promo.is_active ? COLORS.mossGreen : theme.muted,
+                  }}
+                >
+                  {promo.is_active ? "Active" : "Paused"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => deletePromotion(promo.id)}
+                  title="Delete promotion"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#EF4444",
+                    cursor: "pointer",
+                    fontSize: 16,
+                    lineHeight: 1,
+                    padding: "0 4px",
+                  }}
+                >
+                  ×
+                </button>
               </div>
             </div>
           </div>
@@ -142,10 +227,101 @@ export function PromotionsManager({ theme }) {
       })}
 
       {showForm ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: 12, borderRadius: 10, background: theme.surfaceAlt, border: `1px solid ${theme.muted}15` }}>
-          <input placeholder="Title (e.g. Happy Hour)" value={draft.title} onChange={e => setDraft(p => ({ ...p, title: e.target.value }))} style={inputStyle} />
-          <input placeholder="Discount text (e.g. 20% off all wine)" value={draft.discount_text} onChange={e => setDraft(p => ({ ...p, discount_text: e.target.value }))} style={inputStyle} />
-          <input placeholder="Description (optional)" value={draft.description} onChange={e => setDraft(p => ({ ...p, description: e.target.value }))} style={inputStyle} />
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          padding: 14,
+          borderRadius: 10,
+          background: theme.surfaceAlt,
+          border: `1px solid ${editingId ? theme.accent : theme.muted + "20"}`,
+          marginTop: 10,
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: theme.heading }}>
+              {editingId ? "Edit Promotion" : "New Promotion"}
+            </div>
+            {editingId && (
+              <span style={{ fontSize: 10, color: theme.accent, fontWeight: 500 }}>
+                Editing #{editingId}
+              </span>
+            )}
+          </div>
+
+          <div>
+            <label style={{ fontSize: 10, color: theme.muted }}>Title</label>
+            <input
+              placeholder="Title (e.g. Make It a Christmas to Remember)"
+              value={draft.title}
+              onChange={e => setDraft(p => ({ ...p, title: e.target.value }))}
+              style={inputStyle}
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: 10, color: theme.muted }}>Discount / Highlight Text</label>
+            <input
+              placeholder="Discount text (e.g. Festive Dinners, Sharing Feasts & Bottomless)"
+              value={draft.discount_text}
+              onChange={e => setDraft(p => ({ ...p, discount_text: e.target.value }))}
+              style={inputStyle}
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: 10, color: theme.muted }}>Description (optional)</label>
+            <input
+              placeholder="Description"
+              value={draft.description}
+              onChange={e => setDraft(p => ({ ...p, description: e.target.value }))}
+              style={inputStyle}
+            />
+          </div>
+
+          {draft.early_bird !== undefined && draft.early_bird !== null && (
+            <div>
+              <label style={{ fontSize: 10, color: theme.muted }}>Early Bird Offer / Perk (optional)</label>
+              <input
+                placeholder="e.g. Book by 31st October & enjoy a complimentary glass of Prosecco"
+                value={draft.early_bird || ""}
+                onChange={e => setDraft(p => ({ ...p, early_bird: e.target.value }))}
+                style={inputStyle}
+              />
+            </div>
+          )}
+
+          {draft.packages && draft.packages.length > 0 && (
+            <div style={{ marginTop: 4, padding: "8px 10px", background: `${theme.muted}10`, borderRadius: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: theme.heading, marginBottom: 6 }}>
+                Festive Packages & Pricing
+              </div>
+              {draft.packages.map((pkg, pIdx) => (
+                <div key={pIdx} style={{ display: "grid", gridTemplateColumns: "1fr 90px", gap: 6, marginBottom: 6 }}>
+                  <input
+                    value={pkg.name}
+                    placeholder="Package name"
+                    onChange={(e) => {
+                      const updated = [...draft.packages];
+                      updated[pIdx] = { ...updated[pIdx], name: e.target.value };
+                      setDraft((p) => ({ ...p, packages: updated }));
+                    }}
+                    style={inputStyle}
+                  />
+                  <input
+                    value={pkg.price}
+                    placeholder="Price (e.g. £35.95)"
+                    onChange={(e) => {
+                      const updated = [...draft.packages];
+                      updated[pIdx] = { ...updated[pIdx], price: e.target.value };
+                      setDraft((p) => ({ ...p, packages: updated }));
+                    }}
+                    style={inputStyle}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
             <div>
               <label style={{ fontSize: 10, color: theme.muted }}>Start Date</label>
@@ -156,44 +332,86 @@ export function PromotionsManager({ theme }) {
               <input type="date" value={draft.end_date} onChange={e => setDraft(p => ({ ...p, end_date: e.target.value }))} style={inputStyle} />
             </div>
           </div>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            {["NEW", "LIMITED", "HOT", "SEASONAL", "DAILY", "WEEKENDS"].map(b => (
-              <button key={b} onClick={() => setDraft(p => ({ ...p, badge_text: p.badge_text === b ? "" : b }))} style={{
-                padding: "4px 8px", borderRadius: 4, border: "none", cursor: "pointer", fontSize: 10, fontWeight: 600,
-                background: draft.badge_text === b ? theme.accent : `${theme.muted}15`,
-                color: draft.badge_text === b ? "#fff" : theme.text,
-              }}>{b}</button>
-            ))}
+
+          <div>
+            <label style={{ fontSize: 10, color: theme.muted, display: "block", marginBottom: 4 }}>Badge Text</label>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {["NEW", "LIMITED", "HOT", "SEASONAL", "DAILY", "WEEKENDS", "CHRISTMAS 2026"].map(b => (
+                <button
+                  key={b}
+                  type="button"
+                  onClick={() => setDraft(p => ({ ...p, badge_text: p.badge_text === b ? "" : b }))}
+                  style={{
+                    padding: "4px 8px", borderRadius: 4, border: "none", cursor: "pointer", fontSize: 10, fontWeight: 600,
+                    background: draft.badge_text === b ? theme.accent : `${theme.muted}15`,
+                    color: draft.badge_text === b ? "#fff" : theme.text,
+                  }}
+                >
+                  {b}
+                </button>
+              ))}
+            </div>
           </div>
-          <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-            <button onClick={save} disabled={!draft.title} style={{
-              flex: 1, padding: "8px", borderRadius: 6, border: "none",
-              background: draft.title ? theme.accent : `${theme.muted}30`,
-              color: draft.title ? "#fff" : theme.muted,
-              cursor: draft.title ? "pointer" : "not-allowed",
-              fontSize: 12, fontWeight: 500, fontFamily: "'Outfit', sans-serif",
-            }}>Save Promotion</button>
-            <button onClick={() => { setShowForm(false); setDraft(blank); }} style={{
-              padding: "8px 12px", borderRadius: 6, border: `1px solid ${theme.muted}20`,
-              background: "transparent", color: theme.muted, cursor: "pointer", fontSize: 12,
-              fontFamily: "'Outfit', sans-serif",
-            }}>Cancel</button>
+
+          <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
+            <button
+              type="button"
+              onClick={save}
+              disabled={!draft.title}
+              style={{
+                flex: 1, padding: "8px", borderRadius: 6, border: "none",
+                background: draft.title ? theme.accent : `${theme.muted}30`,
+                color: draft.title ? "#fff" : theme.muted,
+                cursor: draft.title ? "pointer" : "not-allowed",
+                fontSize: 12, fontWeight: 600, fontFamily: "'Outfit', sans-serif",
+              }}
+            >
+              {editingId ? "Update Promotion" : "Save Promotion"}
+            </button>
+            <button
+              type="button"
+              onClick={cancel}
+              style={{
+                padding: "8px 12px", borderRadius: 6, border: `1px solid ${theme.muted}20`,
+                background: "transparent", color: theme.muted, cursor: "pointer", fontSize: 12,
+                fontFamily: "'Outfit', sans-serif",
+              }}
+            >
+              Cancel
+            </button>
           </div>
         </div>
       ) : (
         <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-          <button onClick={() => setShowForm(true)} style={{
-            flex: 1, padding: "10px", borderRadius: 8,
-            border: `1px dashed ${theme.muted}30`, background: "transparent",
-            color: theme.accent, cursor: "pointer", fontSize: 12, fontWeight: 500,
-            fontFamily: "'Outfit', sans-serif",
-          }}>+ Add Promotion</button>
-          <button onClick={resetPromotions} title="Restore default promotions" style={{
-            padding: "10px 12px", borderRadius: 8,
-            border: `1px solid ${theme.muted}20`, background: "transparent",
-            color: theme.muted, cursor: "pointer", fontSize: 12,
-            fontFamily: "'Outfit', sans-serif",
-          }}>Reset</button>
+          <button
+            type="button"
+            onClick={() => {
+              setEditingId(null);
+              setDraft(blank);
+              setShowForm(true);
+            }}
+            style={{
+              flex: 1, padding: "10px", borderRadius: 8,
+              border: `1px dashed ${theme.muted}30`, background: "transparent",
+              color: theme.accent, cursor: "pointer", fontSize: 12, fontWeight: 500,
+              fontFamily: "'Outfit', sans-serif",
+            }}
+          >
+            + Add Promotion
+          </button>
+          <button
+            type="button"
+            onClick={resetPromotions}
+            title="Restore default promotions"
+            style={{
+              padding: "10px 12px", borderRadius: 8,
+              border: `1px solid ${theme.muted}20`, background: "transparent",
+              color: theme.muted, cursor: "pointer", fontSize: 12,
+              fontFamily: "'Outfit', sans-serif",
+            }}
+          >
+            Reset
+          </button>
         </div>
       )}
     </div>
