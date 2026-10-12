@@ -266,7 +266,6 @@ export default function TheSixthElement() {
         <MenuPage
           theme={theme}
           flags={flags}
-          onOpenStudio={() => navigate("studio")}
           setBookingOpen={handleOpenBooking}
           navigate={navigate}
         />
