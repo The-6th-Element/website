@@ -126,7 +126,11 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
   // Section mutations
   const addSection = () => {
     mutate(d => {
-      if (!d[activeCat]) d[activeCat] = { title: activeCat === "daytime" ? "Daytime" : "Evening", sections: [] };
+      if (!d[activeCat]) {
+        const title = activeCat === "daytime" ? "Daytime" : activeCat === "evening" ? "Evening" : activeCat === "festive" ? "Festive Menu" : activeCat;
+        const icon = activeCat === "daytime" ? "☀️" : activeCat === "evening" ? "🌙" : activeCat === "festive" ? "🎄" : "📋";
+        d[activeCat] = { title, icon, sections: [] };
+      }
       d[activeCat].sections.push({ name: "New Section", items: [] });
     });
   };
@@ -639,10 +643,11 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
               flexWrap: "wrap",
               gap: 10,
             }}>
-              <div style={{ display: "flex", gap: 8 }}>
-                {["daytime", "evening"].map(cat => {
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {Object.keys(draft).map(cat => {
                   const active = activeCat === cat;
-                  const isDay = cat === "daytime";
+                  const icon = cat === "daytime" ? "☀️" : cat === "evening" ? "🌙" : cat === "festive" ? "🎄" : draft[cat]?.icon || "📋";
+                  const label = draft[cat]?.title || (cat === "festive" ? "Festive Menu" : `${cat.charAt(0).toUpperCase() + cat.slice(1)} Menu`);
                   return (
                     <button
                       key={cat}
@@ -660,10 +665,11 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                         display: "flex",
                         alignItems: "center",
                         gap: 6,
+                        transition: "all 0.2s ease",
                       }}
                     >
-                      <span>{isDay ? "☀️" : "🌙"}</span>
-                      <span style={{ textTransform: "capitalize" }}>{cat} Menu</span>
+                      <span>{icon}</span>
+                      <span>{label}</span>
                       <span style={{
                         fontSize: 11,
                         opacity: 0.8,
@@ -857,7 +863,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                           <span style={{ fontSize: 10, textTransform: "uppercase", color: theme.muted, fontWeight: 600 }}>
                             Dietary:
                           </span>
-                          {["V", "VE", "GF", "GF*", "DF"].map(tag => {
+                          {["V", "VE", "GF", "GF*", "DF", "HALAL"].map(tag => {
                             const active = Array.isArray(item.tags) && item.tags.includes(tag);
                             return (
                               <button
@@ -866,12 +872,13 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                                 style={{
                                   padding: "2px 8px",
                                   borderRadius: 12,
-                                  border: `1px solid ${active ? COLORS.warmAmber : `${theme.muted}30`}`,
-                                  background: active ? `${COLORS.warmAmber}25` : "transparent",
-                                  color: active ? COLORS.warmAmber : theme.muted,
+                                  border: `1px solid ${active ? (tag === "HALAL" ? "#3B6E80" : COLORS.warmAmber) : `${theme.muted}30`}`,
+                                  background: active ? (tag === "HALAL" ? "rgba(74, 124, 143, 0.25)" : `${COLORS.warmAmber}25`) : "transparent",
+                                  color: active ? (tag === "HALAL" ? "#5D9BB0" : COLORS.warmAmber) : theme.muted,
                                   cursor: "pointer",
                                   fontSize: 10,
                                   fontWeight: 600,
+                                  transition: "all 0.15s ease",
                                 }}
                               >
                                 {active ? `✓ ${tag}` : `+ ${tag}`}
@@ -952,8 +959,8 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
           <div style={{
             overflowY: "auto",
             padding: 32,
-            background: activeCat === "evening" ? "#0F0D0A" : "#FAF8F0",
-            color: activeCat === "evening" ? "#D4C5A9" : "#2C2C2C",
+            background: activeCat === "evening" ? "#0F0D0A" : activeCat === "festive" ? "#181412" : "#FAF8F0",
+            color: activeCat === "evening" ? "#D4C5A9" : activeCat === "festive" ? "#F5EFE6" : "#2C2C2C",
             transition: "all 0.4s ease",
           }}>
             {/* Live Customer Preview Header */}
@@ -963,7 +970,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
               alignItems: "center",
               marginBottom: 24,
               paddingBottom: 14,
-              borderBottom: `1px solid ${activeCat === "evening" ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"}`,
+              borderBottom: `1px solid ${activeCat === "evening" || activeCat === "festive" ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"}`,
             }}>
               <div>
                 <span style={{
@@ -971,7 +978,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
                   fontWeight: 700,
-                  color: COLORS.warmAmber,
+                  color: activeCat === "festive" ? "#D4AF37" : COLORS.warmAmber,
                 }}>
                   ● Live Customer Preview
                 </span>
@@ -979,18 +986,18 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                   fontFamily: "'Cormorant Garamond', serif",
                   fontSize: 28,
                   fontWeight: 400,
-                  color: activeCat === "evening" ? "#F6F4E3" : "#4B3621",
+                  color: activeCat === "evening" || activeCat === "festive" ? "#F6F4E3" : "#4B3621",
                   marginTop: 4,
                 }}>
-                  {activeCategoryData.title || (activeCat === "daytime" ? "Daytime" : "Evening")}
+                  {activeCategoryData.title || (activeCat === "daytime" ? "Daytime" : activeCat === "evening" ? "Evening" : "Festive Menu")}
                 </h2>
-                <div style={{ fontSize: 13, color: activeCat === "evening" ? "#7A7060" : "#6E6456", fontStyle: "italic" }}>
+                <div style={{ fontSize: 13, color: activeCat === "evening" ? "#7A7060" : activeCat === "festive" ? "#A89D8B" : "#6E6456", fontStyle: "italic" }}>
                   {activeCategoryData.subtitle}
                 </div>
               </div>
 
               <div style={{ fontSize: 28 }}>
-                {activeCat === "daytime" ? "☀️" : "🌙"}
+                {activeCat === "daytime" ? "☀️" : activeCat === "evening" ? "🌙" : activeCat === "festive" ? "🎄" : (activeCategoryData.icon || "📋")}
               </div>
             </div>
 
@@ -1002,8 +1009,8 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                     fontFamily: "'Cormorant Garamond', serif",
                     fontSize: 20,
                     fontWeight: 500,
-                    color: activeCat === "evening" ? "#F6F4E3" : "#4B3621",
-                    borderBottom: `1px solid ${COLORS.warmAmber}40`,
+                    color: activeCat === "evening" || activeCat === "festive" ? "#F6F4E3" : "#4B3621",
+                    borderBottom: `1px solid ${activeCat === "festive" ? "rgba(212, 175, 55, 0.4)" : `${COLORS.warmAmber}40`}`,
                     paddingBottom: 8,
                     marginBottom: 16,
                   }}>
@@ -1021,8 +1028,8 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                         style={{
                           padding: 14,
                           borderRadius: 8,
-                          background: activeCat === "evening" ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
-                          border: `1px solid ${activeCat === "evening" ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)"}`,
+                          background: (activeCat === "evening" || activeCat === "festive") ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
+                          border: `1px solid ${(activeCat === "evening" || activeCat === "festive") ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)"}`,
                         }}
                       >
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
@@ -1030,7 +1037,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                             fontFamily: "'Cormorant Garamond', serif",
                             fontSize: 16,
                             fontWeight: 600,
-                            color: activeCat === "evening" ? "#F6F4E3" : "#4B3621",
+                            color: activeCat === "evening" || activeCat === "festive" ? "#F6F4E3" : "#4B3621",
                           }}>
                             {item.name}
                           </span>
@@ -1038,17 +1045,17 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                             fontFamily: "'Outfit', sans-serif",
                             fontSize: 14,
                             fontWeight: 600,
-                            color: COLORS.warmAmber,
+                            color: activeCat === "festive" ? "#E5C158" : COLORS.warmAmber,
                             marginLeft: 8,
                           }}>
-                            £{item.price}
+                            {String(item.price).startsWith("+") || String(item.price).toLowerCase() === "included" ? item.price : `£${item.price}`}
                           </span>
                         </div>
 
                         {item.desc && (
                           <div style={{
                             fontSize: 12,
-                            color: activeCat === "evening" ? "#8A8070" : "#6E6456",
+                            color: activeCat === "evening" ? "#8A8070" : activeCat === "festive" ? "#B8AE9C" : "#6E6456",
                             marginTop: 4,
                             lineHeight: 1.4,
                             fontWeight: 300,
@@ -1058,7 +1065,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                         )}
 
                         {Array.isArray(item.tags) && item.tags.length > 0 && (
-                          <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
+                          <div style={{ display: "flex", gap: 4, marginTop: 6, flexWrap: "wrap" }}>
                             {item.tags.map((t, ti) => (
                               <span
                                 key={ti}
@@ -1068,8 +1075,9 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                                   letterSpacing: "0.05em",
                                   padding: "1px 6px",
                                   borderRadius: 10,
-                                  background: `${COLORS.warmAmber}20`,
-                                  color: COLORS.warmAmber,
+                                  background: t === "HALAL" || t === "H" ? "rgba(74, 124, 143, 0.2)" : `${COLORS.warmAmber}20`,
+                                  color: t === "HALAL" || t === "H" ? "#5D9BB0" : COLORS.warmAmber,
+                                  border: t === "HALAL" || t === "H" ? "1px solid rgba(74, 124, 143, 0.4)" : "none",
                                 }}
                               >
                                 {t}

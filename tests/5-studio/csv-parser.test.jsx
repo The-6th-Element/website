@@ -78,6 +78,31 @@ describe('BK-14: Menu Studio CSV Import/Export Suite', () => {
     expect(mainsSec.items[0].tags).toContain('HALAL')
   })
 
+  it('parses CSV text with festive / Christmas category seamlessly', () => {
+    const csv = [
+      'Category,Section,Name,Price,Description,DietaryTags',
+      'daytime,Brunch,Eggs Florentine,£11.00,Poached eggs and spinach,V',
+      'evening,Mains,Kerala Prawn Curry,£17.50,Coconut and curry leaves,GF',
+      'festive,Festive Dinner,Christmas Turkey Tikka,35.95,Cranberry chutney,GF',
+      'christmas,Christmas Feast,Velvet Christmas Makhani,37.95,Butter chicken,GF',
+    ].join('\r\n')
+
+    const res = csvToMenu(csv)
+    expect(res.success).toBe(true)
+    expect(res.menu.festive).toBeDefined()
+    expect(res.menu.festive.sections.length).toBeGreaterThanOrEqual(2)
+    expect(res.stats.festiveSections).toBeGreaterThanOrEqual(2)
+
+    const festiveDinner = res.menu.festive.sections.find(s => s.name === 'Festive Dinner')
+    expect(festiveDinner).toBeDefined()
+    expect(festiveDinner.items[0].name).toBe('Christmas Turkey Tikka')
+    expect(festiveDinner.items[0].tags).toEqual(['GF'])
+
+    const feast = res.menu.festive.sections.find(s => s.name === 'Christmas Feast')
+    expect(feast).toBeDefined()
+    expect(feast.items[0].name).toBe('Velvet Christmas Makhani')
+  })
+
   it('fails gracefully when CSV is empty or missing headers', () => {
     const emptyRes = csvToMenu('')
     expect(emptyRes.success).toBe(false)

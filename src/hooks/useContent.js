@@ -1,5 +1,5 @@
 // src/hooks/useContent.js
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { MENU_DATA } from "../data/menuData";
 import { DEFAULT_PROMOTIONS } from "../data/config";
 import { DEFAULT_EVENTS } from "../data/events";
@@ -198,10 +198,12 @@ export function useMenu() {
     }
   });
 
-  const activeRaw = localCustom
-    ? { ...MENU_DATA, ...localCustom, festive: localCustom.festive || MENU_DATA.festive }
-    : MENU_DATA;
-  const menu = normalizeMenu(activeRaw);
+  const activeRaw = useMemo(() => {
+    return localCustom
+      ? { ...MENU_DATA, ...localCustom, festive: localCustom.festive || MENU_DATA.festive }
+      : MENU_DATA;
+  }, [localCustom]);
+  const menu = useMemo(() => normalizeMenu(activeRaw), [activeRaw]);
   const [saveState, setSaveState] = useState("idle");
 
   useEffect(() => {
