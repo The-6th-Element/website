@@ -16,13 +16,13 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 ---
 
 ## 📊 Backlog Summary Metrics
-- 🟢 **Complete**: 43 items
+- 🟢 **Complete**: 46 items
 - 🟡 **Ready to Deploy**: 0 item
-- 🔵 **Prioritised**: 11 items
-- ⚪ **Backlog**: 16 items
-- 💡 **Discovery**: 5 items
+- 🔵 **Prioritised**: 14 items
+- ⚪ **Backlog**: 19 items
+- 💡 **Discovery**: 6 items
 - ❌ **Cancelled**: 1 item
-- **Total Tracked**: 76 items across 13 Categories
+- **Total Tracked**: 86 items across 14 Categories
 
 ---
 
@@ -105,7 +105,58 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-73** | `DATA-03` | Data Hub & Financial Pipelines | **Tender Reconciliation Alerting** | Flag discrepancies between declared cash drawer totals in Toast and physical bank deposits. | Low | 💡 Discovery |
 | **FEATURE-74** | `BK-12` | Menu Management & In-Browser Studio | **Menu Item Availability / 86 Toggle** | Scrapped / Cancelled per operational review. Full dining and beverage menu remains permanently viewable online; physical 86 / stock availability is handled live at till point without modifying digital menus. | Low | ❌ Cancelled |
 | **FEATURE-75** | `SEC-01` | Quality Assurance & Automated Testing | **Automated Security, SAST & Vulnerability Test Suite** | Automated security testing integrated into CI/CD quality gates: dependency CVE vulnerability audits (npm audit), client-side XSS injection sanitization tests, sensitive credential/secret leakage checks before bundling, and RBAC privilege escalation resistance tests. | High | 🟢 Complete |
-| **FEATURE-76** | `BK-40` | Guest Experience & Mobile Optimizations | **Dedicated Festivities Hub & Seasonal Offers Page (`FESTIVITIES` Navigation)** | Add top-level navigation item 'FESTIVITIES' situated between 'MENU' and 'SOCIAL IMPACT' routing to a dedicated seasonal portal (/festivities) displaying active festive offerings (Christmas, New Year, Diwali, etc.) with package tiers, early bird perks, Toast table reservations, and group booking enquiry dialogs. Supported by a streamlined festive campaign manager in the Staff Portal. | High | ⚪ Backlog |
+| **FEATURE-76** | `BK-40` | Guest Experience & Mobile Optimizations | **Dedicated Events Hub & Master-Detail Event Viewer (`EVENTS` Navigation)** | Add top-level navigation item 'Events' situated between 'Menu' and 'Social Impact' leading to /events. Master-detail responsive architecture with left-hand events directory and dynamically generated right-hand event views displaying Title, Start & End dates, rich narrative Description, Offers & Packages, Toast 'Book Table' reservation action, and Group Enquiry modal. Supported by an extensible catalog for easily adding future events. | High | 🟢 Complete |
+| **FEATURE-77** | `BK-28` | Operations & System Health | **Incremental Telemetry & Persistent Multi-Day Analytics Retention** | Ensure website traffic metrics and dining intent telemetry are strictly incremental and retained across code deployments and daily midnight GMT rollovers. Includes timeframe selector (All-Time Cumulative, Today, Yesterday), permanent multi-day rollup summary, and resilient client-side aggregation. | High | 🟢 Complete |
+| **FEATURE-78** | `GBP-01` | Google Business Profile | **Google Business Profile API Connection & OAuth2 Link (Foundational Link)** | Establish secure Google Cloud Project API connection, OAuth2 account authorization, and credentials vaulting in Staff Portal for venue identity verification and API handshake. | High | 🔵 Prioritised |
+| **FEATURE-79** | `GBP-02` | Google Business Profile | **'Reserve with Google' Direct Toast Tables Integration** | Connect Google Maps and Search Knowledge Panel native 'Reserve a Table' button directly to Toast Tables reservation engine, cutting dining booking friction from 4 taps to 1. | High | 🔵 Prioritised |
+| **FEATURE-80** | `GBP-03` | Google Business Profile | **Live Google Reviews Ingestion & AI Reputation Manager** | Automated periodic sync of authentic 5-star Google customer reviews into the website showcase (advancing `FEATURE-69 / BK-09`), with Staff Portal alerts and AI-assisted reply drafting. | High | 🔵 Prioritised |
+| **FEATURE-81** | `GBP-04` | Google Business Profile | **Google Food Menus & Structured Pricing Synchronization** | Programmatic sync of daytime brunch and evening dining menus, prices, descriptions, and dietary badges (V, VE, GF, Halal) from Menu Studio into Google's structured Food Ordering tabs. | Medium | ⚪ Backlog |
+| **FEATURE-82** | `GBP-05` | Google Business Profile | **Google Posts & Seasonal Event Syndication** | Programmatically syndicate festive offers, NYE gala, and jazz brunches from the Events Manager (`FEATURE-76`) directly to Google Business Profile Posts (Offers & Events). | Medium | ⚪ Backlog |
+| **FEATURE-83** | `GBP-06` | Google Business Profile | **Operating Hours & Bank Holiday Schedule Sync** | Real-time sync of regular weekly operating hours and special bank holiday schedules (Christmas Eve, Boxing Day, NYE, Easter) from Staff Portal Settings to GBP. | Medium | ⚪ Backlog |
+| **FEATURE-84** | `GBP-07` | Google Business Profile | **Richmond Local SEO & Amenity Attribute Optimization** | Programmatic audit and management of high-conversion venue attributes (Outdoor seating, Dog-friendly terrace, Halal options, Free Wi-Fi) to dominate Richmond/East Sheen map searches. | Medium | ⚪ Backlog |
+| **FEATURE-85** | `GBP-08` | Google Business Profile | **GBP Search Footfall & Intent Analytics Ingestion** | Ingest Google Business Profile Insights (Search impressions, Maps views, Direction taps, Phone call clicks) into the Staff Portal Traffic & Intent dashboard (`FEATURE-77`). | Low | 💡 Discovery |
+
+---
+
+### 📍 Google Business Profile Program Specifications (`FEATURE-78` to `FEATURE-85`)
+
+#### Strategic Business Context & Local Growth Impact
+For a venue situated at `210 Upper Richmond Road West, London SW14 8AH`, **over 70% of new guest discovery and dining bookings originate directly from Google Search and Google Maps**. Establishing an automated, bi-directional bridge between the venue's digital platform and Google Business Profile (GBP) converts search visibility into seated dining covers, protects price integrity, and secures long-term local market leadership.
+
+#### Detailed Scope of the 8 Google Business Profile Features:
+
+1. **`FEATURE-78` (`GBP-01`) — Google Business Profile API Connection & OAuth2 Link (Foundational Link)**:
+   - **Prerequisite Scope**: Google Cloud Console project creation, Google My Business / Business Profile APIs activation, OAuth2 client ID/secret configuration.
+   - **Staff Portal Integration**: Add a secure "Google Connection" sub-card in `/staff` Settings allowing authorized admins to authenticate and verify venue location ID (`ChIJ...`).
+   - **Security**: Store refreshed OAuth2 tokens securely with encrypted session tokens.
+
+2. **`FEATURE-79` (`GBP-02`) — 'Reserve with Google' Direct Toast Tables Integration**:
+   - **Booking Flow**: Connect Toast Tables reservation widget directly to Google's "Reserve a Table" button on Google Search & Maps.
+   - **Growth Outcome**: Cuts booking friction from 4 taps down to 1 without requiring guests to navigate away from Google Maps, capturing impulsive evening and weekend dining decisions.
+
+3. **`FEATURE-80` (`GBP-03`) — Live Google Reviews Ingestion & AI Reputation Manager**:
+   - **Reviews Sync**: Ingest authentic 5-star customer testimonials from GBP API into the website's social proof carousel (superseding and completing `BK-09`).
+   - **Staff Portal Response Hub**: Alert managers on fresh Google reviews with 1-click suggested AI response drafting to maintain high engagement velocity, a primary local map ranking signal.
+
+4. **`FEATURE-81` (`GBP-04`) — Google Food Menus & Structured Pricing Synchronization**:
+   - **Menu Sync**: Automatic programmatic mapping of daytime brunch and evening dining items, descriptions, prices, and dietary flags (`V`, `VE`, `GF`, `Halal`) from in-browser Menu Studio to Google Food Menus.
+   - **Growth Outcome**: Eliminates menu drift and captures high-intent diners searching for specific dishes (e.g. *"12-hour Slow-Cooked Lamb Shank"*, *"Old Delhi Butter Chicken"*, *"Cardamom French Toast"*, *"Old Spike V60 pour-over"*).
+
+5. **`FEATURE-82` (`GBP-05`) — Google Posts & Seasonal Event Syndication**:
+   - **Syndication**: Programmatically publish seasonal celebrations (e.g. *Christmas 2026*, *Diwali Banquets*, *New Year's Eve Gala*, *Wine Masterclasses*), and jazz brunches directly into Google Posts ("Offer" & "Event" post formats).
+   - **Growth Outcome**: Prominent promotional banner placement on Google's Knowledge Panel whenever local customers search for the venue or dining in East Sheen.
+
+6. **`FEATURE-83` (`GBP-06`) — Operating Hours & Bank Holiday Schedule Sync**:
+   - **Hours Sync**: Real-time sync of regular weekly hours and special holiday times (Christmas Eve, Boxing Day, New Year's Day, Easter, Bank Holidays) directly from Staff Portal Settings to GBP.
+   - **Growth Outcome**: Prevents customer disappointment, avoids negative reviews caused by outdated hours, and captures peak holiday trade.
+
+7. **`FEATURE-84` (`GBP-07`) — Richmond Local SEO & Amenity Attribute Optimization**:
+   - **Attribute Audit**: Programmatically audit and maintain high-conversion venue attributes: *Outdoor seating, Heated dog-friendly terrace, Wheelchair accessible, Vegetarian options, Vegan options, Halal friendly, High chairs, Free Wi-Fi, Organic natural wines*.
+   - **Growth Outcome**: Dominates Google Maps 3-Pack rankings across Richmond upon Thames, East Sheen, Barnes, Kew, Mortlake, and Putney for queries like *"dog-friendly brunch East Sheen"*, *"best Indian restaurant Richmond"*, and *"outdoor wine bar near me"*.
+
+8. **`FEATURE-85` (`GBP-08`) — GBP Search Footfall & Intent Analytics Ingestion**:
+   - **Analytics Ingestion**: Pull GBP Insights telemetry (Search impressions, Maps views, "Request Directions" navigations, website visits, and phone call clicks) directly into the Staff Portal's **Traffic & Intent** dashboard (`FEATURE-77`).
+   - **Growth Outcome**: Correlates Google Maps search footfall with Toast till receipts and nightly Toast-to-Xero financial reconciliation, providing management with a true end-to-end view of marketing ROI to register revenue.
 
 ---
 
