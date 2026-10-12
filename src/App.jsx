@@ -267,6 +267,8 @@ export default function TheSixthElement() {
           theme={theme}
           flags={flags}
           onOpenStudio={() => navigate("studio")}
+          setBookingOpen={handleOpenBooking}
+          navigate={navigate}
         />
       )}
       {currentPage === "events" && (

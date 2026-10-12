@@ -5,6 +5,7 @@ import { defaultMenuTab } from "../utils/time";
 import { useMenu } from "../hooks/useContent";
 import { FadeIn } from "../components/ui/FadeIn";
 import { PrintMenuModal } from "../components/admin/PrintMenuModal";
+import { GroupEnquiryModal } from "../components/features/GroupEnquiryModal";
 import { trackMenuTab, trackDietaryFilter } from "../utils/analytics";
 import {
   DietaryFilterBar,
@@ -31,15 +32,43 @@ function getTagStyle(t, theme) {
   return { bg: `${COLORS.mossGreen}15`, color: COLORS.mossGreen, border: `${COLORS.mossGreen}30` };
 }
 
-export function MenuPage({ theme, flags, onOpenStudio }) {
+/**
+ * Formats price cleanly handling packages, upgrades, and included items.
+ */
+function formatPriceDisplay(price) {
+  if (price === undefined || price === null || price === "" || price === "TBA") return price || "";
+  const s = String(price).trim();
+  if (s === "Included") return "Included";
+  if (s.startsWith("+") || s.startsWith("£")) return s;
+  if (s.toLowerCase().includes("free")) return s;
+  const num = parseFloat(s);
+  if (!isNaN(num)) return `£${s}`;
+  return s;
+}
+
+export function MenuPage({ theme, flags, onOpenStudio, setBookingOpen, navigate }) {
   const { menu } = useMenu();
   const tabs = Object.keys(menu).map((id) => ({ id, label: menu[id].title || id, icon: menu[id].icon || "" }));
-  const [activeTab, setActiveTab] = useState(() => defaultMenuTab(flags));
+  const [activeTab, setActiveTab] = useState(() => {
+    try {
+      const hash = window.location.hash || "";
+      if (hash.includes("festive") || hash.includes("christmas")) return "festive";
+      if (hash.includes("evening")) return "evening";
+      if (hash.includes("daytime")) return "daytime";
+      const q = new URLSearchParams(window.location.search).get("tab");
+      if (q && ["daytime", "evening", "festive"].includes(q)) return q;
+    } catch {}
+    return defaultMenuTab(flags);
+  });
   const [activeDietFilter, setActiveDietFilter] = useState("all");
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [groupEnquiryOpen, setGroupEnquiryOpen] = useState(false);
 
   useEffect(() => {
-    setActiveTab(defaultMenuTab(flags));
+    // Only auto-override if the user isn't currently viewing the festive menu
+    if (activeTab !== "festive") {
+      setActiveTab(defaultMenuTab(flags));
+    }
   }, [flags?.menu_evening_hour]);
 
   const current = tabs.some((t) => t.id === activeTab) && menu[activeTab] ? activeTab : tabs[0]?.id || "";
@@ -214,6 +243,185 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
                 {data.title}
               </h2>
               <p style={{ fontSize: 14, color: theme.muted, fontWeight: 300, marginTop: 8 }}>{data.subtitle}</p>
+
+              {/* Special Festive Experience Hero Banner */}
+              {current === "festive" && (
+                <div
+                  style={{
+                    maxWidth: 820,
+                    margin: "24px auto 12px",
+                    background: `linear-gradient(135deg, ${COLORS.warmAmber}16, ${COLORS.mossGreen}12)`,
+                    border: `1.5px solid ${COLORS.warmAmber}50`,
+                    borderRadius: 18,
+                    padding: "20px 24px",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
+                    textAlign: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      background: `${COLORS.warmAmber}22`,
+                      border: `1px solid ${COLORS.warmAmber}60`,
+                      padding: "6px 14px",
+                      borderRadius: 30,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: COLORS.warmAmber,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      marginBottom: 10,
+                    }}
+                  >
+                    <span>🥂 Early Reservation Perk</span>
+                  </div>
+                  <p
+                    style={{
+                      fontSize: 13.5,
+                      lineHeight: 1.6,
+                      color: theme.heading,
+                      fontWeight: 500,
+                      margin: "0 0 16px",
+                    }}
+                  >
+                    Book by <strong>31st October</strong> and enjoy a complimentary glass of chilled Prosecco for every guest on Festive Dinner &amp; Christmas Feast bookings.
+                  </p>
+
+                  {/* 4 Packages Highlight Pills */}
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+                      gap: 10,
+                      marginBottom: 18,
+                      textAlign: "left",
+                    }}
+                  >
+                    <div
+                      style={{
+                        background: theme.surfaceAlt || "#FFFFFF",
+                        border: `1px solid ${COLORS.warmAmber}30`,
+                        borderRadius: 10,
+                        padding: "10px 12px",
+                      }}
+                    >
+                      <div style={{ fontSize: 10, fontWeight: 700, color: COLORS.warmAmber, letterSpacing: "0.05em" }}>FESTIVE DINNER</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: theme.heading }}>£35.95 <span style={{ fontSize: 10.5, fontWeight: 400, color: theme.muted }}>pp</span></div>
+                      <div style={{ fontSize: 11, color: theme.muted }}>2–8 guests · 3 Courses</div>
+                    </div>
+                    <div
+                      style={{
+                        background: theme.surfaceAlt || "#FFFFFF",
+                        border: `1px solid ${COLORS.warmAmber}30`,
+                        borderRadius: 10,
+                        padding: "10px 12px",
+                      }}
+                    >
+                      <div style={{ fontSize: 10, fontWeight: 700, color: COLORS.warmAmber, letterSpacing: "0.05em" }}>CHRISTMAS FEAST</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: theme.heading }}>£37.95 <span style={{ fontSize: 10.5, fontWeight: 400, color: theme.muted }}>pp</span></div>
+                      <div style={{ fontSize: 11, color: theme.muted }}>9+ guests · Family sharing</div>
+                    </div>
+                    <div
+                      style={{
+                        background: theme.surfaceAlt || "#FFFFFF",
+                        border: `1px solid ${COLORS.warmAmber}30`,
+                        borderRadius: 10,
+                        padding: "10px 12px",
+                      }}
+                    >
+                      <div style={{ fontSize: 10, fontWeight: 700, color: COLORS.mossGreen, letterSpacing: "0.05em" }}>BOTTOMLESS BRUNCH</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: theme.heading }}>£45.00 <span style={{ fontSize: 10.5, fontWeight: 400, color: theme.muted }}>pp</span></div>
+                      <div style={{ fontSize: 11, color: theme.muted }}>Fri–Sun · 90m drinks</div>
+                    </div>
+                    <div
+                      style={{
+                        background: theme.surfaceAlt || "#FFFFFF",
+                        border: `1px solid ${COLORS.warmAmber}30`,
+                        borderRadius: 10,
+                        padding: "10px 12px",
+                      }}
+                    >
+                      <div style={{ fontSize: 10, fontWeight: 700, color: COLORS.mossGreen, letterSpacing: "0.05em" }}>DRINKS &amp; NIBBLES</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: theme.heading }}>from £20 <span style={{ fontSize: 10.5, fontWeight: 400, color: theme.muted }}>pp</span></div>
+                      <div style={{ fontSize: 11, color: theme.muted }}>Office parties (10+)</div>
+                    </div>
+                  </div>
+
+                  {/* Direct Action Buttons */}
+                  <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+                    {setBookingOpen && (
+                      <button
+                        type="button"
+                        onClick={() => setBookingOpen(true)}
+                        style={{
+                          background: `linear-gradient(135deg, ${COLORS.mossGreen}, #4A562B)`,
+                          color: "#FFFFFF",
+                          border: "none",
+                          borderRadius: 24,
+                          padding: "10px 20px",
+                          fontSize: 13,
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          boxShadow: "0 4px 14px rgba(96, 110, 61, 0.35)",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 6,
+                          fontFamily: "'Outfit', sans-serif",
+                        }}
+                      >
+                        <span>Book Festive Table</span>
+                        <span>›</span>
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setGroupEnquiryOpen(true)}
+                      style={{
+                        background: "transparent",
+                        color: theme.heading,
+                        border: `1.5px solid ${COLORS.warmAmber}`,
+                        borderRadius: 24,
+                        padding: "9px 18px",
+                        fontSize: 12.5,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                        fontFamily: "'Outfit', sans-serif",
+                      }}
+                    >
+                      <span>Group &amp; Office Enquiry</span>
+                      <span>✉</span>
+                    </button>
+                    {navigate && (
+                      <button
+                        type="button"
+                        onClick={() => navigate("events")}
+                        style={{
+                          background: `${COLORS.warmAmber}15`,
+                          color: theme.heading,
+                          border: `1px solid ${COLORS.warmAmber}35`,
+                          borderRadius: 24,
+                          padding: "9px 16px",
+                          fontSize: 12,
+                          fontWeight: 500,
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 6,
+                          fontFamily: "'Outfit', sans-serif",
+                        }}
+                      >
+                        <span>Events Hub</span>
+                        <span>✦</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </FadeIn>
 
@@ -345,7 +553,7 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
                             fontFamily: "'Cormorant Garamond', serif",
                           }}
                         >
-                          {item.price === "TBA" ? "TBA" : `£${item.price}`}
+                          {formatPriceDisplay(item.price)}
                         </div>
                       </div>
                     </FadeIn>
@@ -492,6 +700,16 @@ export function MenuPage({ theme, flags, onOpenStudio }) {
           menuData={menu}
           initialCategory={current}
           onClose={() => setShowPrintModal(false)}
+        />
+      )}
+
+      {/* Group & Office Enquiry Dialog */}
+      {groupEnquiryOpen && (
+        <GroupEnquiryModal
+          isOpen={groupEnquiryOpen}
+          onClose={() => setGroupEnquiryOpen(false)}
+          theme={theme}
+          defaultPackage="Festive Dinner"
         />
       )}
     </div>

@@ -198,7 +198,9 @@ export function useMenu() {
     }
   });
 
-  const activeRaw = localCustom || MENU_DATA;
+  const activeRaw = localCustom
+    ? { ...MENU_DATA, ...localCustom, festive: localCustom.festive || MENU_DATA.festive }
+    : MENU_DATA;
   const menu = normalizeMenu(activeRaw);
   const [saveState, setSaveState] = useState("idle");
 

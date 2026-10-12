@@ -51,6 +51,8 @@ export function generatePrintableMenuHtml({
     categoriesToPrint.push({ key: "daytime", data: menuData.daytime });
   } else if (category === "evening" && menuData.evening) {
     categoriesToPrint.push({ key: "evening", data: menuData.evening });
+  } else if (category === "festive" && menuData.festive) {
+    categoriesToPrint.push({ key: "festive", data: menuData.festive });
   } else {
     if (menuData.daytime) categoriesToPrint.push({ key: "daytime", data: menuData.daytime });
     if (menuData.evening) categoriesToPrint.push({ key: "evening", data: menuData.evening });
