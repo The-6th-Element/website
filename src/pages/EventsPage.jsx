@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { COLORS } from "../theme/tokens";
 import { useEvents } from "../hooks/useContent";
 import { GroupEnquiryModal } from "../components/features/GroupEnquiryModal";
+import { FadeIn } from "../components/ui/FadeIn";
 
 export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-2026" }) {
   const { events } = useEvents();
@@ -57,53 +58,56 @@ export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-
         }}
       >
         {/* Page Header - Consistent with Social Impact, Our Story, and Contact Us */}
-        <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <div
-            style={{
-              fontSize: 11,
-              letterSpacing: "0.3em",
-              textTransform: "uppercase",
-              color: theme.muted,
-              marginBottom: 12,
-            }}
-          >
-            Curated Gatherings &amp; Seasonal Celebrations
+        <FadeIn>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <div
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                color: theme.muted,
+                marginBottom: 12,
+              }}
+            >
+              Curated Gatherings &amp; Seasonal Celebrations
+            </div>
+            <h1
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(32px, 5vw, 52px)",
+                fontWeight: 400,
+                color: theme.heading,
+                margin: "0 0 16px",
+              }}
+            >
+              Events &amp; Festive Experiences
+            </h1>
+            <p
+              style={{
+                fontSize: 15,
+                lineHeight: 1.6,
+                color: theme.muted,
+                maxWidth: 620,
+                margin: "0 auto",
+                fontWeight: 300,
+              }}
+            >
+              From candlelit seasonal feasts to celebratory gatherings — discover our calendar of memorable experiences and festive dining in East Sheen.
+            </p>
           </div>
-          <h1
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "clamp(32px, 5vw, 52px)",
-              fontWeight: 400,
-              color: theme.heading,
-              margin: "0 0 16px",
-            }}
-          >
-            Events &amp; Festive Experiences
-          </h1>
-          <p
-            style={{
-              fontSize: 15,
-              lineHeight: 1.6,
-              color: theme.muted,
-              maxWidth: 620,
-              margin: "0 auto",
-              fontWeight: 300,
-            }}
-          >
-            From candlelit seasonal feasts to celebratory gatherings — discover our calendar of memorable experiences and festive dining in East Sheen.
-          </p>
-        </div>
+        </FadeIn>
 
         {/* Master-Detail Layout */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(260px, 320px) 1fr",
-            gap: 28,
-            alignItems: "start",
-          }}
-          className="events-grid-layout"
-        >
+        <FadeIn delay={0.1}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "minmax(260px, 320px) 1fr",
+              gap: 28,
+              alignItems: "start",
+            }}
+            className="events-grid-layout"
+          >
           {/* LEFT SIDEBAR: Events Directory */}
           <aside
             style={{
@@ -662,7 +666,8 @@ export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-
             </div>
           </main>
         </div>
-      </div>
+      </FadeIn>
+    </div>
 
       {/* Group Enquiry Dialog */}
       {groupEnquiryOpen && (
