@@ -7,7 +7,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 
 ## 📌 Standardized Status Lifecycle
 - 🟢 **Complete**: Fully implemented, tested, verified, and live in the codebase.
-- 🟡 **Ready to Deploy**: Implementation complete; awaiting operational or release window.
+- 🟡 **Yet to Deploy**: Fully implemented and tested in DEV; awaiting production release window / deployment.
 - 🔵 **Prioritised**: Scoped, agreed upon, and queued as immediate next priorities.
 - ⚪ **Backlog**: Scoped enhancements scheduled for subsequent roadmap phases.
 - 💡 **Discovery**: Early concepts under research or viability/API feasibility assessment.
@@ -17,8 +17,8 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 
 ## 📊 Backlog Summary Metrics
 - 🟢 **Complete**: 46 items
-- 🟡 **Ready to Deploy**: 0 item
-- 🔵 **Prioritised**: 15 items
+- 🟡 **Yet to Deploy**: 1 item
+- 🔵 **Prioritised**: 14 items
 - ⚪ **Backlog**: 19 items
 - 💡 **Discovery**: 6 items
 - ❌ **Cancelled**: 1 item
@@ -115,7 +115,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-83** | `GBP-06` | Google Business Profile | **Operating Hours & Bank Holiday Schedule Sync** | Real-time sync of regular weekly operating hours and special bank holiday schedules (Christmas Eve, Boxing Day, NYE, Easter) from Staff Portal Settings to GBP. | Medium | ⚪ Backlog |
 | **FEATURE-84** | `GBP-07` | Google Business Profile | **Richmond Local SEO & Amenity Attribute Optimization** | Programmatic audit and management of high-conversion venue attributes (Outdoor seating, Dog-friendly terrace, Halal options, Free Wi-Fi) to dominate Richmond/East Sheen map searches. | Medium | ⚪ Backlog |
 | **FEATURE-85** | `GBP-08` | Google Business Profile | **GBP Search Footfall & Intent Analytics Ingestion** | Ingest Google Business Profile Insights (Search impressions, Maps views, Direction taps, Phone call clicks) into the Staff Portal Traffic & Intent dashboard (`FEATURE-77`). | Low | 💡 Discovery |
-| **FEATURE-86** | `BK-41` | Guest Experience & Mobile Optimizations | **Festive & Christmas Dining Menu Integration in Menu Section** | Introduce a dedicated festive dining menu experience within the Menu section (`/menu`), displaying the official 2026 Festive Menu: Festive Dinner (3 courses · £35.95 pp), Christmas Feast (family sharing for 9+ · £37.95 pp, Signature Feast £49.95 pp), Festive Bottomless Brunch (£45 pp · Fri–Sun 11am–2pm), and Drinks & Nibbles packages (The Merry £20 pp, The Jolly £30 pp). Complete with dietary badges (V, VE, GF, GF*), table sharing guidance, dessert upgrades, early-bird Prosecco perks, and direct Toast reservation integration. | High | 🔵 Prioritised |
+| **FEATURE-86** | `BK-41` | Guest Experience & Mobile Optimizations | **Festive & Christmas Dining Menu Integration in Menu Section** | Introduce a dedicated festive dining menu experience within the Menu section (`/menu`), displaying the official 2026 Festive Menu: Festive Dinner (3 courses · £35.95 pp), Christmas Feast (family sharing for 9+ · £37.95 pp, Signature Feast £49.95 pp), Festive Bottomless Brunch (£45 pp · Fri–Sun 11am–2pm), and Drinks & Nibbles packages (The Merry £20 pp, The Jolly £30 pp). Complete with dietary badges (V, VE, GF, GF*), table sharing guidance, dessert upgrades, early-bird Prosecco perks, and direct Toast reservation integration. | High | 🟡 Yet to Deploy |
 
 ---
 
@@ -127,13 +127,13 @@ To capture peak Q4 holiday dining demand across East Sheen and Richmond, the web
 #### Detailed Menu Architecture & Offerings:
 
 1. **Festive Dinner (2 – 8 Guests · 3 Courses · £35.95 per person)**
-   - **To Begin**:
+   - **To Begin (Choose One)**:
      - *Christmas Turkey Tikka* (`GF`) — Turkey tikka, cranberry & mint chutney
      - *Winter Ruby Tikki* (`V`, `GF`) — Beetroot & goat's cheese tikki, tamarind glaze, pistachio crumble
      - *Ember Glazed Wings* (`GF`) — Chef special chicken wings, in-house marinated, slow-cooked, makhani drizzle
      - *Winter Shore Pakoras* (`VE`) — Samphire pakoras, seaweed salt, house dip
      - *Fireside Paneer Tikka* (`V`, `GF`) — Paneer tikka, mustard pickle marinade, smoked yoghurt
-   - **The Main Event (Served with Naan or Saffron Rice)**:
+   - **The Main Event (Choose One · Served with Naan or Saffron Rice)**:
      - *Velvet Christmas Makhani* (`GF`) — Butter chicken, tomatoes, butter, cream, cashews & aromatic spices
      - *Mulled Spice Chicken Chettinad* (`GF`) — Chicken chettinad
      - *Midwinter Malabar Prawns* (`GF`) — King prawn, coconut, curry leaf & Malabar spice sauce
