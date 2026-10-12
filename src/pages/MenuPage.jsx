@@ -127,10 +127,38 @@ export function MenuPage({ theme, flags, onOpenStudio, setBookingOpen, navigate 
   const activeFilterMeta = DIETARY_FILTERS.find((f) => f.id === activeDietFilter);
 
   return (
-    <div style={{ paddingTop: 92, minHeight: "100vh" }}>
+    <div style={{ paddingTop: 120, minHeight: "100vh" }}>
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 20px" }}>
-        {/* Unified Top Control Bar: Left = Tabs & Print Menu, Right = Dietary & Lifestyle Filters */}
+        {/* Page Top Header - Consistent with Social Impact, Our Story, and Contact Us */}
         <FadeIn>
+          <div style={{ textAlign: "center", marginBottom: 36 }}>
+            <div
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                color: theme.muted,
+                marginBottom: 12,
+              }}
+            >
+              Our Menu
+            </div>
+            <h1
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(32px, 5vw, 52px)",
+                fontWeight: 400,
+                color: theme.heading,
+                margin: 0,
+              }}
+            >
+              Inspired by the five elements
+            </h1>
+          </div>
+        </FadeIn>
+
+        {/* Unified Top Control Bar: Left = Tabs & Print Menu, Right = Dietary & Lifestyle Filters */}
+        <FadeIn delay={0.1}>
           <div
             style={{
               display: "flex",

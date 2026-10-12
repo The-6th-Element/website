@@ -42,7 +42,7 @@ export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-
   return (
     <div
       style={{
-        paddingTop: "calc(90px + env(safe-area-inset-top, 0px))",
+        paddingTop: "calc(120px + env(safe-area-inset-top, 0px))",
         paddingBottom: 80,
         minHeight: "100vh",
         background: theme.bg,
@@ -56,31 +56,29 @@ export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-
           padding: "0 20px",
         }}
       >
-        {/* Page Header */}
-        <div style={{ textAlign: "center", marginBottom: 36 }}>
+        {/* Page Header - Consistent with Social Impact, Our Story, and Contact Us */}
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div
             style={{
               fontSize: 11,
-              letterSpacing: "0.22em",
+              letterSpacing: "0.3em",
               textTransform: "uppercase",
-              color: COLORS.warmAmber,
-              fontWeight: 700,
-              marginBottom: 6,
+              color: theme.muted,
+              marginBottom: 12,
             }}
           >
-            Curated Gatherings & Seasonal Celebrations
+            Curated Gatherings &amp; Seasonal Celebrations
           </div>
           <h1
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "clamp(34px, 5vw, 48px)",
-              fontWeight: 700,
+              fontSize: "clamp(32px, 5vw, 52px)",
+              fontWeight: 400,
               color: theme.heading,
-              lineHeight: 1.15,
-              margin: "0 0 12px",
+              margin: "0 0 16px",
             }}
           >
-            Events & Festive Experiences
+            Events &amp; Festive Experiences
           </h1>
           <p
             style={{
