@@ -18,11 +18,11 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 ## 📊 Backlog Summary Metrics
 - 🟢 **Complete**: 46 items
 - 🟡 **Ready to Deploy**: 0 item
-- 🔵 **Prioritised**: 14 items
+- 🔵 **Prioritised**: 15 items
 - ⚪ **Backlog**: 19 items
 - 💡 **Discovery**: 6 items
 - ❌ **Cancelled**: 1 item
-- **Total Tracked**: 86 items across 14 Categories
+- **Total Tracked**: 87 items across 14 Categories
 
 ---
 
@@ -115,6 +115,55 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-83** | `GBP-06` | Google Business Profile | **Operating Hours & Bank Holiday Schedule Sync** | Real-time sync of regular weekly operating hours and special bank holiday schedules (Christmas Eve, Boxing Day, NYE, Easter) from Staff Portal Settings to GBP. | Medium | ⚪ Backlog |
 | **FEATURE-84** | `GBP-07` | Google Business Profile | **Richmond Local SEO & Amenity Attribute Optimization** | Programmatic audit and management of high-conversion venue attributes (Outdoor seating, Dog-friendly terrace, Halal options, Free Wi-Fi) to dominate Richmond/East Sheen map searches. | Medium | ⚪ Backlog |
 | **FEATURE-85** | `GBP-08` | Google Business Profile | **GBP Search Footfall & Intent Analytics Ingestion** | Ingest Google Business Profile Insights (Search impressions, Maps views, Direction taps, Phone call clicks) into the Staff Portal Traffic & Intent dashboard (`FEATURE-77`). | Low | 💡 Discovery |
+| **FEATURE-86** | `BK-41` | Guest Experience & Mobile Optimizations | **Festive & Christmas Dining Menu Integration in Menu Section** | Introduce a dedicated festive dining menu experience within the Menu section (`/menu`), displaying the official 2026 Festive Menu: Festive Dinner (3 courses · £35.95 pp), Christmas Feast (family sharing for 9+ · £37.95 pp, Signature Feast £49.95 pp), Festive Bottomless Brunch (£45 pp · Fri–Sun 11am–2pm), and Drinks & Nibbles packages (The Merry £20 pp, The Jolly £30 pp). Complete with dietary badges (V, VE, GF, GF*), table sharing guidance, dessert upgrades, early-bird Prosecco perks, and direct Toast reservation integration. | High | 🔵 Prioritised |
+
+---
+
+### 🎄 Festive & Christmas Menu Specifications (`FEATURE-86` / `BK-41`)
+
+#### Overview & Customer Dining Purpose
+To capture peak Q4 holiday dining demand across East Sheen and Richmond, the website's main **Menu Section (`/menu`)** must showcase the complete printed festive catalog (**"Make it a Christmas to remember · Served from 20th November"**). This allows couples, family groups, and corporate party organisers to browse authentic dishes, examine dietary accommodations, and book festive tables directly without friction.
+
+#### Detailed Menu Architecture & Offerings:
+
+1. **Festive Dinner (2 – 8 Guests · 3 Courses · £35.95 per person)**
+   - **To Begin**:
+     - *Christmas Turkey Tikka* (`GF`) — Turkey tikka, cranberry & mint chutney
+     - *Winter Ruby Tikki* (`V`, `GF`) — Beetroot & goat's cheese tikki, tamarind glaze, pistachio crumble
+     - *Ember Glazed Wings* (`GF`) — Chef special chicken wings, in-house marinated, slow-cooked, makhani drizzle
+     - *Winter Shore Pakoras* (`VE`) — Samphire pakoras, seaweed salt, house dip
+     - *Fireside Paneer Tikka* (`V`, `GF`) — Paneer tikka, mustard pickle marinade, smoked yoghurt
+   - **The Main Event (Served with Naan or Saffron Rice)**:
+     - *Velvet Christmas Makhani* (`GF`) — Butter chicken, tomatoes, butter, cream, cashews & aromatic spices
+     - *Mulled Spice Chicken Chettinad* (`GF`) — Chicken chettinad
+     - *Midwinter Malabar Prawns* (`GF`) — King prawn, coconut, curry leaf & Malabar spice sauce
+     - *Golden Paneer Lababdar* (`V`, `GF`) — Paneer lababdar, tomato, cashew & aromatic spice gravy
+     - *Winter White Malai Kofta* (`V`) — Malai kofta
+     - *Midnight Dal Makhani* (`V`, `GF`) — Dal makhani, slow-cooked 12 hours, cultured butter & truffle oil
+     - **Signature Main Upgrade (+£10)**: *The Christmas Shank* — 12-hour slow-braised lamb shank, Kashmiri reduction, naan or saffron rice
+   - **To Finish**:
+     - *Christmas Gulab Jamun* (`V`) — Warm gulab jamun, Baileys ice cream
+     - **Signature Dessert Upgrade (+£10)**: *Midnight Chocolate Sphere* — Filter coffee chocolate, Baileys ice cream, table theatre
+
+2. **Christmas Feast (9+ Guests · Family Sharing for Table · £37.95 per person)**
+   - **On Arrival**: Christmas Turkey Tikka (`GF`), Winter Ruby Tikki (`V`, `GF`), Ember Glazed Wings (`GF`), Winter Shore Pakoras (`VE`)
+   - **The Feast**: Velvet Christmas Makhani (`GF`), Golden Paneer Lababdar (`V`, `GF`), Midnight Dal Makhani (`V`, `GF`), Golden Jaipur Aloo (`VE`, `GF`), Saffron Rice & Festive Bread Basket (Peshawari naan, aloo kulcha, garlic naan)
+   - **To Finish**: Christmas Gulab Jamun (`V`) (Upgrade to Midnight Chocolate Sphere +£10 pp)
+   - **The Signature Feast (£49.95 per person)**: Everything above, plus *Ember Lamb Chops* (kasundi glaze, pickled shallots & mint chutney) and *The Christmas Shank* for the table
+
+3. **Festive Bottomless Brunch (Fri – Sun · 11am – 2pm · £45 per person)**
+   - **Bottomless Pours (90 mins)**: Prosecco, Mango Mimosa, Bellini, Aperol Spritz, Hugo Spritz
+   - **Brunch Selection**: Avocado & Feta Sourdough (`V`, `GF*`), House Masala Shakshuka (`GF`), Crispy Chicken Waffle, Buttermilk Pancakes (`V`), Truffle Mushroom Croissant (`V`), Chef's Daily Lunch Bowl
+   - **Indian Tapas Selection**: Beetroot & Goat's Cheese Tikki (`V`, `GF`), Chicken / Vegetable Biryani (`GF`), Samphire Pakoras (`VE`), Bombay Nachos (`V`), Jaipur Aloo (`VE`, `GF`), Paneer Tikka (`V`, `GF`)
+
+4. **Drinks & Nibbles Packages (Office & Group Celebrations · Min 10 Guests · from £20 per person)**
+   - **The Merry (£20 per person)**: 2 drinks each (house wine, Prosecco, beer or soft drink) + Sharing nibbles (Bar Nibbles, Poppadoms & chutneys, Samphire Pakoras, Bombay Nachos)
+   - **The Jolly (£30 per person)**: 3 drinks each (including house cocktails) + Everything in The Merry, plus Chef Special Chicken Wings, Paneer Tikka, Beetroot & Goat's Cheese Tikki
+   - **Optional Perk**: Welcome glass of chilled Prosecco for £6 per person
+
+5. **Operational Policies & Promotional Badges**:
+   - **Early-Bird Perk**: Book by 31st October and enjoy a complimentary glass of chilled Prosecco for every guest on Festive Dinner & Christmas Feast bookings.
+   - **Deposit & Service Terms**: 50% deposit required for group bookings. Full vegetarian, vegan, gluten-free, and allergen guidance clearly noted.
 
 ---
 
