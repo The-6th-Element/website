@@ -51,7 +51,7 @@ export function Footer({ theme, navigate, onOpenAdmin }) {
             >
               Navigate
             </div>
-            {["home", "menu", "impact", "about", "contact"].map((p) => (
+            {["home", "menu", "events", "impact", "about", "contact"].map((p) => (
               <button
                 key={p}
                 onClick={() => navigate(p)}
@@ -68,7 +68,7 @@ export function Footer({ theme, navigate, onOpenAdmin }) {
                   textTransform: "capitalize",
                 }}
               >
-                {p === "impact" ? "Social Impact" : p === "about" ? "Our Story" : p}
+                {p === "impact" ? "Social Impact" : p === "about" ? "Our Story" : p === "events" ? "Events" : p}
               </button>
             ))}
           </div>

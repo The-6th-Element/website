@@ -1,0 +1,221 @@
+// src/data/events.js
+// Master events & seasonal celebrations catalog for The Sixth Element
+import { COLORS } from "../theme/tokens";
+
+export const DEFAULT_EVENTS = [
+  {
+    id: "christmas-2026",
+    title: "Make It a Christmas to Remember",
+    subtitle: "Festive Dinners, Sharing Feasts & Bottomless Celebrations",
+    badge: "CHRISTMAS 2026",
+    badgeColor: COLORS.warmAmber,
+    startDate: "2026-11-20",
+    endDate: "2026-12-31",
+    dateDisplay: "20 Nov 2026 – 31 Dec 2026",
+    timing: "Daily Lunch & Evening Dining",
+    tagline: "'Tis the Season to Celebrate",
+    description:
+      "Family gatherings, catch-ups with friends or the annual office celebration — celebrate the festive season with modern Indian cuisine, seasonal spice blends, handcrafted botanical cocktails and warm East Sheen hospitality. Our festive menus bring people together around generous sharing platters, heritage curries and aromatic seasonal desserts.",
+    earlyBird:
+      "Book by 31st October and enjoy a complimentary glass of chilled Prosecco for every guest (Festive Dinner & Christmas Feast bookings).",
+    offers: [
+      {
+        name: "Festive Dinner",
+        guests: "For 2 – 8 guests",
+        price: "£35.95",
+        unit: "pp",
+        description: "Three courses with a choice of dishes across festive starters, signature mains, and seasonal desserts.",
+        extra: "✦ 12-hour Slow-Cooked Lamb Shank +£10",
+      },
+      {
+        name: "Christmas Feast",
+        guests: "For 9+ guests",
+        price: "£37.95",
+        unit: "pp",
+        description: "Abundant sharing platters served family-style for the whole table — no pre-order headaches, no fuss.",
+        extra: "✦ Signature Royal Feast Upgrade £49.95 pp",
+      },
+      {
+        name: "Festive Bottomless",
+        guests: "Fri – Sun · 11am – 2pm",
+        price: "£45.00",
+        unit: "pp",
+        description: "A brunch or lunch dish of your choice with 90 minutes of bottomless festive fizz, mimosas, or beer.",
+        extra: "✦ Includes artisan filter coffee on arrival",
+      },
+      {
+        name: "Drinks & Nibbles",
+        guests: "Office & Group Parties",
+        price: "from £20.00",
+        unit: "pp",
+        description: "Festive cocktails and spiced sharing street snacks for relaxed evening gatherings in our candlelit lounge.",
+        extra: "✦ Private bar corner hire available",
+      },
+    ],
+    terms:
+      "Festive menus served from 20th November. Advance reservations recommended. 50% deposit required to secure group bookings of 9 or more. Full vegetarian, vegan, and allergen menus always available.",
+    hasGroupEnquiry: true,
+  },
+  {
+    id: "diwali-2026",
+    title: "Diwali Grand Celebration & Royal Thali",
+    subtitle: "A Feast of Lights, Aromatic Spices & Sweet Traditions",
+    badge: "FESTIVAL OF LIGHTS",
+    badgeColor: COLORS.warmAmber,
+    startDate: "2026-10-25",
+    endDate: "2026-11-05",
+    dateDisplay: "25 Oct 2026 – 05 Nov 2026",
+    timing: "Evening Sittings from 5:30 PM",
+    tagline: "Light, Warmth & Subcontinental Banquets",
+    description:
+      "Celebrate the triumph of light, knowledge and renewal with our grand Diwali dining experience. An opulent spread inspired by regional Indian festive banquets, complete with lantern-lit terrace tables, traditional silver thalis, spiced celebratory cocktails, and artisan house-made mithai (sweets) crafted freshly for the festive week.",
+    earlyBird:
+      "Early bookings received before 20th October include a complimentary glass of Spiced Cardamom Kir Royale upon arrival.",
+    offers: [
+      {
+        name: "Royal Diwali Thali Banquet",
+        guests: "For 1 – 8 guests",
+        price: "£38.50",
+        unit: "pp",
+        description: "Multi-dish celebratory thali featuring slow-simmered Dal Makhani, Paneer Pasanda or Champaran Mutton, saffron pulao, raita, and freshly baked kulchas.",
+        extra: "✦ Includes trio of festive artisan mithai",
+      },
+      {
+        name: "Grand Family Diwali Feast",
+        guests: "For 4+ guests",
+        price: "£42.00",
+        unit: "pp",
+        description: "Generous table-wide feast starting with crispy street-food chaats, sizzling tandoori grills, royal curries, and sharing breads.",
+        extra: "✦ Welcome Spiced Chai Martini included",
+      },
+      {
+        name: "Artisan Mithai Box Gift",
+        guests: "Take-Home Gift Box",
+        price: "£15.00",
+        unit: "box",
+        description: "Handcrafted collection of pistachio barfi, saffron kaju katli, and motichoor ladoo made by our pastry chefs.",
+        extra: "✦ Beautiful festive gilded gift packaging",
+      },
+    ],
+    terms:
+      "Dedicated vegetarian and vegan thalis fully catered. Halal certified meats. Advance booking highly recommended due to high demand.",
+    hasGroupEnquiry: true,
+  },
+  {
+    id: "nye-2026",
+    title: "New Year's Eve Gala & Midnight Countdown",
+    subtitle: "Welcome 2027 in Style with a 5-Course Tasting Journey",
+    badge: "NEW YEAR'S EVE",
+    badgeColor: COLORS.mossGreen,
+    startDate: "2026-12-31",
+    endDate: "2027-01-01",
+    dateDisplay: "31 Dec 2026 · Sittings at 6:00 PM & 9:00 PM",
+    timing: "Early Gala Sitting (6:00 PM) · Countdown Lounge (9:00 PM)",
+    tagline: "Toast to New Beginnings",
+    description:
+      "Ring in the New Year with an unforgettable culinary celebration in East Sheen. An exclusive modern Indian tasting menu paired with low-intervention natural wines, live acoustic jazz, and a midnight Champagne toast under the candlelit Ether ambiance.",
+    earlyBird:
+      "Tables reserved before 15 November receive an upgraded glass of Vintage Reserve Champagne for the midnight toast.",
+    offers: [
+      {
+        name: "Early Gala Dinner",
+        guests: "6:00 PM Sitting",
+        price: "£55.00",
+        unit: "pp",
+        description: "4-course celebratory menu ideal for families, early celebrators, and guests heading onwards into Central London.",
+        extra: "✦ Table available until 8:15 PM",
+      },
+      {
+        name: "Midnight Countdown Feast",
+        guests: "9:00 PM Sitting",
+        price: "£75.00",
+        unit: "pp",
+        description: "5-course signature tasting menu with reserved table for the entire evening, live jazz sets, midnight Champagne, and countdown party favors.",
+        extra: "✦ Midnight countdown toast included",
+      },
+      {
+        name: "Sommelier Natural Wine Flight",
+        guests: "Optional Upgrade",
+        price: "£35.00",
+        unit: "pp",
+        description: "Four paired glasses of rare organic and biodynamic European wines selected to match each tasting course.",
+        extra: "✦ Guided notes by our sommelier",
+      },
+    ],
+    terms:
+      "Full prepayment required to confirm reservations. Dress code: Smart Elegance. 9:00 PM sitting is 18+ only.",
+    hasGroupEnquiry: true,
+  },
+  {
+    id: "wine-masterclass",
+    title: "Natural Wine & Subcontinental Spice Masterclass",
+    subtitle: "An Intimate Guided Tasting with Guest Sommeliers",
+    badge: "TASTING EXPERIENCE",
+    badgeColor: COLORS.warmAmber,
+    startDate: "2026-11-12",
+    endDate: "2026-11-12",
+    dateDisplay: "Thursday, 12 Nov 2026 · 7:00 PM – 9:30 PM",
+    timing: "One Evening Only · Strictly 20 Seats",
+    tagline: "Exploring Low-Intervention Wine & Bold Flavours",
+    description:
+      "A deep dive into the fascinating harmony between low-intervention European natural wines and intricate subcontinental spice profiles. Hosted by our beverage director alongside guest winemakers, featuring 5 rare wine pours paired with 5 bespoke small plates from our kitchen.",
+    earlyBird: null,
+    offers: [
+      {
+        name: "Individual Masterclass Ticket",
+        guests: "Per Guest",
+        price: "£48.00",
+        unit: "ticket",
+        description: "Admission to the tasting masterclass, 5 guided wine pours (75ml each), 5 paired small tasting plates, and tasting notebook.",
+        extra: "✦ 10% discount on bottle takeaway that evening",
+      },
+      {
+        name: "Couples Pairing Admission",
+        guests: "For Two Guests",
+        price: "£90.00",
+        unit: "pair",
+        description: "Shared masterclass table for two guests with all 10 wine pours, paired tasting plates, and keepsake tasting notes.",
+        extra: "✦ Guaranteed table placement together",
+      },
+    ],
+    terms:
+      "Strictly limited to 20 guests for an intimate experience. Dietary accommodations must be stated at booking. 48-hour cancellation policy applies.",
+    hasGroupEnquiry: false,
+  },
+  {
+    id: "jazz-brunch",
+    title: "Weekend Live Jazz Brunch & Bottomless Club",
+    subtitle: "Soulful Acoustic Saxophone, Spiced Plates & Artisan Coffee",
+    badge: "EVERY WEEKEND",
+    badgeColor: COLORS.mossGreen,
+    startDate: "2026-10-01",
+    endDate: "2027-04-30",
+    dateDisplay: "Every Saturday & Sunday · 11:00 AM – 3:30 PM",
+    timing: "Live Jazz Duo Sets from 12:00 PM – 2:30 PM",
+    tagline: "Unwind into the Weekend",
+    description:
+      "Transform your weekend mornings into a sunlit culinary oasis. Enjoy our acclaimed daytime menu — from Cardamom French Toast and Gunpowder Egg Brioche to Old Spike V60 single-origin pour-overs — accompanied by soothing live acoustic saxophone and jazz duos in our bright East Sheen dining room.",
+    earlyBird: null,
+    offers: [
+      {
+        name: "A La Carte Brunch Table",
+        guests: "For 1 – 8 guests",
+        price: "Free booking",
+        unit: "reservation",
+        description: "Reserve your daytime table with zero deposit and order freely from our daytime breakfast, brunch, and coffee menu.",
+        extra: "✦ Live jazz included at no extra charge",
+      },
+      {
+        name: "Bottomless Brunch Upgrade",
+        guests: "Available on arrival",
+        price: "£35.00",
+        unit: "pp",
+        description: "Enjoy any brunch dish accompanied by 90 minutes of bottomless Prosecco, orange mimosas, or spiced house Bloody Marys.",
+        extra: "✦ Whole table must participate",
+      },
+    ],
+    terms:
+      "Walk-ins always welcome, though reservations are recommended between 12:00 PM and 2:00 PM for live music sittings. Heated dog-friendly terrace available.",
+    hasGroupEnquiry: true,
+  },
+];

@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { HomePage } from '../../src/pages/HomePage'
 import { MenuPage } from '../../src/pages/MenuPage'
+import { EventsPage } from '../../src/pages/EventsPage'
 import { AboutPage } from '../../src/pages/AboutPage'
 import { SocialImpactPage } from '../../src/pages/SocialImpactPage'
 import { ContactPage } from '../../src/pages/ContactPage'
@@ -55,6 +56,17 @@ describe('BK-14: Navigation & Route Smoke Tests', () => {
     expect(screen.getByRole('button', { name: /Plant-Based/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Gluten-Friendly/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Halal Friendly/i })).toBeInTheDocument()
+  })
+
+  it('renders EventsPage with master-detail layout and Book Table trigger', () => {
+    render(
+      <EventsPage
+        theme={AM_THEME}
+        setBookingOpen={() => {}}
+      />
+    )
+    expect(screen.getByRole('heading', { name: /Events & Festive Experiences/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Book Table/i })).toBeInTheDocument()
   })
 
   it('renders AboutPage (Our Story) without crashing', () => {

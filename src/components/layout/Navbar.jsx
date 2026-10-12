@@ -26,6 +26,7 @@ export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, to
   const links = [
     { id: "home", label: "Home" },
     { id: "menu", label: "Menu" },
+    { id: "events", label: "Events" },
     { id: "impact", label: "Social Impact" },
     { id: "about", label: "Our Story" },
     { id: "contact", label: "Contact" },

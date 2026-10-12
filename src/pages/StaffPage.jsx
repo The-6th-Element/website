@@ -12,6 +12,7 @@ import {
 } from "../utils/userManager";
 import { UserManager } from "../components/admin/UserManager";
 import { PromotionsManager } from "../components/admin/PromotionsManager";
+import { EventsManager } from "../components/admin/EventsManager";
 import { FadeIn } from "../components/ui/FadeIn";
 import { Logomark } from "../components/ui/Logomark";
 import { useMenu } from "../hooks/useContent";
@@ -49,6 +50,7 @@ export function StaffPage({
   const availableTabs = [
     canManageUsers && { id: "users", label: "Staff & Users", icon: "👥" },
     canManagePromos && { id: "promos", label: "Offers & Promos", icon: "🎁" },
+    canManagePromos && { id: "events", label: "Events & Gatherings", icon: "🗓️" },
     { id: "analytics", label: "Traffic & Intent", icon: "📊" },
     canEditSettings && { id: "settings", label: "Operations & Display", icon: "⚙️" },
   ].filter(Boolean);
@@ -1333,6 +1335,28 @@ export function StaffPage({
                   </p>
                 </div>
                 <PromotionsManager theme={theme} />
+              </div>
+            )}
+
+            {/* TAB: Events & Gatherings */}
+            {activeTab === "events" && canManagePromos && (
+              <div>
+                <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: `1px solid ${theme.muted}15` }}>
+                  <h2
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: 26,
+                      fontWeight: 500,
+                      color: theme.heading,
+                    }}
+                  >
+                    Events &amp; Gatherings
+                  </h2>
+                  <p style={{ fontSize: 13, color: theme.muted, fontWeight: 300, marginTop: 4 }}>
+                    Create and manage special seasonal events, ticketed dinners, festive celebrations, and dining packages.
+                  </p>
+                </div>
+                <EventsManager theme={theme} />
               </div>
             )}
 

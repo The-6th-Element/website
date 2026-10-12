@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { MENU_DATA } from "../data/menuData";
 import { DEFAULT_PROMOTIONS } from "../data/config";
+import { DEFAULT_EVENTS } from "../data/events";
 
 export function isPromoLive(p) {
   const today = new Date().toISOString().slice(0, 10);
@@ -90,6 +91,87 @@ export function usePromotions() {
   };
 
   return { promotions, status: "connected", saveState, addPromotion, updatePromotion, deletePromotion, resetPromotions };
+}
+
+// ── Events Hook (browser-persisted with instant real-time sync) ──
+export function useEvents() {
+  const [events, setEvents] = useState(() => {
+    try {
+      const saved = localStorage.getItem("tse_events");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const hasXmas = parsed.some((e) => e.id === "christmas-2026");
+          if (!hasXmas) {
+            const xmas = DEFAULT_EVENTS.find((e) => e.id === "christmas-2026");
+            if (xmas) return [xmas, ...parsed];
+          }
+          return parsed;
+        }
+      }
+    } catch {}
+    return DEFAULT_EVENTS;
+  });
+  const [saveState, setSaveState] = useState("idle");
+
+  useEffect(() => {
+    const handleSync = () => {
+      try {
+        const saved = localStorage.getItem("tse_events");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const hasXmas = parsed.some((e) => e.id === "christmas-2026");
+            if (!hasXmas) {
+              const xmas = DEFAULT_EVENTS.find((e) => e.id === "christmas-2026");
+              if (xmas) return setEvents([xmas, ...parsed]);
+            }
+            setEvents(parsed);
+            return;
+          }
+        }
+        setEvents(DEFAULT_EVENTS);
+      } catch {}
+    };
+    window.addEventListener("tse_events_updated", handleSync);
+    return () => window.removeEventListener("tse_events_updated", handleSync);
+  }, []);
+
+  const persist = (next) => {
+    setEvents(next);
+    setSaveState("saving");
+    try {
+      localStorage.setItem("tse_events", JSON.stringify(next));
+      window.dispatchEvent(new Event("tse_events_updated"));
+      setSaveState("saved");
+      if (typeof window !== "undefined") {
+        setTimeout(() => {
+          try {
+            if (typeof window !== "undefined") setSaveState("idle");
+          } catch {}
+        }, 2500);
+      }
+    } catch {
+      setSaveState("error");
+    }
+  };
+
+  const addEvent = (event) => {
+    const slug = event.id || `event-${Date.now()}`;
+    persist([...events, { ...event, id: slug }]);
+  };
+  const updateEvent = (id, patch) =>
+    persist(events.map((e) => (e.id === id ? { ...e, ...patch } : e)));
+  const deleteEvent = (id) => persist(events.filter((e) => e.id !== id));
+  const resetEvents = () => {
+    try {
+      localStorage.removeItem("tse_events");
+    } catch {}
+    window.dispatchEvent(new Event("tse_events_updated"));
+    persist(DEFAULT_EVENTS);
+  };
+
+  return { events, status: "connected", saveState, addEvent, updateEvent, deleteEvent, resetEvents };
 }
 
 // Normalizes menu categories into a consistent { title, subtitle, icon, sections } shape

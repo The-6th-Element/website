@@ -11,6 +11,7 @@ import { ReservationModal } from "./components/features/ReservationModal";
 import { StructuredData } from "./components/features/StructuredData";
 import { HomePage } from "./pages/HomePage";
 import { MenuPage } from "./pages/MenuPage";
+import { EventsPage } from "./pages/EventsPage";
 import { SocialImpactPage } from "./pages/SocialImpactPage";
 import { AboutPage } from "./pages/AboutPage";
 import { ContactPage } from "./pages/ContactPage";
@@ -26,7 +27,7 @@ export default function TheSixthElement() {
       const path = window.location.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
       if (path === "admin" || path === "staff") return "staff";
       if (path === "studio") return "studio";
-      if (["home", "menu", "impact", "about", "contact"].includes(path)) {
+      if (["home", "menu", "events", "impact", "about", "contact"].includes(path)) {
         return path;
       }
     } catch {}
@@ -144,7 +145,7 @@ export default function TheSixthElement() {
       } else if (path === "studio") {
         setCurrentPage("studio");
       } else {
-        setCurrentPage(["home", "menu", "impact", "about", "contact"].includes(path) ? path : "home");
+        setCurrentPage(["home", "menu", "events", "impact", "about", "contact"].includes(path) ? path : "home");
       }
     };
     window.addEventListener("popstate", handlePopState);
@@ -163,6 +164,7 @@ export default function TheSixthElement() {
     const PAGE_TITLES = {
       home: "The Sixth Element | Modern Indian & Specialty Coffee | Richmond, London",
       menu: "Food & Drinks Menu | Daytime Brunch & Evening Dining | The Sixth Element",
+      events: "Events & Festive Celebrations | The Sixth Element London",
       about: "Our Story & Culinary Philosophy | Inspired by the Elements | The Sixth Element",
       impact: "Social Impact & Ethical Sourcing | The Sixth Element London",
       contact: "Find Us, Hours & Reservations | 210 Upper Richmond Road West, SW14",
@@ -265,6 +267,12 @@ export default function TheSixthElement() {
           theme={theme}
           flags={flags}
           onOpenStudio={() => navigate("studio")}
+        />
+      )}
+      {currentPage === "events" && (
+        <EventsPage
+          theme={theme}
+          setBookingOpen={handleOpenBooking}
         />
       )}
       {currentPage === "impact" && <SocialImpactPage theme={theme} />}
