@@ -55,6 +55,7 @@ describe('FEATURE-86: Christmas Festive Menu in Menu Section', () => {
 
     // Section headings
     expect(screen.getAllByRole('heading', { name: /Festive Dinner/i }).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getByRole('heading', { name: /Festive Dinner · The Main Event \(Choose One/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Christmas Feast/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Festive Bottomless Brunch/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Drinks & Nibbles/i })).toBeInTheDocument()
@@ -68,7 +69,8 @@ describe('FEATURE-86: Christmas Festive Menu in Menu Section', () => {
     expect(screen.getAllByText(/Christmas Gulab Jamun/i).length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText(/Midnight Chocolate Sphere/i).length).toBeGreaterThanOrEqual(1)
 
-    // Upgrades and special pricing formatting
+    // Upgrades and special pricing formatting:
+    // Individual festive dinner items do not display prices (since it's £35.95 pp), only upgrades show +£10
     expect(screen.getAllByText(/\+£10/i).length).toBeGreaterThanOrEqual(1)
 
     // Christmas Feast offerings

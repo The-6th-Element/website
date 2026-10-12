@@ -605,18 +605,20 @@ export function MenuPage({ theme, flags, setBookingOpen, navigate }) {
                             </p>
                           )}
                         </div>
-                        <div
-                          style={{
-                            fontSize: 15,
-                            fontWeight: 600,
-                            color: theme.accent,
-                            marginLeft: 16,
-                            whiteSpace: "nowrap",
-                            fontFamily: "'Cormorant Garamond', serif",
-                          }}
-                        >
-                          {formatPriceDisplay(item.price)}
-                        </div>
+                        {formatPriceDisplay(item.price) ? (
+                          <div
+                            style={{
+                              fontSize: 15,
+                              fontWeight: 600,
+                              color: theme.accent,
+                              marginLeft: 16,
+                              whiteSpace: "nowrap",
+                              fontFamily: "'Cormorant Garamond', serif",
+                            }}
+                          >
+                            {formatPriceDisplay(item.price)}
+                          </div>
+                        ) : null}
                       </div>
                     </FadeIn>
                   ))}

@@ -1041,15 +1041,17 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                           }}>
                             {item.name}
                           </span>
-                          <span style={{
-                            fontFamily: "'Outfit', sans-serif",
-                            fontSize: 14,
-                            fontWeight: 600,
-                            color: activeCat === "festive" ? "#E5C158" : COLORS.warmAmber,
-                            marginLeft: 8,
-                          }}>
-                            {String(item.price).startsWith("+") || String(item.price).toLowerCase() === "included" ? item.price : `£${item.price}`}
-                          </span>
+                          {item.price ? (
+                            <span style={{
+                              fontFamily: "'Outfit', sans-serif",
+                              fontSize: 14,
+                              fontWeight: 600,
+                              color: activeCat === "festive" ? "#E5C158" : COLORS.warmAmber,
+                              marginLeft: 8,
+                            }}>
+                              {String(item.price).startsWith("+") || String(item.price).toLowerCase() === "included" ? item.price : `£${item.price}`}
+                            </span>
+                          ) : null}
                         </div>
 
                         {item.desc && (
