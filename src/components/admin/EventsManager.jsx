@@ -877,7 +877,7 @@ export function EventsManager({ theme }) {
             onClick={() => {
               if (
                 window.confirm(
-                  "Restore default calendar of events (Christmas 2026, Diwali, NYE Gala, Wine Masterclass, Jazz Brunch)? This will overwrite custom event edits."
+                  "Restore default calendar of events (Christmas 2026)? This will overwrite custom event edits."
                 )
               ) {
                 resetEvents();

@@ -56,14 +56,13 @@ describe('EventsManager: Staff Events & Gatherings Portal Management', () => {
   it('renders default events with badges, dates, and edit buttons', () => {
     render(<EventsManager theme={AM_THEME} />)
 
-    // Check default events are rendered
+    // Check default Christmas event is rendered
     expect(screen.getByText('Make It a Christmas to Remember')).toBeInTheDocument()
-    expect(screen.getByText(/Diwali Grand Celebration/i)).toBeInTheDocument()
-    expect(screen.getByText(/New Year's Eve Gala/i)).toBeInTheDocument()
+    expect(screen.getByText(/CHRISTMAS 2026/i)).toBeInTheDocument()
 
-    // Verify Edit buttons exist for each event
+    // Verify Edit button exists for the event
     const editButtons = screen.getAllByRole('button', { name: /Edit ✎/i })
-    expect(editButtons.length).toBeGreaterThanOrEqual(5)
+    expect(editButtons.length).toBeGreaterThanOrEqual(1)
 
     // Verify '+ Add Event & Gathering' button is present
     expect(screen.getByRole('button', { name: /\+ Add Event & Gathering/i })).toBeInTheDocument()
@@ -145,16 +144,38 @@ describe('EventsManager: Staff Events & Gatherings Portal Management', () => {
     // Mock window.confirm to true
     vi.spyOn(window, 'confirm').mockImplementation(() => true)
 
+    // Seed with two events
+    const initialEvents = [
+      {
+        id: 'christmas-2026',
+        title: 'Make It a Christmas to Remember',
+        badge: 'CHRISTMAS 2026',
+        dateDisplay: '20 Nov 2026 – 31 Dec 2026',
+        offers: [],
+      },
+      {
+        id: 'temporary-event',
+        title: 'Temporary Tasting Session',
+        badge: 'ONE NIGHT ONLY',
+        dateDisplay: '15 Nov 2026',
+        offers: [],
+      },
+    ]
+    localStorage.setItem('tse_events', JSON.stringify(initialEvents))
+
     render(<EventsManager theme={AM_THEME} />)
 
-    expect(screen.getByText(/Weekend Live Jazz Brunch/i)).toBeInTheDocument()
+    expect(screen.getByText('Temporary Tasting Session')).toBeInTheDocument()
 
     // Find all delete buttons
     const deleteButtons = screen.getAllByRole('button', { name: /Delete ×/i })
-    // Click delete on the last event (Jazz Brunch)
-    fireEvent.click(deleteButtons[deleteButtons.length - 1])
+    expect(deleteButtons.length).toBe(2)
+
+    // Click delete on the second event
+    fireEvent.click(deleteButtons[1])
 
     expect(window.confirm).toHaveBeenCalled()
-    expect(screen.queryByText(/Weekend Live Jazz Brunch/i)).not.toBeInTheDocument()
+    expect(screen.queryByText('Temporary Tasting Session')).not.toBeInTheDocument()
+    expect(screen.getByText('Make It a Christmas to Remember')).toBeInTheDocument()
   })
 })

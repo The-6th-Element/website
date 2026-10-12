@@ -92,7 +92,7 @@ export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-
               fontWeight: 300,
             }}
           >
-            From candlelit seasonal feasts and regional Diwali banquets to intimate natural wine masterclasses and live jazz mornings — discover our calendar of memorable gatherings in East Sheen.
+            From candlelit seasonal feasts to celebratory gatherings — discover our calendar of memorable experiences and festive dining in East Sheen.
           </p>
         </div>
 
@@ -144,7 +144,7 @@ export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-
                   borderRadius: 10,
                 }}
               >
-                {currentList.length} Events
+                {currentList.length} {currentList.length === 1 ? "Event" : "Events"}
               </span>
             </div>
 
