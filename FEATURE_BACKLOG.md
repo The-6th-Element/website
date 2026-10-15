@@ -16,13 +16,13 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 ---
 
 ## 📊 Backlog Summary Metrics
-- 🟢 **Complete**: 53 items
+- 🟢 **Complete**: 52 items
 - 🟡 **Yet to Deploy**: 0 items
 - 🔵 **Prioritised**: 12 items
 - ⚪ **Backlog**: 19 items
 - 💡 **Discovery**: 6 items
 - ❌ **Cancelled**: 1 item
-- **Total Tracked**: 91 items across 14 Categories
+- **Total Tracked**: 90 items across 14 Categories
 
 ---
 
