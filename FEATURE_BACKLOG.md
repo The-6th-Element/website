@@ -80,7 +80,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-48** | `BK-31` | Guest Experience & Mobile Optimizations | **Real-Time Kitchen & Service Status Pill** | Dynamic navbar pill indicating live kitchen state ('Open Now · Serving Daytime Brunch' / 'Evening Plates from 5:30pm') based on current London time. | High | 🔵 Prioritised |
 | **FEATURE-49** | `BK-17` | Guest Experience & Mobile Optimizations | **Interactive Day-to-Night Vibe Slider** | Interactive time-scrubber on the homepage allowing visitors to slide from 8:00am Morning Coffee to 12:30pm Brunch to 5:30pm Golden Hour to 9:00pm Candlelit Lounge, watching lighting and dishes morph dynamically. | High | 🔵 Prioritised |
 | **FEATURE-50** | `BK-27` | Marketing & Community Growth | **OpenGraph Rich Social Sharing Cards** | High-resolution OpenGraph and Twitter/X card metadata ensuring links shared in local Richmond/East Sheen Facebook groups, WhatsApp chats, and iMessage display stunning branded imagery and compelling venue copy. | High | 🔵 Prioritised |
-| **FEATURE-51** | `BK-36` | Operations & System Health | **Omnichannel Opening Hours Synchronization** | Audit, align, and synchronize operating hours and service schedules across all touchpoints: Toast ePOS & Toast Tables, website UI & Schema.org JSON-LD, and Google Business Profile (Maps, Search, Holiday Hours). | High | 🔵 Prioritised |
+| **FEATURE-51** | `BK-36 / TOAST-04` | Operations & System Health | **Toast Day-Wise Opening Hours Ingestion & Omnichannel Refresh (Website & Google Pages)** | Automated pipeline to fetch day-wise operating hours and holiday schedules directly from Toast API, and programmatically refresh them across the Website (Contact page, Footer, and Schema.org JSON-LD) and Google Pages (Google Business Profile & Maps Knowledge Panel). | High | 🔵 Prioritised |
 | **FEATURE-52** | `BK-37` | Marketing & Community Growth | **Social Brand Awareness & Multi-Platform Campaigns** | Strategic framework and digital tooling to elevate brand awareness across Instagram, Facebook, TikTok, and Nextdoor: includes campaign landing flows, deep-linked UTM attribution into Toast bookings, and graphics templates. | High | 🔵 Prioritised |
 | **FEATURE-53** | `BK-11` | Menu Management & In-Browser Studio | **Toast POS Direct Menu Integration** | Explore direct sync between Toast POS API and website menu to eliminate manual dual-entry of menu items and pricing. | High | 🔵 Prioritised |
 | **FEATURE-54** | `BK-04` | Guest Experience & Mobile Optimizations | **Click & Collect / Takeaway Ordering** | Simple mobile-first takeaway ordering for morning coffees, pastries, and brunch dishes with time-slot collection. | Medium | ⚪ Backlog |
@@ -212,6 +212,26 @@ For a venue situated at `210 Upper Richmond Road West, London SW14 8AH`, **over 
 8. **`FEATURE-85` (`GBP-08`) — GBP Search Footfall & Intent Analytics Ingestion**:
    - **Analytics Ingestion**: Pull GBP Insights telemetry (Search impressions, Maps views, "Request Directions" navigations, website visits, and phone call clicks) directly into the Staff Portal's **Traffic & Intent** dashboard (`FEATURE-77`).
    - **Growth Outcome**: Correlates Google Maps search footfall with Toast till receipts and nightly Toast-to-Xero financial reconciliation, providing management with a true end-to-end view of marketing ROI to register revenue.
+
+---
+
+### ⏰ Toast Day-Wise Opening Hours Ingestion & Omnichannel Refresh (`FEATURE-51` / `BK-36` / `TOAST-04`)
+
+#### Overview & Strategic Operational Intent
+Operating hours are configured and updated directly within **Toast POS** (covering regular daily service hours, kitchen cutoffs, and seasonal bank holiday variations). Currently, updating hours across the website and Google requires manual intervention across multiple touchpoints. `FEATURE-51` builds an automated data pipeline that treats Toast as the single authoritative source of truth for restaurant trading times, continuously synchronizing schedule changes across both the public website and Google properties.
+
+#### Pipeline Architecture & Delivery Scope:
+1. **Toast API Ingestion**:
+   - Query Toast Restaurant Service / Dining Option Configuration API (`/restaurants/{restaurantGuid}/diningOptions` and service schedules).
+   - Ingest day-wise open/close timings (Monday through Sunday) along with daytime vs evening service breaks and special holiday date overrides.
+2. **Website Touchpoint Refresh**:
+   - **Contact & Location Page (`ContactPage.jsx`)**: Dynamically render live day-by-day opening hours table matching the exact Toast schedule.
+   - **Footer Navigation**: Reflect current weekly operating schedule without hardcoded static text.
+   - **Live Service Status Indicator**: Dynamic open/closed status badge based on current UK London time (e.g. *"Open Now · Daytime Brunch until 3:00 PM"* or *"Closed · Opens Tomorrow at 8:00 AM"*).
+   - **Search Engine Structured Data**: Automatically update `Schema.org/Restaurant` `openingHoursSpecification` in JSON-LD markup so Google Search crawlers index accurate hours.
+3. **Google Business Profile & Maps Refresh**:
+   - Programmatic synchronization to Google Business Profile via the Places / GBP API connection established in `FEATURE-78`.
+   - Update both regular weekly hours and special bank holiday hours (Christmas Eve, Boxing Day, New Year's Eve, Easter) directly on the Google Maps Knowledge Panel.
 
 ---
 
