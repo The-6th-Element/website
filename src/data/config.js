@@ -7,6 +7,13 @@ export const TOAST_CONFIG = {
   reservationUrl: "https://tables.toasttab.com/restaurants/5503e03f-b188-421c-aa8f-5a2c8e27fd59/findTime",
 };
 
+// ── Deliveroo Online Ordering & Delivery Config ────────────────────
+export const DELIVEROO_CONFIG = {
+  url: "https://deliveroo.co.uk/menu/london/sheen/the-sixth-element-210-upper-richmond-road-west",
+  area: "East Sheen, Richmond, Mortlake & Barnes",
+};
+export const DELIVEROO_URL = DELIVEROO_CONFIG.url;
+
 // ── Elements Data ──────────────────────────────────────────────────
 export const ELEMENTS = [
   { name: "Earth", symbol: "🜃", color: COLORS.earthBrown, desc: "Honest ingredients, grounded in provenance. Every plate tells a story of soil and season." },

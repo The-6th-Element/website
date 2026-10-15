@@ -16,13 +16,13 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 ---
 
 ## 📊 Backlog Summary Metrics
-- 🟢 **Complete**: 50 items
+- 🟢 **Complete**: 52 items
 - 🟡 **Yet to Deploy**: 0 items
-- 🔵 **Prioritised**: 14 items
+- 🔵 **Prioritised**: 13 items
 - ⚪ **Backlog**: 19 items
 - 💡 **Discovery**: 6 items
 - ❌ **Cancelled**: 1 item
-- **Total Tracked**: 90 items across 14 Categories
+- **Total Tracked**: 91 items across 14 Categories
 
 ---
 
@@ -108,7 +108,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-76** | `BK-40` | Guest Experience & Mobile Optimizations | **Dedicated Events Hub & Master-Detail Event Viewer (`EVENTS` Navigation)** | Add top-level navigation item 'Events' situated between 'Menu' and 'Social Impact' leading to /events. Master-detail responsive architecture with left-hand events directory and dynamically generated right-hand event views displaying Title, Start & End dates, rich narrative Description, Offers & Packages, Toast 'Book Table' reservation action, and Group Enquiry modal. Supported by an extensible catalog for easily adding future events. | High | 🟢 Complete |
 | **FEATURE-77** | `BK-28` | Operations & System Health | **Incremental Telemetry & Persistent Multi-Day Analytics Retention** | Ensure website traffic metrics and dining intent telemetry are strictly incremental and retained across code deployments and daily midnight GMT rollovers. Includes timeframe selector (All-Time Cumulative, Today, Yesterday), permanent multi-day rollup summary, and resilient client-side aggregation. | High | 🟢 Complete |
 | **FEATURE-78** | `GBP-01` | Google Business Profile | **Google Business Profile API Connection & OAuth2 Link (Foundational Link)** | Establish secure Google Cloud Project API connection, OAuth2 account authorization, and credentials vaulting in Staff Portal for venue identity verification and API handshake. | High | 🔵 Prioritised |
-| **FEATURE-79** | `GBP-02` | Google Business Profile | **'Reserve with Google' Direct Toast Tables Integration** | Connect Google Maps and Search Knowledge Panel native 'Reserve a Table' button directly to Toast Tables reservation engine, cutting dining booking friction from 4 taps to 1. | High | 🔵 Prioritised |
+| **FEATURE-79** | `GBP-02` | Google Business Profile | **'Reserve with Google' & 'Order Online' Direct Toast Tables & Deliveroo Integrations** | Verified live Google Search Knowledge Panel direct integrations ('Reserve a table' via Toast Tables and 'Order online' via Deliveroo), and implemented dedicated multi-touchpoint Deliveroo ordering and delivery integration across the website (Menu page luxury callout banner, mobile navigation drawer 1-tap ordering, Contact page local delivery card, and footer navigation links with native iOS/Android app deep-linking support). | High | 🟢 Complete |
 | **FEATURE-80** | `GBP-03` | Google Business Profile | **Live Google Reviews Ingestion & AI Reputation Manager** | Automated periodic sync of authentic 5-star Google customer reviews into the website showcase (advancing `FEATURE-69 / BK-09`), with Staff Portal alerts and AI-assisted reply drafting. | High | 🔵 Prioritised |
 | **FEATURE-81** | `GBP-04` | Google Business Profile | **Google Food Menus & Structured Pricing Synchronization** | Programmatic sync of daytime brunch and evening dining menus, prices, descriptions, and dietary badges (V, VE, GF, DF) from Menu Studio into Google's structured Food Ordering tabs. | Medium | ⚪ Backlog |
 | **FEATURE-82** | `GBP-05` | Google Business Profile | **Google Posts & Seasonal Event Syndication** | Programmatically syndicate festive offers, NYE gala, and jazz brunches from the Events Manager (`FEATURE-76`) directly to Google Business Profile Posts (Offers & Events). | Medium | ⚪ Backlog |
@@ -119,6 +119,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-87** | `SEC-02` | Staff & Role-Based Access Control (RBAC) | **Credentials & Secret Recovery Persistence & Account Isolation** | Isolated admin, pooja, and deepak into independent protected accounts, permanently retaining custom passwords and secret questions/answers across browser storage with strict default revocation. | High | 🟢 Complete |
 | **FEATURE-88** | `SEC-03` | Operations & System Health | **npm v12 Supply-Chain Hardening & Security Policy** | Upgraded runtime to npm 12.2.0 with engine-strict compatibility, audited allowScripts for native modules, exact version pinning, and packageManager declaration. | High | 🟢 Complete |
 | **FEATURE-89** | `BK-42` | Guest Experience & Mobile Optimizations | **Menu Dietary Taxonomy Standardization: Gluten Free & Halal Decommissioning** | Standardized all dietary taxonomy to 'Gluten Free' across filter chips, studio tools, and menu badges, and decommissioned Halal qualifiers across all pages, components, and studio tools. | Medium | 🟢 Complete |
+| **FEATURE-90** | `BK-43` | Staff & Role-Based Access Control (RBAC) | **Cross-Browser & Multi-Device Cloud Synchronization for Staff Accounts & Credentials via Supabase** | Eliminated localStorage browser isolation barriers across Edge, Chrome, Safari, iPad, and mobile devices. Real-time synchronization of staff accounts, password hashes, and security recovery questions with Supabase cloud table (`public.staff_users`) protected by Row Level Security (RLS) with offline fallback resilience. | High | 🟢 Complete |
 
 ---
 
@@ -182,9 +183,10 @@ For a venue situated at `210 Upper Richmond Road West, London SW14 8AH`, **over 
    - **Staff Portal Integration**: Add a secure "Google Connection" sub-card in `/staff` Settings allowing authorized admins to authenticate and verify venue location ID (`ChIJ...`).
    - **Security**: Store refreshed OAuth2 tokens securely with encrypted session tokens.
 
-2. **`FEATURE-79` (`GBP-02`) — 'Reserve with Google' Direct Toast Tables Integration**:
-   - **Booking Flow**: Connect Toast Tables reservation widget directly to Google's "Reserve a Table" button on Google Search & Maps.
-   - **Growth Outcome**: Cuts booking friction from 4 taps down to 1 without requiring guests to navigate away from Google Maps, capturing impulsive evening and weekend dining decisions.
+2. **`FEATURE-79` (`GBP-02`) — 'Reserve with Google' & 'Order Online' Direct Toast Tables & Deliveroo Integrations (🟢 Complete)**:
+   - **Reserve with Google (Toast Tables)**: Live Google Search Knowledge Panel direct integration via Toast Tables, cutting dining table reservations from 4 taps down to 1 directly from Google Search and Google Maps.
+   - **Order Online (Deliveroo)**: Live Google Knowledge Panel direct integration connecting to Deliveroo, plus 4 high-conversion, non-intrusive web touchpoints across the website (Menu page luxury delivery banner, mobile navigation drawer 1-tap ordering, Contact page local delivery card, and footer navigation links).
+   - **Universal Deep-Linking**: Configured standard HTTPS Deliveroo links that automatically launch the native Deliveroo mobile app on iOS (Apple Universal Links) and Android (Android App Links) if installed, with instant mobile web fallback.
 
 3. **`FEATURE-80` (`GBP-03`) — Live Google Reviews Ingestion & AI Reputation Manager**:
    - **Reviews Sync**: Ingest authentic 5-star customer testimonials from GBP API into the website's social proof carousel (superseding and completing `BK-09`).
