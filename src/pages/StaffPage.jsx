@@ -20,6 +20,7 @@ import { useMenu } from "../hooks/useContent";
 import { PrintMenuModal } from "../components/admin/PrintMenuModal";
 import { AnalyticsDashboard } from "../components/admin/AnalyticsDashboard";
 import { GoogleConnectionCard } from "../components/admin/GoogleConnectionCard";
+import { GoogleReviewsManager } from "../components/admin/GoogleReviewsManager";
 
 export function StaffPage({
   theme,
@@ -1577,6 +1578,9 @@ export function StaffPage({
                     Table reservations are powered by Toast Tables. The booking page loads in a spacious modal window directly on your site.
                   </p>
                 </div>
+
+                {/* Google Reviews & AI Reputation Hub (FEATURE-80) */}
+                <GoogleReviewsManager theme={theme} />
 
                 {/* Google Business Profile & Places Integration (FEATURE-78) */}
                 <GoogleConnectionCard theme={theme} />

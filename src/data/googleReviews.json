@@ -1,0 +1,69 @@
+{
+  "placeId": "ChIJGQQLEQAPdkgRd3Et9bb_R3M",
+  "placeName": "The Sixth Element",
+  "address": "210 Upper Richmond Rd W, London SW14 8AH",
+  "rating": 4.8,
+  "userRatingsTotal": 32,
+  "reviews": [
+    {
+      "id": "rev_01",
+      "authorName": "Charlotte Davies",
+      "authorPhoto": "",
+      "rating": 5,
+      "relativeTimeDescription": "2 weeks ago",
+      "publishedAt": "2026-09-30T11:20:00Z",
+      "text": "Such a fantastic addition to East Sheen! We had the cardamom French toast and masala chai for brunch, and both were outstanding. The atmosphere is warm, calm, and beautifully styled. Love that dogs are welcome on the terrace. Can't wait to return for evening dining!",
+      "tags": ["Cardamom French Toast", "Masala Chai", "Dog-Friendly", "Brunch"],
+      "reply": "Thank you Charlotte! So delighted you enjoyed our Cardamom French Toast and chai. Looking forward to welcoming you and your furry companion back for evening plates very soon! — Pooja & The Sixth Element Team",
+      "status": "replied"
+    },
+    {
+      "id": "rev_02",
+      "authorName": "James Henderson",
+      "authorPhoto": "",
+      "rating": 5,
+      "relativeTimeDescription": "a month ago",
+      "publishedAt": "2026-09-14T19:45:00Z",
+      "text": "Visited for dinner last Friday with my partner. The velvet butter chicken and slow-braised lamb shank were next level, full of depth and authentic spice. Excellent natural wine selection too. Attentive service without feeling rushed. 5 stars all the way.",
+      "tags": ["Butter Chicken", "Lamb Shank", "Natural Wine", "Evening Plates"],
+      "reply": "Dear James, thank you for the wonderful feedback! Our kitchen takes huge pride in the 12-hour braised shank and rich butter chicken. Thrilled you enjoyed our wine pairings. See you again soon!",
+      "status": "replied"
+    },
+    {
+      "id": "rev_03",
+      "authorName": "Dr. Priya Patel",
+      "authorPhoto": "",
+      "rating": 5,
+      "relativeTimeDescription": "3 weeks ago",
+      "publishedAt": "2026-09-22T09:15:00Z",
+      "text": "My new regular coffee spot in Richmond! Old Spike specialty roast is brewed to perfection, and their sourdough pastries are fresh every morning. Modern, aesthetic design with lovely staff. Highly recommended.",
+      "tags": ["Old Spike Coffee", "Sourdough", "Atmosphere"],
+      "reply": null,
+      "status": "pending"
+    },
+    {
+      "id": "rev_04",
+      "authorName": "Marcus Sterling",
+      "authorPhoto": "",
+      "rating": 5,
+      "relativeTimeDescription": "2 months ago",
+      "publishedAt": "2026-08-18T20:30:00Z",
+      "text": "Incredible concept transitioning from daytime café to evening candlelit lounge. We booked the heated terrace for a group celebration and the team looked after us impeccably. The cocktails and sharing plates are London quality right on Upper Richmond Road.",
+      "tags": ["Cocktails", "Heated Terrace", "Group Celebration", "Service"],
+      "reply": null,
+      "status": "pending"
+    },
+    {
+      "id": "rev_05",
+      "authorName": "Sophie Laurent",
+      "authorPhoto": "",
+      "rating": 5,
+      "relativeTimeDescription": "a month ago",
+      "publishedAt": "2026-09-08T13:00:00Z",
+      "text": "Exceptional gluten-free accommodations! Usually dining out with celiac disease is stressful, but the team walked me through every dish. The winter ruby tikki and dal makhani are sublime. Genuine, heartfelt hospitality.",
+      "tags": ["Gluten-Free", "Dal Makhani", "Hospitality", "Dietary Friendly"],
+      "reply": null,
+      "status": "pending"
+    }
+  ]
+}
