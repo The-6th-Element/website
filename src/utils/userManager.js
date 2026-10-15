@@ -171,26 +171,67 @@ function mapStaffUserToDbRecord(user) {
   };
 }
 
+function getDeletedUsernames() {
+  try {
+    const raw = typeof localStorage !== "undefined" ? localStorage.getItem("tse_deleted_staff_users") : null;
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed.map((s) => String(s).toLowerCase());
+    }
+  } catch {}
+  return [];
+}
+
+function markUserDeleted(username) {
+  try {
+    const deleted = getDeletedUsernames();
+    const clean = username.toLowerCase();
+    if (!deleted.includes(clean)) {
+      deleted.push(clean);
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem("tse_deleted_staff_users", JSON.stringify(deleted));
+      }
+    }
+  } catch {}
+}
+
+function unmarkUserDeleted(username) {
+  try {
+    const deleted = getDeletedUsernames();
+    const clean = username.toLowerCase();
+    const filtered = deleted.filter((u) => u !== clean);
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("tse_deleted_staff_users", JSON.stringify(filtered));
+    }
+  } catch {}
+}
+
 /**
  * Returns list of all staff accounts from browser storage or defaults.
- * Reliably merges seeded default accounts with persisted modifications in localStorage.
+ * Reliably merges seeded default accounts with persisted modifications in localStorage,
+ * while respecting any accounts that have been explicitly deleted.
  */
 export function getStaffUsers() {
+  const deleted = getDeletedUsernames();
   try {
-    const saved = localStorage.getItem("tse_staff_users");
+    const saved = typeof localStorage !== "undefined" ? localStorage.getItem("tse_staff_users") : null;
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        // Build map seeded with defaults
+        // Build map seeded with defaults (excluding deleted accounts)
         const userMap = new Map();
         DEFAULT_USERS.forEach((defUser) => {
-          userMap.set(defUser.username.toLowerCase(), { ...defUser });
+          const uKey = defUser.username.toLowerCase();
+          if (!deleted.includes(uKey)) {
+            userMap.set(uKey, { ...defUser });
+          }
         });
 
         // Overlay saved custom properties and accounts
         parsed.forEach((user) => {
           if (!user || !user.username) return;
           const key = user.username.toLowerCase();
+          if (deleted.includes(key)) return;
           const existing = userMap.get(key);
           if (existing) {
             userMap.set(key, {
@@ -210,7 +251,7 @@ export function getStaffUsers() {
       }
     }
   } catch {}
-  return DEFAULT_USERS.map((u) => ({ ...u }));
+  return DEFAULT_USERS.filter((u) => !deleted.includes(u.username.toLowerCase())).map((u) => ({ ...u }));
 }
 
 /**
@@ -253,14 +294,18 @@ export async function syncStaffUsersFromCloud() {
     if (res.ok) {
       const cloudUsers = await res.json();
       if (Array.isArray(cloudUsers) && cloudUsers.length > 0) {
+        const deleted = getDeletedUsernames();
         const userMap = new Map();
         DEFAULT_USERS.forEach((defUser) => {
-          userMap.set(defUser.username.toLowerCase(), { ...defUser });
+          const uKey = defUser.username.toLowerCase();
+          if (!deleted.includes(uKey)) {
+            userMap.set(uKey, { ...defUser });
+          }
         });
 
         cloudUsers.forEach((rec) => {
           const appUser = mapDbRecordToStaffUser(rec);
-          if (appUser) {
+          if (appUser && !deleted.includes(appUser.username.toLowerCase())) {
             userMap.set(appUser.username, appUser);
           }
         });
@@ -660,6 +705,7 @@ export async function addStaffUser({ username, name, role, title, password, secu
   };
 
   const updated = [...users, newUser];
+  unmarkUserDeleted(cleanUsername);
   saveStaffUsers(updated);
   pushUserInsertToCloud(newUser).catch(() => {});
   return newUser;
@@ -706,8 +752,8 @@ export async function updateStaffUser(username, patch) {
  * Deletes a staff account.
  */
 export function deleteStaffUser(username) {
+  const cleanUsername = username ? username.trim().toLowerCase() : "";
   const users = getStaffUsers();
-  const cleanUsername = username.toLowerCase();
   const target = users.find(u => u.username.toLowerCase() === cleanUsername);
 
   if (!target) throw new Error("User not found.");
@@ -717,6 +763,9 @@ export function deleteStaffUser(username) {
   if (target.isProtected || ["admin", "deepak"].includes(cleanUsername)) {
     throw new Error("Core administrator accounts cannot be deleted.");
   }
+
+  // Mark account as permanently deleted in tombstones registry
+  markUserDeleted(cleanUsername);
 
   const filtered = users.filter(u => u.username.toLowerCase() !== cleanUsername);
   saveStaffUsers(filtered);
@@ -738,8 +787,11 @@ export function hasPermission(role, permissionKey) {
 export function resetStaffUsersToDefault() {
   try {
     localStorage.removeItem("tse_staff_users");
+    localStorage.removeItem("tse_deleted_staff_users");
   } catch {}
-  window.dispatchEvent(new Event("tse_staff_users_updated"));
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("tse_staff_users_updated"));
+  }
   return DEFAULT_USERS;
 }
 

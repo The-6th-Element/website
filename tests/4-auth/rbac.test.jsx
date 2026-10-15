@@ -5,6 +5,7 @@ import {
   getStaffUsers,
   deleteStaffUser,
   resetStaffUsersToDefault,
+  addStaffUser,
   SECURITY_QUESTIONS,
   setupSecurityQuestion,
   getSecurityQuestionForUser,
@@ -44,6 +45,54 @@ describe('BK-14 & BK-38: RBAC & User Management Regression Suite', () => {
     expect(() => deleteStaffUser('pooja')).toThrow(/Owner account cannot be deleted/i)
     expect(() => deleteStaffUser('admin')).toThrow(/Core administrator accounts cannot be deleted/i)
     expect(() => deleteStaffUser('deepak')).toThrow(/Core administrator accounts cannot be deleted/i)
+  })
+
+  it('permanently deletes non-core users and prevents resurrection on re-fetch and cloud sync', async () => {
+    // manager starts present
+    expect(getStaffUsers().find(u => u.username === 'manager')).toBeDefined()
+
+    // Delete manager
+    deleteStaffUser('manager')
+
+    // Manager must not be returned by getStaffUsers()
+    expect(getStaffUsers().find(u => u.username === 'manager')).toBeUndefined()
+
+    // Even if syncStaffUsersFromCloud is triggered with cloud returning manager:
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        {
+          username: 'manager',
+          name: 'Floor Manager',
+          role: 'manager',
+          is_protected: false,
+        },
+      ],
+    })
+
+    const synced = await syncStaffUsersFromCloud()
+    expect(synced.find(u => u.username === 'manager')).toBeUndefined()
+    expect(getStaffUsers().find(u => u.username === 'manager')).toBeUndefined()
+  })
+
+  it('allows re-creating a previously deleted user and resets tombstones on default reset', async () => {
+    deleteStaffUser('chef')
+    expect(getStaffUsers().find(u => u.username === 'chef')).toBeUndefined()
+
+    // Re-add chef
+    await addStaffUser({
+      username: 'chef',
+      name: 'Head Chef',
+      role: 'kitchen',
+      password: 'ChefPassword123!',
+    })
+    expect(getStaffUsers().find(u => u.username === 'chef')).toBeDefined()
+
+    // Resetting defaults clears tombstones and restores seeded accounts
+    deleteStaffUser('chef')
+    expect(getStaffUsers().find(u => u.username === 'chef')).toBeUndefined()
+    resetStaffUsersToDefault()
+    expect(getStaffUsers().find(u => u.username === 'chef')).toBeDefined()
   })
 
   it('provides default seeded users with distinct admin, pooja, and deepak accounts', () => {
