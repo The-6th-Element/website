@@ -19,6 +19,7 @@ import { Logomark } from "../components/ui/Logomark";
 import { useMenu } from "../hooks/useContent";
 import { PrintMenuModal } from "../components/admin/PrintMenuModal";
 import { AnalyticsDashboard } from "../components/admin/AnalyticsDashboard";
+import { GoogleConnectionCard } from "../components/admin/GoogleConnectionCard";
 
 export function StaffPage({
   theme,
@@ -1577,6 +1578,9 @@ export function StaffPage({
                     To modify the Toast link, update <code style={{ background: `${theme.muted}15`, padding: "2px 6px", borderRadius: 4 }}>TOAST_CONFIG.reservationUrl</code>.
                   </p>
                 </div>
+
+                {/* Google Business Profile & Places Integration (FEATURE-78) */}
+                <GoogleConnectionCard theme={theme} />
               </div>
             )}
           </div>

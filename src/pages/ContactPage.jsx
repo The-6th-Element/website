@@ -1,6 +1,6 @@
 // src/pages/ContactPage.jsx
 import React from "react";
-import { MAP_EMBED_SRC, MAP_DIRECTIONS_URL, DELIVEROO_CONFIG } from "../data/config";
+import { MAP_EMBED_SRC, MAP_DIRECTIONS_URL, DELIVEROO_CONFIG, GOOGLE_CONFIG } from "../data/config";
 import { FadeIn } from "../components/ui/FadeIn";
 import { trackDirectionsClick, trackContactClick } from "../utils/analytics";
 import { BookTableButton } from "../components/ui/BookTableButton";
@@ -142,6 +142,31 @@ export function ContactPage({ theme, setBookingOpen }) {
                   onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
                 >
                   📍 Get Directions
+                </a>
+                <a
+                  href={GOOGLE_CONFIG.reviewUri}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "12px 20px",
+                    borderRadius: 30,
+                    textDecoration: "none",
+                    background: `${theme.accent}14`,
+                    color: theme.heading,
+                    border: `1.5px solid ${theme.accent}50`,
+                    fontFamily: "'Outfit', sans-serif",
+                    fontSize: 14,
+                    fontWeight: 500,
+                    letterSpacing: "0.03em",
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                >
+                  ⭐ Review Us on Google ↗
                 </a>
               </div>
 

@@ -101,3 +101,14 @@ export const OLD_SPIKE_URL = "https://oldspikeroastery.com/pages/impact";
 export const VENUE_ADDRESS = "210 Upper Richmond Road West, London, SW14 8AH";
 export const MAP_EMBED_SRC = `https://www.google.com/maps?q=${encodeURIComponent(VENUE_ADDRESS)}&output=embed`;
 export const MAP_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(VENUE_ADDRESS)}`;
+
+// ── Google Business Profile & Places Config (FEATURE-78) ────────────
+export const GOOGLE_CONFIG = {
+  placeId: "ChIJGQQLEQAPdkgRd3Et9bb_R3M",
+  cid: "8306889198970696055",
+  storeCode: "06233181898163879843",
+  apiKey: "AIzaSyCe3boH2pmNmbmn0aqjPi6MUSLSd7juBWQ",
+  mapsUri: "https://maps.google.com/?cid=8306889198970696055",
+  reviewUri: "https://search.google.com/local/writereview?placeid=ChIJGQQLEQAPdkgRd3Et9bb_R3M",
+  businessProfileManagerUri: "https://business.google.com/locations",
+};
