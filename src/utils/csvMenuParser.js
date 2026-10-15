@@ -177,21 +177,39 @@ export function csvToMenu(csvText, baseMenu = MENU_DATA) {
   const warnings = [];
   let itemCount = 0;
 
-  // Build cloned base structure
+  // Build cloned base structure including festive Christmas menu
   const resultMenu = {
     daytime: {
-      title: "Daytime",
+      title: baseMenu.daytime?.title || "Daytime",
       subtitle: baseMenu.daytime?.subtitle || "Served 8am – 2pm · Inspired by the five elements",
-      icon: "☀️",
+      icon: baseMenu.daytime?.icon || "☀️",
       sections: [],
     },
     evening: {
-      title: "Evening",
+      title: baseMenu.evening?.title || "Evening",
       subtitle: baseMenu.evening?.subtitle || "Modern Indian · Served from 5pm",
-      icon: "🌙",
+      icon: baseMenu.evening?.icon || "🌙",
+      sections: [],
+    },
+    festive: {
+      title: baseMenu.festive?.title || "Festive Menu",
+      subtitle: baseMenu.festive?.subtitle || "Make it a Christmas to remember · Served from 20th November",
+      icon: baseMenu.festive?.icon || "🎄",
       sections: [],
     },
   };
+
+  // Preserve any additional custom categories from baseMenu if present
+  for (const [k, v] of Object.entries(baseMenu || {})) {
+    if (!resultMenu[k]) {
+      resultMenu[k] = {
+        title: v.title || k,
+        subtitle: v.subtitle || "",
+        icon: v.icon || "📋",
+        sections: [],
+      };
+    }
+  }
 
   // Process rows
   for (let r = 1; r < rawRows.length; r++) {
@@ -199,7 +217,14 @@ export function csvToMenu(csvText, baseMenu = MENU_DATA) {
     const rowNum = r + 1;
 
     let catRaw = (catIdx !== -1 && row[catIdx] ? row[catIdx] : "daytime").toLowerCase();
-    const catKey = catRaw.includes("even") || catRaw.includes("night") || catRaw.includes("pm") ? "evening" : "daytime";
+    let catKey = "daytime";
+    if (catRaw.includes("festive") || catRaw.includes("xmas") || catRaw.includes("christ")) {
+      catKey = "festive";
+    } else if (catRaw.includes("even") || catRaw.includes("night") || catRaw.includes("pm")) {
+      catKey = "evening";
+    } else if (resultMenu[catRaw]) {
+      catKey = catRaw;
+    }
 
     const sectionName = (secIdx !== -1 && row[secIdx] ? row[secIdx] : "General").trim();
     const itemName = (row[nameIdx] || "").trim();
@@ -212,7 +237,7 @@ export function csvToMenu(csvText, baseMenu = MENU_DATA) {
     let price = priceIdx !== -1 && row[priceIdx] ? row[priceIdx].trim() : "0";
     // Strip leading currency symbols if user typed £12 or $12
     price = price.replace(/^[£$€]/, "").trim();
-    if (!price || isNaN(Number(price))) {
+    if (!price || (isNaN(Number(price)) && !price.toLowerCase().includes("included") && !price.toLowerCase().includes("free") && !price.startsWith("+"))) {
       warnings.push(`Row ${rowNum} ("${itemName}"): Price '${price}' is non-numeric, keeping as string.`);
     }
 
@@ -228,6 +253,14 @@ export function csvToMenu(csvText, baseMenu = MENU_DATA) {
     }
 
     // Locate or create section in the appropriate category
+    if (!resultMenu[catKey]) {
+      resultMenu[catKey] = {
+        title: catRaw.charAt(0).toUpperCase() + catRaw.slice(1),
+        subtitle: "",
+        icon: "📋",
+        sections: [],
+      };
+    }
     let targetCategory = resultMenu[catKey];
     let section = targetCategory.sections.find(s => s.name.toLowerCase() === sectionName.toLowerCase());
     if (!section) {
@@ -249,7 +282,10 @@ export function csvToMenu(csvText, baseMenu = MENU_DATA) {
     return { success: false, error: "No valid menu items could be read from this CSV file." };
   }
 
-  const sectionsCount = resultMenu.daytime.sections.length + resultMenu.evening.sections.length;
+  const sectionsCount = Object.values(resultMenu).reduce(
+    (sum, cat) => sum + (cat.sections?.length || 0),
+    0
+  );
 
   return {
     success: true,
@@ -257,8 +293,9 @@ export function csvToMenu(csvText, baseMenu = MENU_DATA) {
     stats: {
       itemsCount: itemCount,
       sectionsCount,
-      daytimeSections: resultMenu.daytime.sections.length,
-      eveningSections: resultMenu.evening.sections.length,
+      daytimeSections: resultMenu.daytime?.sections.length || 0,
+      eveningSections: resultMenu.evening?.sections.length || 0,
+      festiveSections: resultMenu.festive?.sections.length || 0,
     },
     warnings,
   };

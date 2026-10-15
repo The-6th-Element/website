@@ -3,8 +3,9 @@ import React from "react";
 import { MAP_EMBED_SRC, MAP_DIRECTIONS_URL } from "../data/config";
 import { FadeIn } from "../components/ui/FadeIn";
 import { trackDirectionsClick, trackContactClick } from "../utils/analytics";
+import { BookTableButton } from "../components/ui/BookTableButton";
 
-export function ContactPage({ theme }) {
+export function ContactPage({ theme, setBookingOpen }) {
   return (
     <div style={{ paddingTop: 120, minHeight: "100vh" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 24px 80px" }}>
@@ -108,32 +109,41 @@ export function ContactPage({ theme }) {
                 </div>
               ))}
 
-              <a
-                href={MAP_DIRECTIONS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackDirectionsClick("contact_page")}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  marginTop: 8,
-                  padding: "12px 24px",
-                  borderRadius: 30,
-                  textDecoration: "none",
-                  background: theme.accent,
-                  color: "#fff",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  letterSpacing: "0.03em",
-                  transition: "transform 0.3s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-              >
-                📍 Get Directions
-              </a>
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 8 }}>
+                {setBookingOpen && (
+                  <BookTableButton
+                    size="md"
+                    theme={theme}
+                    onClick={() => setBookingOpen(true)}
+                  />
+                )}
+                <a
+                  href={MAP_DIRECTIONS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackDirectionsClick("contact_page")}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "12px 24px",
+                    borderRadius: 30,
+                    textDecoration: "none",
+                    background: "transparent",
+                    color: theme.heading,
+                    border: `1.5px solid ${theme.accent || theme.text}60`,
+                    fontFamily: "'Outfit', sans-serif",
+                    fontSize: 14,
+                    fontWeight: 500,
+                    letterSpacing: "0.03em",
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                >
+                  📍 Get Directions
+                </a>
+              </div>
             </div>
           </FadeIn>
 

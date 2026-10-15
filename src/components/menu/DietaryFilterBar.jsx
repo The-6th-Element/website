@@ -7,8 +7,7 @@ export const DIETARY_FILTERS = [
   { id: "all", label: "All Items", icon: "🍽️", description: "Complete menu catalog" },
   { id: "V", label: "Vegetarian", icon: "🌿", description: "Vegetarian and plant-based dishes" },
   { id: "VE", label: "Plant-Based", icon: "🌱", description: "100% plant-based / vegan dishes" },
-  { id: "GF", label: "Gluten-Friendly", icon: "🌾", description: "Gluten-free and gluten-friendly options" },
-  { id: "HALAL", label: "Halal Friendly", icon: "🌙", description: "Halal-suitable poultry, lamb & preparations" },
+  { id: "GF", label: "Gluten Free", icon: "🌾", description: "Gluten-free and gluten-friendly options" },
 ];
 
 /**
@@ -28,9 +27,6 @@ export function matchesDietaryFilter(item, filterId) {
   if (filterId === "GF") {
     return tags.includes("GF") || tags.includes("GF*");
   }
-  if (filterId === "HALAL") {
-    return tags.includes("HALAL") || tags.includes("H");
-  }
 
   return tags.includes(filterId);
 }
@@ -45,8 +41,94 @@ export function DietaryFilterBar({
   counts = {},
   theme,
   categoryTitle = "menu",
+  inline = false,
 }) {
   const isFiltered = activeFilter !== "all";
+
+  if (inline) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          gap: 6,
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        {DIETARY_FILTERS.map((filter) => {
+          const isActive = activeFilter === filter.id;
+          const count = counts[filter.id] ?? 0;
+          const isDisabled = filter.id !== "all" && count === 0;
+
+          return (
+            <button
+              key={filter.id}
+              disabled={isDisabled}
+              onClick={() => {
+                if (isActive && filter.id !== "all") {
+                  onSelectFilter("all");
+                } else {
+                  onSelectFilter(filter.id);
+                }
+              }}
+              title={isDisabled ? `No items in ${categoryTitle} match ${filter.label}` : filter.description}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 5,
+                minHeight: 36,
+                padding: "6px 12px",
+                borderRadius: 20,
+                border: isActive
+                  ? `1.5px solid ${COLORS.mossGreen}`
+                  : `1px solid ${theme.muted}25`,
+                cursor: isDisabled ? "not-allowed" : "pointer",
+                fontFamily: "'Outfit', sans-serif",
+                fontSize: 12,
+                fontWeight: isActive ? 600 : 500,
+                letterSpacing: "0.02em",
+                background: isActive
+                  ? COLORS.mossGreen
+                  : isDisabled
+                  ? `${theme.muted}06`
+                  : `${theme.muted}12`,
+                color: isActive
+                  ? "#FAF8F0"
+                  : isDisabled
+                  ? `${theme.muted}60`
+                  : theme.heading,
+                opacity: isDisabled ? 0.45 : 1,
+                boxShadow: isActive ? "0 3px 10px rgba(96, 110, 61, 0.25)" : "none",
+                transition: "all 0.25s ease",
+                WebkitTapHighlightColor: "transparent",
+                touchAction: "manipulation",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}
+            >
+              <span style={{ fontSize: 13 }}>{filter.icon}</span>
+              <span>{filter.label}</span>
+              {filter.id !== "all" && (
+                <span
+                  style={{
+                    marginLeft: 2,
+                    fontSize: 10.5,
+                    fontWeight: 700,
+                    padding: "1px 6px",
+                    borderRadius: 8,
+                    background: isActive ? "rgba(255, 255, 255, 0.25)" : `${theme.muted}18`,
+                    color: isActive ? "#FAF8F0" : theme.muted,
+                  }}
+                >
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div

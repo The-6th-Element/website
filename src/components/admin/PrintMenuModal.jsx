@@ -209,6 +209,7 @@ export function PrintMenuModal({ theme, menuData, initialCategory = "all", onClo
                 {[
                   { id: "daytime", label: "☀️ Daytime Service", sub: "Brunch & larger plates (8am – 2pm)" },
                   { id: "evening", label: "🌙 Evening Dining", sub: "Small plates & signatures (from 5pm)" },
+                  { id: "festive", label: "🎄 Festive Menu", sub: "Festive dinner, feast & brunch (from 20 Nov)" },
                   { id: "all", label: "✨ Complete Master Menu", sub: "All categories & sections combined" },
                 ].map((cat) => (
                   <button

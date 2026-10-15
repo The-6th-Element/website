@@ -7,7 +7,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 
 ## 📌 Standardized Status Lifecycle
 - 🟢 **Complete**: Fully implemented, tested, verified, and live in the codebase.
-- 🟡 **Ready to Deploy**: Implementation complete; awaiting operational or release window.
+- 🟡 **Yet to Deploy**: Fully implemented and tested in DEV; awaiting production release window / deployment.
 - 🔵 **Prioritised**: Scoped, agreed upon, and queued as immediate next priorities.
 - ⚪ **Backlog**: Scoped enhancements scheduled for subsequent roadmap phases.
 - 💡 **Discovery**: Early concepts under research or viability/API feasibility assessment.
@@ -16,13 +16,13 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 ---
 
 ## 📊 Backlog Summary Metrics
-- 🟢 **Complete**: 46 items
-- 🟡 **Ready to Deploy**: 0 item
+- 🟢 **Complete**: 50 items
+- 🟡 **Yet to Deploy**: 0 items
 - 🔵 **Prioritised**: 14 items
 - ⚪ **Backlog**: 19 items
 - 💡 **Discovery**: 6 items
 - ❌ **Cancelled**: 1 item
-- **Total Tracked**: 86 items across 14 Categories
+- **Total Tracked**: 90 items across 14 Categories
 
 ---
 
@@ -71,7 +71,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-39** | `BK-14` | Quality Assurance & Automated Testing | **Full Automated Regression Test Pack** | Comprehensive automated regression test pack (Vitest + Testing Library + jsdom) with 31/31 unit, component, and RBAC tests passing. Integrated into GitHub Actions CI/CD to run automatically on every push with pre-deployment quality gates. | High | 🟢 Complete |
 | **FEATURE-40** | `BK-38` | Staff & Role-Based Access Control (RBAC) | **Self-Service Password Reset via Secret Questions** | Secure self-service account recovery allowing staff to reset forgotten passwords by answering a chosen security question from 8 predefined options. Features one-time setup on login, SHA-256 hashed answers, interactive Forgot Password drawer, and Admin Console credential management. | High | 🟢 Complete |
 | **FEATURE-41** | `BK-39` | Operations & System Health | **Guaranteed 05:15 AM External Scheduler** | Replaced delayed GitHub Actions scheduled cron queue with dedicated external webhook trigger (cron-job.org) targeting /actions/workflows/daily_sync.yml/dispatches at 05:15 AM Europe/London with sub-second precision. Delivers daily financial & footfall telemetry reports on time. | High | 🟢 Complete |
-| **FEATURE-42** | `BK-29` | Guest Experience & Mobile Optimizations | **Interactive Dietary & Lifestyle Filter Chips (Menu UX)** | Instant client-side filter chips on the Menu page (Vegetarian, Vegan, Gluten-Friendly, Halal) with badge counts, Option A dish filtering, and telemetry integration. Fully tested and verified live in production via BK-14 regression test pack. | High | 🟢 Complete |
+| **FEATURE-42** | `BK-29` | Guest Experience & Mobile Optimizations | **Interactive Dietary & Lifestyle Filter Chips (Menu UX)** | Instant client-side filter chips on the Menu page (Vegetarian, Plant-Based, Gluten Free) with badge counts, Option A dish filtering, and telemetry integration. Fully tested and verified live in production via BK-14 regression test pack. | High | 🟢 Complete |
 | **FEATURE-43** | `BK-24` | Guest Experience & Mobile Optimizations | **Context-Aware WhatsApp Hospitality Concierge** | Floating WhatsApp concierge button with pre-populated contextual messages based on user intent (e.g. large parties of 6+ on Reservations, daily dietary queries on Menu, dog-friendly or table walk-in queries on Contact). | High | 🔵 Prioritised |
 | **FEATURE-44** | `BK-06` | Guest Experience & Mobile Optimizations | **Digital Gift Cards Integration** | Integration with digital gift voucher provider (e.g. Toast Gift Cards, Square, or Stripe) for custom-amount vouchers with instant email delivery. | High | 🔵 Prioritised |
 | **FEATURE-45** | `BK-19` | Guest Experience & Mobile Optimizations | **Live Walk-in & Table Availability Indicator** | Real-time 1-tap status switch in Staff Portal allowing staff to signal Walk-ins Welcome / Short Wait / Bookings Only to eliminate customer hesitation and drive spontaneous visits. | Medium | 🔵 Prioritised |
@@ -110,11 +110,63 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-78** | `GBP-01` | Google Business Profile | **Google Business Profile API Connection & OAuth2 Link (Foundational Link)** | Establish secure Google Cloud Project API connection, OAuth2 account authorization, and credentials vaulting in Staff Portal for venue identity verification and API handshake. | High | 🔵 Prioritised |
 | **FEATURE-79** | `GBP-02` | Google Business Profile | **'Reserve with Google' Direct Toast Tables Integration** | Connect Google Maps and Search Knowledge Panel native 'Reserve a Table' button directly to Toast Tables reservation engine, cutting dining booking friction from 4 taps to 1. | High | 🔵 Prioritised |
 | **FEATURE-80** | `GBP-03` | Google Business Profile | **Live Google Reviews Ingestion & AI Reputation Manager** | Automated periodic sync of authentic 5-star Google customer reviews into the website showcase (advancing `FEATURE-69 / BK-09`), with Staff Portal alerts and AI-assisted reply drafting. | High | 🔵 Prioritised |
-| **FEATURE-81** | `GBP-04` | Google Business Profile | **Google Food Menus & Structured Pricing Synchronization** | Programmatic sync of daytime brunch and evening dining menus, prices, descriptions, and dietary badges (V, VE, GF, Halal) from Menu Studio into Google's structured Food Ordering tabs. | Medium | ⚪ Backlog |
+| **FEATURE-81** | `GBP-04` | Google Business Profile | **Google Food Menus & Structured Pricing Synchronization** | Programmatic sync of daytime brunch and evening dining menus, prices, descriptions, and dietary badges (V, VE, GF, DF) from Menu Studio into Google's structured Food Ordering tabs. | Medium | ⚪ Backlog |
 | **FEATURE-82** | `GBP-05` | Google Business Profile | **Google Posts & Seasonal Event Syndication** | Programmatically syndicate festive offers, NYE gala, and jazz brunches from the Events Manager (`FEATURE-76`) directly to Google Business Profile Posts (Offers & Events). | Medium | ⚪ Backlog |
 | **FEATURE-83** | `GBP-06` | Google Business Profile | **Operating Hours & Bank Holiday Schedule Sync** | Real-time sync of regular weekly operating hours and special bank holiday schedules (Christmas Eve, Boxing Day, NYE, Easter) from Staff Portal Settings to GBP. | Medium | ⚪ Backlog |
-| **FEATURE-84** | `GBP-07` | Google Business Profile | **Richmond Local SEO & Amenity Attribute Optimization** | Programmatic audit and management of high-conversion venue attributes (Outdoor seating, Dog-friendly terrace, Halal options, Free Wi-Fi) to dominate Richmond/East Sheen map searches. | Medium | ⚪ Backlog |
+| **FEATURE-84** | `GBP-07` | Google Business Profile | **Richmond Local SEO & Amenity Attribute Optimization** | Programmatic audit and management of high-conversion venue attributes (Outdoor seating, Dog-friendly terrace, Free Wi-Fi) to dominate Richmond/East Sheen map searches. | Medium | ⚪ Backlog |
 | **FEATURE-85** | `GBP-08` | Google Business Profile | **GBP Search Footfall & Intent Analytics Ingestion** | Ingest Google Business Profile Insights (Search impressions, Maps views, Direction taps, Phone call clicks) into the Staff Portal Traffic & Intent dashboard (`FEATURE-77`). | Low | 💡 Discovery |
+| **FEATURE-86** | `BK-41` | Guest Experience & Mobile Optimizations | **Festive & Christmas Dining Menu Integration in Menu Section** | Introduce a dedicated festive dining menu experience within the Menu section (`/menu`), displaying the official 2026 Festive Menu: Festive Dinner (3 courses · £35.95 pp), Christmas Feast (family sharing for 9+ · £37.95 pp, Signature Feast £49.95 pp), Festive Bottomless Brunch (£45 pp · Fri–Sun 11am–2pm), and Drinks & Nibbles packages (The Merry £20 pp, The Jolly £30 pp). Complete with dietary badges (V, VE, GF, GF*), table sharing guidance, dessert upgrades, early-bird Prosecco perks, and direct Toast reservation integration. | High | 🟢 Complete |
+| **FEATURE-87** | `SEC-02` | Staff & Role-Based Access Control (RBAC) | **Credentials & Secret Recovery Persistence & Account Isolation** | Isolated admin, pooja, and deepak into independent protected accounts, permanently retaining custom passwords and secret questions/answers across browser storage with strict default revocation. | High | 🟢 Complete |
+| **FEATURE-88** | `SEC-03` | Operations & System Health | **npm v12 Supply-Chain Hardening & Security Policy** | Upgraded runtime to npm 12.2.0 with engine-strict compatibility, audited allowScripts for native modules, exact version pinning, and packageManager declaration. | High | 🟢 Complete |
+| **FEATURE-89** | `BK-42` | Guest Experience & Mobile Optimizations | **Menu Dietary Taxonomy Standardization: Gluten Free & Halal Decommissioning** | Standardized all dietary taxonomy to 'Gluten Free' across filter chips, studio tools, and menu badges, and decommissioned Halal qualifiers across all pages, components, and studio tools. | Medium | 🟢 Complete |
+
+---
+
+### 🎄 Festive & Christmas Menu Specifications (`FEATURE-86` / `BK-41`)
+
+#### Overview & Customer Dining Purpose
+To capture peak Q4 holiday dining demand across East Sheen and Richmond, the website's main **Menu Section (`/menu`)** must showcase the complete printed festive catalog (**"Make it a Christmas to remember · Served from 20th November"**). This allows couples, family groups, and corporate party organisers to browse authentic dishes, examine dietary accommodations, and book festive tables directly without friction.
+
+#### Detailed Menu Architecture & Offerings:
+
+1. **Festive Dinner (2 – 8 Guests · 3 Courses · £35.95 per person)**
+   - **To Begin (Choose One)**:
+     - *Christmas Turkey Tikka* (`GF`) — Turkey tikka, cranberry & mint chutney
+     - *Winter Ruby Tikki* (`V`, `GF`) — Beetroot & goat's cheese tikki, tamarind glaze, pistachio crumble
+     - *Ember Glazed Wings* (`GF`) — Chef special chicken wings, in-house marinated, slow-cooked, makhani drizzle
+     - *Winter Shore Pakoras* (`VE`) — Samphire pakoras, seaweed salt, house dip
+     - *Fireside Paneer Tikka* (`V`, `GF`) — Paneer tikka, mustard pickle marinade, smoked yoghurt
+   - **The Main Event (Choose One · Served with Naan or Saffron Rice)**:
+     - *Velvet Christmas Makhani* (`GF`) — Butter chicken, tomatoes, butter, cream, cashews & aromatic spices
+     - *Mulled Spice Chicken Chettinad* (`GF`) — Chicken chettinad
+     - *Midwinter Malabar Prawns* (`GF`) — King prawn, coconut, curry leaf & Malabar spice sauce
+     - *Golden Paneer Lababdar* (`V`, `GF`) — Paneer lababdar, tomato, cashew & aromatic spice gravy
+     - *Winter White Malai Kofta* (`V`) — Malai kofta
+     - *Midnight Dal Makhani* (`V`, `GF`) — Dal makhani, slow-cooked 12 hours, cultured butter & truffle oil
+     - **Signature Main Upgrade (+£10)**: *The Christmas Shank* — 12-hour slow-braised lamb shank, Kashmiri reduction, naan or saffron rice
+   - **To Finish**:
+     - *Christmas Gulab Jamun* (`V`) — Warm gulab jamun, Baileys ice cream
+     - **Signature Dessert Upgrade (+£10)**: *Midnight Chocolate Sphere* — Filter coffee chocolate, Baileys ice cream, table theatre
+
+2. **Christmas Feast (9+ Guests · Family Sharing for Table · £37.95 per person)**
+   - **On Arrival**: Christmas Turkey Tikka (`GF`), Winter Ruby Tikki (`V`, `GF`), Ember Glazed Wings (`GF`), Winter Shore Pakoras (`VE`)
+   - **The Feast**: Velvet Christmas Makhani (`GF`), Golden Paneer Lababdar (`V`, `GF`), Midnight Dal Makhani (`V`, `GF`), Golden Jaipur Aloo (`VE`, `GF`), Saffron Rice & Festive Bread Basket (Peshawari naan, aloo kulcha, garlic naan)
+   - **To Finish**: Christmas Gulab Jamun (`V`) (Upgrade to Midnight Chocolate Sphere +£10 pp)
+   - **The Signature Feast (£49.95 per person)**: Everything above, plus *Ember Lamb Chops* (kasundi glaze, pickled shallots & mint chutney) and *The Christmas Shank* for the table
+
+3. **Festive Bottomless Brunch (Fri – Sun · 11am – 2pm · £45 per person)**
+   - **Bottomless Pours (90 mins)**: Prosecco, Mango Mimosa, Bellini, Aperol Spritz, Hugo Spritz
+   - **Brunch Selection**: Avocado & Feta Sourdough (`V`, `GF*`), House Masala Shakshuka (`GF`), Crispy Chicken Waffle, Buttermilk Pancakes (`V`), Truffle Mushroom Croissant (`V`), Chef's Daily Lunch Bowl
+   - **Indian Tapas Selection**: Beetroot & Goat's Cheese Tikki (`V`, `GF`), Chicken / Vegetable Biryani (`GF`), Samphire Pakoras (`VE`), Bombay Nachos (`V`), Jaipur Aloo (`VE`, `GF`), Paneer Tikka (`V`, `GF`)
+
+4. **Drinks & Nibbles Packages (Office & Group Celebrations · Min 10 Guests · from £20 per person)**
+   - **The Merry (£20 per person)**: 2 drinks each (house wine, Prosecco, beer or soft drink) + Sharing nibbles (Bar Nibbles, Poppadoms & chutneys, Samphire Pakoras, Bombay Nachos)
+   - **The Jolly (£30 per person)**: 3 drinks each (including house cocktails) + Everything in The Merry, plus Chef Special Chicken Wings, Paneer Tikka, Beetroot & Goat's Cheese Tikki
+   - **Optional Perk**: Welcome glass of chilled Prosecco for £6 per person
+
+5. **Operational Policies & Promotional Badges**:
+   - **Early-Bird Perk**: Book by 31st October and enjoy a complimentary glass of chilled Prosecco for every guest on Festive Dinner & Christmas Feast bookings.
+   - **Deposit & Service Terms**: 50% deposit required for group bookings. Full vegetarian, vegan, gluten-free, and allergen guidance clearly noted.
 
 ---
 
@@ -139,7 +191,7 @@ For a venue situated at `210 Upper Richmond Road West, London SW14 8AH`, **over 
    - **Staff Portal Response Hub**: Alert managers on fresh Google reviews with 1-click suggested AI response drafting to maintain high engagement velocity, a primary local map ranking signal.
 
 4. **`FEATURE-81` (`GBP-04`) — Google Food Menus & Structured Pricing Synchronization**:
-   - **Menu Sync**: Automatic programmatic mapping of daytime brunch and evening dining items, descriptions, prices, and dietary flags (`V`, `VE`, `GF`, `Halal`) from in-browser Menu Studio to Google Food Menus.
+   - **Menu Sync**: Automatic programmatic mapping of daytime brunch and evening dining items, descriptions, prices, and dietary flags (`V`, `VE`, `GF`, `DF`) from in-browser Menu Studio to Google Food Menus.
    - **Growth Outcome**: Eliminates menu drift and captures high-intent diners searching for specific dishes (e.g. *"12-hour Slow-Cooked Lamb Shank"*, *"Old Delhi Butter Chicken"*, *"Cardamom French Toast"*, *"Old Spike V60 pour-over"*).
 
 5. **`FEATURE-82` (`GBP-05`) — Google Posts & Seasonal Event Syndication**:
@@ -151,7 +203,7 @@ For a venue situated at `210 Upper Richmond Road West, London SW14 8AH`, **over 
    - **Growth Outcome**: Prevents customer disappointment, avoids negative reviews caused by outdated hours, and captures peak holiday trade.
 
 7. **`FEATURE-84` (`GBP-07`) — Richmond Local SEO & Amenity Attribute Optimization**:
-   - **Attribute Audit**: Programmatically audit and maintain high-conversion venue attributes: *Outdoor seating, Heated dog-friendly terrace, Wheelchair accessible, Vegetarian options, Vegan options, Halal friendly, High chairs, Free Wi-Fi, Organic natural wines*.
+   - **Attribute Audit**: Programmatically audit and maintain high-conversion venue attributes: *Outdoor seating, Heated dog-friendly terrace, Wheelchair accessible, Vegetarian options, Vegan options, High chairs, Free Wi-Fi, Organic natural wines*.
    - **Growth Outcome**: Dominates Google Maps 3-Pack rankings across Richmond upon Thames, East Sheen, Barnes, Kew, Mortlake, and Putney for queries like *"dog-friendly brunch East Sheen"*, *"best Indian restaurant Richmond"*, and *"outdoor wine bar near me"*.
 
 8. **`FEATURE-85` (`GBP-08`) — GBP Search Footfall & Intent Analytics Ingestion**:

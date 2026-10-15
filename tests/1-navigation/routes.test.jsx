@@ -54,8 +54,7 @@ describe('BK-14: Navigation & Route Smoke Tests', () => {
     expect(screen.getByRole('button', { name: /All Items/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Vegetarian/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Plant-Based/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Gluten-Friendly/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Halal Friendly/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Gluten Free/i })).toBeInTheDocument()
   })
 
   it('renders EventsPage with master-detail layout and Book Table trigger', () => {

@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { COLORS } from "../theme/tokens";
 import { useEvents } from "../hooks/useContent";
 import { GroupEnquiryModal } from "../components/features/GroupEnquiryModal";
+import { FadeIn } from "../components/ui/FadeIn";
+import { BookTableButton } from "../components/ui/BookTableButton";
 
 export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-2026" }) {
   const { events } = useEvents();
@@ -42,7 +44,7 @@ export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-
   return (
     <div
       style={{
-        paddingTop: "calc(90px + env(safe-area-inset-top, 0px))",
+        paddingTop: "calc(120px + env(safe-area-inset-top, 0px))",
         paddingBottom: 80,
         minHeight: "100vh",
         background: theme.bg,
@@ -56,56 +58,57 @@ export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-
           padding: "0 20px",
         }}
       >
-        {/* Page Header */}
-        <div style={{ textAlign: "center", marginBottom: 36 }}>
-          <div
-            style={{
-              fontSize: 11,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: COLORS.warmAmber,
-              fontWeight: 700,
-              marginBottom: 6,
-            }}
-          >
-            Curated Gatherings & Seasonal Celebrations
+        {/* Page Header - Consistent with Social Impact, Our Story, and Contact Us */}
+        <FadeIn>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <div
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                color: theme.muted,
+                marginBottom: 12,
+              }}
+            >
+              Curated Gatherings &amp; Seasonal Celebrations
+            </div>
+            <h1
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(32px, 5vw, 52px)",
+                fontWeight: 400,
+                color: theme.heading,
+                margin: "0 0 16px",
+              }}
+            >
+              Events &amp; Festive Experiences
+            </h1>
+            <p
+              style={{
+                fontSize: 15,
+                lineHeight: 1.6,
+                color: theme.muted,
+                maxWidth: 620,
+                margin: "0 auto",
+                fontWeight: 300,
+              }}
+            >
+              From candlelit seasonal feasts to celebratory gatherings — discover our calendar of memorable experiences and festive dining in East Sheen.
+            </p>
           </div>
-          <h1
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "clamp(34px, 5vw, 48px)",
-              fontWeight: 700,
-              color: theme.heading,
-              lineHeight: 1.15,
-              margin: "0 0 12px",
-            }}
-          >
-            Events & Festive Experiences
-          </h1>
-          <p
-            style={{
-              fontSize: 15,
-              lineHeight: 1.6,
-              color: theme.muted,
-              maxWidth: 620,
-              margin: "0 auto",
-              fontWeight: 300,
-            }}
-          >
-            From candlelit seasonal feasts to celebratory gatherings — discover our calendar of memorable experiences and festive dining in East Sheen.
-          </p>
-        </div>
+        </FadeIn>
 
         {/* Master-Detail Layout */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(260px, 320px) 1fr",
-            gap: 28,
-            alignItems: "start",
-          }}
-          className="events-grid-layout"
-        >
+        <FadeIn delay={0.1}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "minmax(260px, 320px) 1fr",
+              gap: 28,
+              alignItems: "start",
+            }}
+            className="events-grid-layout"
+          >
           {/* LEFT SIDEBAR: Events Directory */}
           <aside
             style={{
@@ -595,30 +598,12 @@ export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-
                 alignItems: "center",
               }}
             >
-              <button
-                type="button"
+              <BookTableButton
                 onClick={() => setBookingOpen(true)}
-                style={{
-                  flex: "1 1 200px",
-                  background: `linear-gradient(135deg, ${COLORS.mossGreen}, #4A562B)`,
-                  color: "#FFFFFF",
-                  border: "none",
-                  borderRadius: 12,
-                  padding: "14px 24px",
-                  fontSize: 15,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  boxShadow: "0 6px 20px rgba(96, 110, 61, 0.35)",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  transition: "all 0.2s ease",
-                }}
-              >
-                <span>Book Table</span>
-                <span>›</span>
-              </button>
+                theme={theme}
+                size="lg"
+                style={{ flex: "1 1 200px" }}
+              />
 
               {selectedEvent.hasGroupEnquiry && (
                 <button
@@ -664,7 +649,8 @@ export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-
             </div>
           </main>
         </div>
-      </div>
+      </FadeIn>
+    </div>
 
       {/* Group Enquiry Dialog */}
       {groupEnquiryOpen && (

@@ -78,6 +78,7 @@ export default function TheSixthElement() {
         username: session.username,
         role: session.role,
         title: session.title,
+        hasSecurityQuestion: session.hasSecurityQuestion,
         token: savedToken,
         loading: false,
       });
@@ -95,6 +96,7 @@ export default function TheSixthElement() {
       username: result.username,
       role: result.role,
       title: result.title,
+      hasSecurityQuestion: result.hasSecurityQuestion,
       token: result.token,
       loading: false,
     });
@@ -251,6 +253,7 @@ export default function TheSixthElement() {
         navigate={navigate}
         currentPage={currentPage}
         topOffset={barVisible ? ANNOUNCEMENT_BAR_H : 0}
+        setBookingOpen={flags?.booking_enabled !== false ? handleOpenBooking : undefined}
       />
 
       {currentPage === "home" && (
@@ -266,7 +269,8 @@ export default function TheSixthElement() {
         <MenuPage
           theme={theme}
           flags={flags}
-          onOpenStudio={() => navigate("studio")}
+          setBookingOpen={handleOpenBooking}
+          navigate={navigate}
         />
       )}
       {currentPage === "events" && (
@@ -277,7 +281,12 @@ export default function TheSixthElement() {
       )}
       {currentPage === "impact" && <SocialImpactPage theme={theme} />}
       {currentPage === "about" && <AboutPage theme={theme} />}
-      {currentPage === "contact" && <ContactPage theme={theme} />}
+      {currentPage === "contact" && (
+        <ContactPage
+          theme={theme}
+          setBookingOpen={flags?.booking_enabled !== false ? handleOpenBooking : undefined}
+        />
+      )}
       {currentPage === "staff" && (
         <StaffPage
           theme={theme}

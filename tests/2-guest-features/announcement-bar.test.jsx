@@ -52,8 +52,8 @@ describe('Christmas Promotion & Ticker Modal Integration', () => {
     expect(within(dialog).getByRole('heading', { name: /^Drinks & Nibbles$/i })).toBeInTheDocument()
     expect(within(dialog).getByText(/from £20/i)).toBeInTheDocument()
 
-    // Verify Book a Table button triggers setBookingOpen
-    const bookButton = within(dialog).getByRole('button', { name: /Book a Table/i })
+    // Verify Book Table button triggers setBookingOpen
+    const bookButton = within(dialog).getByRole('button', { name: /Book (a )?Table/i })
     expect(bookButton).toBeInTheDocument()
 
     fireEvent.click(bookButton)

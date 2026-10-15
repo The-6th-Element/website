@@ -64,8 +64,7 @@ describe('FEATURE-75 (SEC-01): Client-Side XSS & Injection Sanitization', () => 
         'all': 10,
         'V': 5,
         'VE': 3,
-        'GF': 2,
-        'HALAL': 4
+        'GF': 2
       };
 
       const { container } = render(
