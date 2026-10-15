@@ -50,3 +50,14 @@ global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
 }
+
+// Default safe mock for fetch in test environment (prevents unmocked live external network calls)
+if (typeof globalThis.fetch === 'undefined' || !vi.isMockFunction(globalThis.fetch)) {
+  globalThis.fetch = vi.fn().mockImplementation(() =>
+    Promise.resolve({
+      ok: false,
+      status: 404,
+      json: async () => [],
+    })
+  )
+}
