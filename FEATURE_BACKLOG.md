@@ -16,13 +16,13 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 ---
 
 ## 📊 Backlog Summary Metrics
-- 🟢 **Complete**: 46 items
-- 🟡 **Yet to Deploy**: 1 item
+- 🟢 **Complete**: 50 items
+- 🟡 **Yet to Deploy**: 0 items
 - 🔵 **Prioritised**: 14 items
 - ⚪ **Backlog**: 19 items
 - 💡 **Discovery**: 6 items
 - ❌ **Cancelled**: 1 item
-- **Total Tracked**: 87 items across 14 Categories
+- **Total Tracked**: 90 items across 14 Categories
 
 ---
 
@@ -71,7 +71,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-39** | `BK-14` | Quality Assurance & Automated Testing | **Full Automated Regression Test Pack** | Comprehensive automated regression test pack (Vitest + Testing Library + jsdom) with 31/31 unit, component, and RBAC tests passing. Integrated into GitHub Actions CI/CD to run automatically on every push with pre-deployment quality gates. | High | 🟢 Complete |
 | **FEATURE-40** | `BK-38` | Staff & Role-Based Access Control (RBAC) | **Self-Service Password Reset via Secret Questions** | Secure self-service account recovery allowing staff to reset forgotten passwords by answering a chosen security question from 8 predefined options. Features one-time setup on login, SHA-256 hashed answers, interactive Forgot Password drawer, and Admin Console credential management. | High | 🟢 Complete |
 | **FEATURE-41** | `BK-39` | Operations & System Health | **Guaranteed 05:15 AM External Scheduler** | Replaced delayed GitHub Actions scheduled cron queue with dedicated external webhook trigger (cron-job.org) targeting /actions/workflows/daily_sync.yml/dispatches at 05:15 AM Europe/London with sub-second precision. Delivers daily financial & footfall telemetry reports on time. | High | 🟢 Complete |
-| **FEATURE-42** | `BK-29` | Guest Experience & Mobile Optimizations | **Interactive Dietary & Lifestyle Filter Chips (Menu UX)** | Instant client-side filter chips on the Menu page (Vegetarian, Vegan, Gluten-Friendly) with badge counts, Option A dish filtering, and telemetry integration. Fully tested and verified live in production via BK-14 regression test pack. | High | 🟢 Complete |
+| **FEATURE-42** | `BK-29` | Guest Experience & Mobile Optimizations | **Interactive Dietary & Lifestyle Filter Chips (Menu UX)** | Instant client-side filter chips on the Menu page (Vegetarian, Plant-Based, Gluten Free) with badge counts, Option A dish filtering, and telemetry integration. Fully tested and verified live in production via BK-14 regression test pack. | High | 🟢 Complete |
 | **FEATURE-43** | `BK-24` | Guest Experience & Mobile Optimizations | **Context-Aware WhatsApp Hospitality Concierge** | Floating WhatsApp concierge button with pre-populated contextual messages based on user intent (e.g. large parties of 6+ on Reservations, daily dietary queries on Menu, dog-friendly or table walk-in queries on Contact). | High | 🔵 Prioritised |
 | **FEATURE-44** | `BK-06` | Guest Experience & Mobile Optimizations | **Digital Gift Cards Integration** | Integration with digital gift voucher provider (e.g. Toast Gift Cards, Square, or Stripe) for custom-amount vouchers with instant email delivery. | High | 🔵 Prioritised |
 | **FEATURE-45** | `BK-19` | Guest Experience & Mobile Optimizations | **Live Walk-in & Table Availability Indicator** | Real-time 1-tap status switch in Staff Portal allowing staff to signal Walk-ins Welcome / Short Wait / Bookings Only to eliminate customer hesitation and drive spontaneous visits. | Medium | 🔵 Prioritised |
@@ -115,7 +115,10 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-83** | `GBP-06` | Google Business Profile | **Operating Hours & Bank Holiday Schedule Sync** | Real-time sync of regular weekly operating hours and special bank holiday schedules (Christmas Eve, Boxing Day, NYE, Easter) from Staff Portal Settings to GBP. | Medium | ⚪ Backlog |
 | **FEATURE-84** | `GBP-07` | Google Business Profile | **Richmond Local SEO & Amenity Attribute Optimization** | Programmatic audit and management of high-conversion venue attributes (Outdoor seating, Dog-friendly terrace, Free Wi-Fi) to dominate Richmond/East Sheen map searches. | Medium | ⚪ Backlog |
 | **FEATURE-85** | `GBP-08` | Google Business Profile | **GBP Search Footfall & Intent Analytics Ingestion** | Ingest Google Business Profile Insights (Search impressions, Maps views, Direction taps, Phone call clicks) into the Staff Portal Traffic & Intent dashboard (`FEATURE-77`). | Low | 💡 Discovery |
-| **FEATURE-86** | `BK-41` | Guest Experience & Mobile Optimizations | **Festive & Christmas Dining Menu Integration in Menu Section** | Introduce a dedicated festive dining menu experience within the Menu section (`/menu`), displaying the official 2026 Festive Menu: Festive Dinner (3 courses · £35.95 pp), Christmas Feast (family sharing for 9+ · £37.95 pp, Signature Feast £49.95 pp), Festive Bottomless Brunch (£45 pp · Fri–Sun 11am–2pm), and Drinks & Nibbles packages (The Merry £20 pp, The Jolly £30 pp). Complete with dietary badges (V, VE, GF, GF*), table sharing guidance, dessert upgrades, early-bird Prosecco perks, and direct Toast reservation integration. | High | 🟡 Yet to Deploy |
+| **FEATURE-86** | `BK-41` | Guest Experience & Mobile Optimizations | **Festive & Christmas Dining Menu Integration in Menu Section** | Introduce a dedicated festive dining menu experience within the Menu section (`/menu`), displaying the official 2026 Festive Menu: Festive Dinner (3 courses · £35.95 pp), Christmas Feast (family sharing for 9+ · £37.95 pp, Signature Feast £49.95 pp), Festive Bottomless Brunch (£45 pp · Fri–Sun 11am–2pm), and Drinks & Nibbles packages (The Merry £20 pp, The Jolly £30 pp). Complete with dietary badges (V, VE, GF, GF*), table sharing guidance, dessert upgrades, early-bird Prosecco perks, and direct Toast reservation integration. | High | 🟢 Complete |
+| **FEATURE-87** | `SEC-02` | Staff & Role-Based Access Control (RBAC) | **Credentials & Secret Recovery Persistence & Account Isolation** | Isolated admin, pooja, and deepak into independent protected accounts, permanently retaining custom passwords and secret questions/answers across browser storage with strict default revocation. | High | 🟢 Complete |
+| **FEATURE-88** | `SEC-03` | Operations & System Health | **npm v12 Supply-Chain Hardening & Security Policy** | Upgraded runtime to npm 12.2.0 with engine-strict compatibility, audited allowScripts for native modules, exact version pinning, and packageManager declaration. | High | 🟢 Complete |
+| **FEATURE-89** | `BK-42` | Guest Experience & Mobile Optimizations | **Menu Dietary Taxonomy Standardization: Gluten Free & Halal Decommissioning** | Standardized all dietary taxonomy to 'Gluten Free' across filter chips, studio tools, and menu badges, and decommissioned Halal qualifiers across all pages, components, and studio tools. | Medium | 🟢 Complete |
 
 ---
 

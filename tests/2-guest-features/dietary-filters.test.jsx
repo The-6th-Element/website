@@ -28,7 +28,7 @@ describe('BK-29 & BK-14: Dietary & Lifestyle Filter Chips (Regression Suite)', (
       expect(matchesDietaryFilter({ tags: ['V'] }, 'VE')).toBe(false)
     })
 
-    it('matches Gluten-Friendly (GF) for dishes tagged GF or GF*', () => {
+    it('matches Gluten Free (GF) for dishes tagged GF or GF*', () => {
       expect(matchesDietaryFilter({ tags: ['GF'] }, 'GF')).toBe(true)
       expect(matchesDietaryFilter({ tags: ['GF*'] }, 'GF')).toBe(true)
       expect(matchesDietaryFilter({ tags: ['V'] }, 'GF')).toBe(false)
@@ -52,7 +52,7 @@ describe('BK-29 & BK-14: Dietary & Lifestyle Filter Chips (Regression Suite)', (
       expect(screen.getByRole('button', { name: /All Items/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /Vegetarian/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /Plant-Based/i })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /Gluten-Friendly/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Gluten Free/i })).toBeInTheDocument()
       expect(screen.queryByRole('button', { name: /Halal Friendly/i })).not.toBeInTheDocument()
 
       // Click vegetarian filter

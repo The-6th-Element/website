@@ -7,7 +7,7 @@ export const DIETARY_FILTERS = [
   { id: "all", label: "All Items", icon: "🍽️", description: "Complete menu catalog" },
   { id: "V", label: "Vegetarian", icon: "🌿", description: "Vegetarian and plant-based dishes" },
   { id: "VE", label: "Plant-Based", icon: "🌱", description: "100% plant-based / vegan dishes" },
-  { id: "GF", label: "Gluten-Friendly", icon: "🌾", description: "Gluten-free and gluten-friendly options" },
+  { id: "GF", label: "Gluten Free", icon: "🌾", description: "Gluten-free and gluten-friendly options" },
 ];
 
 /**
