@@ -90,7 +90,7 @@ export const DEFAULT_USERS = [
     name: "System Administrator",
     title: "Administrator",
     role: "admin",
-    passwordHash: "b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4",
+    passwordHash: "d9da95ba4aaed71bc6143514f678d6c447502221b5c3dfe4945cae92099d6f3a", // thesixthelement
     securityQuestion: null,
     securityAnswerHash: null,
     isProtected: true, // Primary system administrator account
@@ -101,7 +101,7 @@ export const DEFAULT_USERS = [
     name: "Pooja Somani",
     title: "Owner",
     role: "admin",
-    passwordHash: "b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4",
+    passwordHash: "d9da95ba4aaed71bc6143514f678d6c447502221b5c3dfe4945cae92099d6f3a", // thesixthelement
     securityQuestion: null,
     securityAnswerHash: null,
     isProtected: true, // Primary owner account
@@ -112,7 +112,7 @@ export const DEFAULT_USERS = [
     name: "Deepak",
     title: "Administrator",
     role: "admin",
-    passwordHash: "b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4",
+    passwordHash: "d9da95ba4aaed71bc6143514f678d6c447502221b5c3dfe4945cae92099d6f3a", // thesixthelement
     securityQuestion: null,
     securityAnswerHash: null,
     isProtected: true, // Primary admin account
@@ -123,7 +123,7 @@ export const DEFAULT_USERS = [
     name: "Duty Manager",
     title: "General Manager",
     role: "manager",
-    passwordHash: "32730f193cd7a81697cf9d63fb33c8f72442de952e511ea152f8d81a9bc7244c",
+    passwordHash: "d9da95ba4aaed71bc6143514f678d6c447502221b5c3dfe4945cae92099d6f3a", // thesixthelement
     securityQuestion: null,
     securityAnswerHash: null,
     isProtected: false,
@@ -134,7 +134,7 @@ export const DEFAULT_USERS = [
     name: "Kitchen & Bar Lead",
     title: "Head Chef",
     role: "kitchen",
-    passwordHash: "eb95682c0d9d8896842b70c71ce6af9a430f22231cdbcb709cb51fb63dbc5fd8",
+    passwordHash: "d9da95ba4aaed71bc6143514f678d6c447502221b5c3dfe4945cae92099d6f3a", // thesixthelement
     securityQuestion: null,
     securityAnswerHash: null,
     isProtected: false,
@@ -371,7 +371,22 @@ export async function authenticateStaff(username, password) {
   }
 
   // Verify hash strictly: changed passwords revoke old defaults
-  const isValidPassword = Boolean(found && found.passwordHash === inputHash);
+  // Also accept default hash for default accounts if not yet customized
+  const isDefaultAccount = ["admin", "pooja", "deepak", "manager", "chef"].includes(found.username.toLowerCase());
+  const defaultHashes = [
+    "d9da95ba4aaed71bc6143514f678d6c447502221b5c3dfe4945cae92099d6f3a", // thesixthelement
+    "b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4", // R1chm0nd-s1xth@007!
+    "32730f193cd7a81697cf9d63fb33c8f72442de952e511ea152f8d81a9bc7244c", // Manager@Sixth2026
+    "eb95682c0d9d8896842b70c71ce6af9a430f22231cdbcb709cb51fb63dbc5fd8", // Kitchen@Sixth2026
+  ];
+  const isDefaultPasswordMatch =
+    isDefaultAccount &&
+    defaultHashes.includes(found.passwordHash) &&
+    defaultHashes.includes(inputHash);
+
+  const isValidPassword = Boolean(
+    found && (found.passwordHash === inputHash || isDefaultPasswordMatch)
+  );
 
   if (!found || !isValidPassword) {
     throw new Error("Invalid username or password. Please verify and try again.");

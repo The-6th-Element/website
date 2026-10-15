@@ -62,9 +62,9 @@ CREATE POLICY "Allow staff delete"
 -- 5. Seed Core Accounts (Default password hash corresponds to 'thesixthelement')
 INSERT INTO public.staff_users (username, name, title, role, password_hash, is_protected)
 VALUES
-    ('admin', 'System Administrator', 'Administrator', 'admin', 'b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4', true),
-    ('pooja', 'Pooja Somani', 'Owner', 'admin', 'b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4', true),
-    ('deepak', 'Deepak', 'Administrator', 'admin', 'b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4', true),
-    ('manager', 'Duty Manager', 'General Manager', 'manager', '32730f193cd7a81697cf9d63fb33c8f72442de952e511ea152f8d81a9bc7244c', false),
-    ('chef', 'Kitchen & Bar Lead', 'Head Chef', 'kitchen', 'eb95682c0d9d8896842b70c71ce6af9a430f22231cdbcb709cb51fb63dbc5fd8', false)
+    ('admin', 'System Administrator', 'Administrator', 'admin', 'd9da95ba4aaed71bc6143514f678d6c447502221b5c3dfe4945cae92099d6f3a', true),
+    ('pooja', 'Pooja Somani', 'Owner', 'admin', 'd9da95ba4aaed71bc6143514f678d6c447502221b5c3dfe4945cae92099d6f3a', true),
+    ('deepak', 'Deepak', 'Administrator', 'admin', 'd9da95ba4aaed71bc6143514f678d6c447502221b5c3dfe4945cae92099d6f3a', true),
+    ('manager', 'Duty Manager', 'General Manager', 'manager', 'd9da95ba4aaed71bc6143514f678d6c447502221b5c3dfe4945cae92099d6f3a', false),
+    ('chef', 'Kitchen & Bar Lead', 'Head Chef', 'kitchen', 'd9da95ba4aaed71bc6143514f678d6c447502221b5c3dfe4945cae92099d6f3a', false)
 ON CONFLICT (username) DO NOTHING;
