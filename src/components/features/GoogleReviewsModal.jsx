@@ -21,7 +21,7 @@ export function GoogleReviewsModal({ theme, onClose }) {
   }, [onClose]);
 
   const categories = [
-    { id: "ALL", label: "All Experiences" },
+    { id: "ALL", label: "All Reviews" },
     { id: "Brunch", label: "Brunch & Coffee" },
     { id: "Evening", label: "Evening Plates & Wine" },
     { id: "Gluten-Free", label: "Gluten-Free" },
@@ -63,6 +63,7 @@ export function GoogleReviewsModal({ theme, onClose }) {
         style={{
           width: "100%",
           maxWidth: 680,
+          height: 650,
           maxHeight: "88vh",
           background: theme.surface || "#FFFFFF",
           border: `1px solid ${theme.muted}25`,
@@ -83,6 +84,7 @@ export function GoogleReviewsModal({ theme, onClose }) {
             justifyContent: "space-between",
             alignItems: "center",
             background: theme.surfaceAlt || "#FAF8F3",
+            flexShrink: 0,
           }}
         >
           <div>
@@ -126,6 +128,7 @@ export function GoogleReviewsModal({ theme, onClose }) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              flexShrink: 0,
             }}
           >
             ✕
@@ -142,6 +145,7 @@ export function GoogleReviewsModal({ theme, onClose }) {
             overflowX: "auto",
             scrollbarWidth: "none",
             background: theme.surface,
+            flexShrink: 0,
           }}
         >
           {categories.map((c) => {
@@ -149,18 +153,26 @@ export function GoogleReviewsModal({ theme, onClose }) {
             return (
               <button
                 key={c.id}
+                type="button"
                 onClick={() => setFilter(c.id)}
                 style={{
-                  padding: "5px 12px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  minHeight: 34,
+                  padding: "6px 14px",
                   borderRadius: 20,
-                  border: active ? `1px solid ${COLORS.warmAmber}` : `1px solid ${theme.muted}25`,
+                  border: active ? `1.5px solid ${COLORS.warmAmber}` : `1px solid ${theme.muted}30`,
                   background: active ? `${COLORS.warmAmber}18` : "transparent",
                   color: active ? COLORS.warmAmber : theme.muted,
                   fontFamily: "'Outfit', sans-serif",
-                  fontSize: 11.5,
+                  fontSize: 12,
                   fontWeight: active ? 600 : 400,
+                  lineHeight: 1,
                   cursor: "pointer",
                   whiteSpace: "nowrap",
+                  boxSizing: "border-box",
+                  flexShrink: 0,
                   transition: "all 0.15s ease",
                 }}
               >
@@ -179,8 +191,31 @@ export function GoogleReviewsModal({ theme, onClose }) {
             flexDirection: "column",
             gap: 14,
             flex: 1,
+            minHeight: 0,
           }}
         >
+          {filteredReviews.length === 0 && (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "60px 20px",
+                textAlign: "center",
+                color: theme.muted,
+              }}
+            >
+              <span style={{ fontSize: 32, marginBottom: 12, opacity: 0.6 }}>🌿</span>
+              <p style={{ fontSize: 14, fontWeight: 500, margin: 0, color: theme.heading }}>
+                No reviews found under this category
+              </p>
+              <p style={{ fontSize: 12, marginTop: 4, color: theme.muted }}>
+                Select "All Reviews" to explore guest feedback.
+              </p>
+            </div>
+          )}
+
           {filteredReviews.map((rev) => (
             <div
               key={rev.id}
@@ -279,6 +314,7 @@ export function GoogleReviewsModal({ theme, onClose }) {
             background: theme.surfaceAlt || "#FAF8F3",
             flexWrap: "wrap",
             gap: 10,
+            flexShrink: 0,
           }}
         >
           <div style={{ fontSize: 12, color: theme.muted }}>
