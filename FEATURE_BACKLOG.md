@@ -16,13 +16,13 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 ---
 
 ## 📊 Backlog Summary Metrics
-- 🟢 **Complete**: 50 items
+- 🟢 **Complete**: 51 items
 - 🟡 **Yet to Deploy**: 0 items
 - 🔵 **Prioritised**: 14 items
 - ⚪ **Backlog**: 19 items
 - 💡 **Discovery**: 6 items
 - ❌ **Cancelled**: 1 item
-- **Total Tracked**: 90 items across 14 Categories
+- **Total Tracked**: 91 items across 14 Categories
 
 ---
 
@@ -119,6 +119,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-87** | `SEC-02` | Staff & Role-Based Access Control (RBAC) | **Credentials & Secret Recovery Persistence & Account Isolation** | Isolated admin, pooja, and deepak into independent protected accounts, permanently retaining custom passwords and secret questions/answers across browser storage with strict default revocation. | High | 🟢 Complete |
 | **FEATURE-88** | `SEC-03` | Operations & System Health | **npm v12 Supply-Chain Hardening & Security Policy** | Upgraded runtime to npm 12.2.0 with engine-strict compatibility, audited allowScripts for native modules, exact version pinning, and packageManager declaration. | High | 🟢 Complete |
 | **FEATURE-89** | `BK-42` | Guest Experience & Mobile Optimizations | **Menu Dietary Taxonomy Standardization: Gluten Free & Halal Decommissioning** | Standardized all dietary taxonomy to 'Gluten Free' across filter chips, studio tools, and menu badges, and decommissioned Halal qualifiers across all pages, components, and studio tools. | Medium | 🟢 Complete |
+| **FEATURE-90** | `BK-43` | Staff & Role-Based Access Control (RBAC) | **Cross-Browser & Multi-Device Cloud Synchronization for Staff Accounts & Credentials via Supabase** | Eliminated localStorage browser isolation barriers across Edge, Chrome, Safari, iPad, and mobile devices. Real-time synchronization of staff accounts, password hashes, and security recovery questions with Supabase cloud table (`public.staff_users`) protected by Row Level Security (RLS) with offline fallback resilience. | High | 🟢 Complete |
 
 ---
 
