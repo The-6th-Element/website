@@ -270,25 +270,25 @@ export function GoogleReviewsManager({ theme }) {
                 {isPending && (
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                     <a
-                      href={GOOGLE_CONFIG.getReviewReplyUri ? GOOGLE_CONFIG.getReviewReplyUri(rev.authorName) : `https://www.google.com/search?q=The+Sixth+Element+East+Sheen+reviews+${encodeURIComponent(rev.authorName)}`}
+                      href={GOOGLE_CONFIG.localReviewsUri}
                       target="_blank"
                       rel="noopener noreferrer"
-                      title={`Open ${rev.authorName}'s review on Google to reply`}
+                      title="Open Google Reviews dialog for The Sixth Element"
                       style={{
                         padding: "6px 12px",
                         borderRadius: 16,
-                        background: "transparent",
-                        color: theme.muted,
+                        background: `${theme.muted}15`,
+                        color: theme.heading,
                         border: `1px solid ${theme.muted}30`,
                         fontSize: 11,
-                        fontWeight: 500,
+                        fontWeight: 600,
                         textDecoration: "none",
                         display: "inline-flex",
                         alignItems: "center",
                         gap: 4,
                       }}
                     >
-                      ↗ View on Google
+                      ↗ Google Reviews
                     </a>
                     <button
                       onClick={() => handleOpenAiDraft(rev)}
@@ -446,40 +446,43 @@ export function GoogleReviewsManager({ theme }) {
                     ))}
                   </div>
 
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12, paddingTop: 10, borderTop: `1px solid ${theme.muted}15`, flexWrap: "wrap", gap: 10 }}>
-                    <span style={{ fontSize: 11, color: theme.muted }}>
-                      Tip: Copy a response above, then jump straight to {rev.authorName}'s review to paste and reply on Google.
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14, paddingTop: 12, borderTop: `1px solid ${theme.muted}15`, flexWrap: "wrap", gap: 12 }}>
+                    <span style={{ fontSize: 11.5, color: theme.muted, maxWidth: 360, lineHeight: 1.4 }}>
+                      Tip: Copy a response above, then open Google's Reviews dialog to paste and submit your reply to {rev.authorName}.
                     </span>
                     <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                       <a
-                        href={GOOGLE_CONFIG.getReviewReplyUri ? GOOGLE_CONFIG.getReviewReplyUri(rev.authorName) : `https://www.google.com/search?q=The+Sixth+Element+East+Sheen+reviews+${encodeURIComponent(rev.authorName)}`}
+                        href={GOOGLE_CONFIG.localReviewsUri}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
                           display: "inline-flex",
                           alignItems: "center",
                           gap: 6,
-                          fontSize: 11.5,
-                          color: COLORS.earthBrown,
-                          background: `${COLORS.warmAmber}25`,
-                          padding: "6px 14px",
-                          borderRadius: 16,
-                          fontWeight: 600,
+                          fontSize: 12,
+                          color: "#1A1816",
+                          background: COLORS.warmAmber,
+                          padding: "8px 18px",
+                          borderRadius: 20,
+                          fontWeight: 700,
+                          letterSpacing: "0.01em",
                           textDecoration: "none",
-                          border: `1px solid ${COLORS.warmAmber}60`,
+                          boxShadow: "0 2px 10px rgba(221,161,94,0.4)",
+                          transition: "all 0.15s ease",
                         }}
                       >
-                        🎯 Jump to {rev.authorName}'s Review on Google ↗
+                        ⭐ Open Google Reviews Dialog (Reply) ↗
                       </a>
                       <a
                         href={GOOGLE_CONFIG.businessProfileManagerUri}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
-                          fontSize: 11,
+                          fontSize: 11.5,
                           color: theme.accent,
-                          fontWeight: 500,
+                          fontWeight: 600,
                           textDecoration: "none",
+                          padding: "6px 10px",
                         }}
                       >
                         GBP Reviews Dashboard ↗

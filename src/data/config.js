@@ -112,11 +112,6 @@ export const GOOGLE_CONFIG = {
   reviewUri: "https://search.google.com/local/writereview?placeid=ChIJGQQLEQAPdkgRd3Et9bb_R3M",
   businessProfileManagerUri: "https://business.google.com/reviews",
   localReviewsUri: "https://search.google.com/local/reviews?placeid=ChIJGQQLEQAPdkgRd3Et9bb_R3M",
-  getReviewReplyUri: (authorName) => {
-    if (authorName) {
-      return `https://www.google.com/search?q=The+Sixth+Element+East+Sheen+reviews+${encodeURIComponent(authorName)}`;
-    }
-    return "https://business.google.com/reviews";
-  },
+  searchReviewsUri: "https://www.google.com/search?q=The+Sixth+Element+East+Sheen#lrd=0x48760f00110b0419:0x7347ffb6f52d7177,1,,,",
 };
 

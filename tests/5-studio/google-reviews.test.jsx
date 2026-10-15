@@ -127,9 +127,9 @@ describe("FEATURE-80: Google Reviews Ingestion & AI Reputation Manager (GBP-03)"
     const copyBtns = screen.getAllByRole("button", { name: /Copy/i });
     expect(copyBtns.length).toBeGreaterThanOrEqual(1);
 
-    // Verify Jump to Review on Google deep-link exists
-    const jumpLink = screen.getByRole("link", { name: /Jump to .*'s Review on Google/i });
-    expect(jumpLink).toBeInTheDocument();
-    expect(jumpLink.getAttribute("href")).toContain("search?q=The+Sixth+Element+East+Sheen+reviews");
+    // Verify Open Google Reviews Dialog link exists
+    const reviewLink = screen.getByRole("link", { name: /Open Google Reviews Dialog/i });
+    expect(reviewLink).toBeInTheDocument();
+    expect(reviewLink.getAttribute("href")).toContain("search.google.com/local/reviews");
   });
 });
