@@ -1,10 +1,10 @@
-// src/pages/HomePage.jsx
-import React from "react";
+import React, { useState } from "react";
 import { COLORS } from "../theme/tokens";
 import { FadeIn } from "../components/ui/FadeIn";
 import { CTAButton } from "../components/ui/CTAButton";
 import { BookTableButton } from "../components/ui/BookTableButton";
 import { InstagramSection } from "../components/features/InstagramSection";
+import { GoogleReviewsModal } from "../components/features/GoogleReviewsModal";
 
 // Element icons defining each natural element
 function ElementIcon({ name, color, size = 18 }) {
@@ -57,6 +57,7 @@ function ElementIcon({ name, color, size = 18 }) {
 }
 
 export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
+  const [showReviewsModal, setShowReviewsModal] = useState(false);
   return (
     <div>
       {/* Hero Viewport (reclaimed vertical space, fits in one clean view) */}
@@ -477,6 +478,41 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
                       A Sense of Belonging — You
                     </div>
 
+                    {/* Google Reviews Social Proof Badge (FEATURE-80) */}
+                    <div style={{ marginTop: 6, marginBottom: 2 }}>
+                      <button
+                        onClick={() => setShowReviewsModal(true)}
+                        title="Read verified Google reviews from our guests"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 6,
+                          padding: "3px 10px",
+                          borderRadius: 20,
+                          background: `${COLORS.warmAmber}15`,
+                          border: `1px solid ${COLORS.warmAmber}35`,
+                          color: COLORS.warmAmber,
+                          fontFamily: "'Outfit', sans-serif",
+                          fontSize: 11.5,
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = `${COLORS.warmAmber}25`;
+                          e.currentTarget.style.transform = "translateY(-1px)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = `${COLORS.warmAmber}15`;
+                          e.currentTarget.style.transform = "none";
+                        }}
+                      >
+                        <span style={{ letterSpacing: 1.5, fontSize: 11 }}>★★★★★</span>
+                        <span style={{ color: theme.heading, fontWeight: 500 }}>4.8 on Google</span>
+                        <span style={{ color: theme.muted, fontWeight: 400 }}>· 30+ Reviews ↗</span>
+                      </button>
+                    </div>
+
                     <p
                       style={{
                         fontFamily: "'Cormorant Garamond', serif",
@@ -598,6 +634,14 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           </div>
         </FadeIn>
       </section>
+
+      {/* Google Reviews Modal (FEATURE-80) */}
+      {showReviewsModal && (
+        <GoogleReviewsModal
+          theme={theme}
+          onClose={() => setShowReviewsModal(false)}
+        />
+      )}
     </div>
   );
 }

@@ -16,9 +16,9 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 ---
 
 ## 📊 Backlog Summary Metrics
-- 🟢 **Complete**: 52 items
+- 🟢 **Complete**: 53 items
 - 🟡 **Yet to Deploy**: 0 items
-- 🔵 **Prioritised**: 12 items
+- 🔵 **Prioritised**: 11 items
 - ⚪ **Backlog**: 19 items
 - 💡 **Discovery**: 6 items
 - ❌ **Cancelled**: 1 item
@@ -109,7 +109,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-77** | `BK-28` | Operations & System Health | **Incremental Telemetry & Persistent Multi-Day Analytics Retention** | Ensure website traffic metrics and dining intent telemetry are strictly incremental and retained across code deployments and daily midnight GMT rollovers. Includes timeframe selector (All-Time Cumulative, Today, Yesterday), permanent multi-day rollup summary, and resilient client-side aggregation. | High | 🟢 Complete |
 | **FEATURE-78** | `GBP-01` | Google Business Profile | **Google Business Profile & Places API Connection (Foundational Link)** | Verified ownership of The Sixth Element on Google Business Profile (Store Code `06233181898163879843`), established Google Cloud Project connection with Places API (New), vaulted Place ID (`ChIJGQQLEQAPdkgRd3Et9bb_R3M`) and CID (`8306889198970696055`), restricted API key domain access, implemented Staff Portal Google Connection diagnostic card with live handshake testing, and added 1-tap customer Google Review deep-linking. | High | 🟢 Complete |
 | **FEATURE-79** | `GBP-02` | Google Business Profile | **'Reserve with Google' & 'Order Online' Direct Toast Tables & Deliveroo Integrations** | Verified live Google Search Knowledge Panel direct integrations ('Reserve a table' via Toast Tables and 'Order online' via Deliveroo), and implemented dedicated multi-touchpoint Deliveroo ordering and delivery integration across the website (Menu page luxury callout banner, mobile navigation drawer 1-tap ordering, Contact page local delivery card, and footer navigation links with native iOS/Android app deep-linking support). | High | 🟢 Complete |
-| **FEATURE-80** | `GBP-03` | Google Business Profile | **Live Google Reviews Ingestion & AI Reputation Manager** | Automated periodic sync of authentic 5-star Google customer reviews into the website showcase (advancing `FEATURE-69 / BK-09`), with Staff Portal alerts and AI-assisted reply drafting. | High | 🔵 Prioritised |
+| **FEATURE-80** | `GBP-03` | Google Business Profile | **Live Google Reviews Ingestion & AI Reputation Manager** | Automated periodic sync of authentic 5-star Google customer reviews into the website showcase (advancing `FEATURE-69 / BK-09`), with Staff Portal alerts and AI-assisted reply drafting. | High | 🟢 Complete |
 | **FEATURE-81** | `GBP-04` | Google Business Profile | **Google Food Menus & Structured Pricing Synchronization** | Programmatic sync of daytime brunch and evening dining menus, prices, descriptions, and dietary badges (V, VE, GF, DF) from Menu Studio into Google's structured Food Ordering tabs. | Medium | ⚪ Backlog |
 | **FEATURE-82** | `GBP-05` | Google Business Profile | **Google Posts & Seasonal Event Syndication** | Programmatically syndicate festive offers, NYE gala, and jazz brunches from the Events Manager (`FEATURE-76`) directly to Google Business Profile Posts (Offers & Events). | Medium | ⚪ Backlog |
 | **FEATURE-83** | `GBP-06` | Google Business Profile | **Operating Hours & Bank Holiday Schedule Sync** | Real-time sync of regular weekly operating hours and special bank holiday schedules (Christmas Eve, Boxing Day, NYE, Easter) from Staff Portal Settings to GBP. | Medium | ⚪ Backlog |
