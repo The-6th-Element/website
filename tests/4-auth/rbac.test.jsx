@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import {
   ROLES,
   hasPermission,
@@ -10,10 +10,12 @@ import {
   getSecurityQuestionForUser,
   verifySecurityAnswerAndResetPassword,
   authenticateStaff,
+  syncStaffUsersFromCloud,
 } from '../../src/utils/userManager'
 
 describe('BK-14 & BK-38: RBAC & User Management Regression Suite', () => {
   beforeEach(() => {
+    vi.restoreAllMocks()
     resetStaffUsersToDefault()
   })
 
@@ -129,5 +131,40 @@ describe('BK-14 & BK-38: RBAC & User Management Regression Suite', () => {
     await expect(
       authenticateStaff('deepak', 'thesixthelement')
     ).rejects.toThrow(/Invalid username or password/i)
+  })
+
+  it('BK-38: synchronizes staff accounts from Supabase cloud database across devices', async () => {
+    const cloudMockData = [
+      {
+        username: 'deepak',
+        name: 'Deepak',
+        title: 'Administrator',
+        role: 'admin',
+        password_hash: 'mocked_remote_hash_123',
+        security_question: SECURITY_QUESTIONS[0],
+        security_answer_hash: 'mocked_answer_hash_456',
+        is_protected: true,
+      },
+    ]
+
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: async () => cloudMockData,
+    })
+
+    const synced = await syncStaffUsersFromCloud()
+    const deepak = synced.find(u => u.username === 'deepak')
+    expect(deepak).toBeDefined()
+    expect(deepak.passwordHash).toBe('mocked_remote_hash_123')
+    expect(deepak.securityQuestion).toBe(SECURITY_QUESTIONS[0])
+    expect(deepak.securityAnswerHash).toBe('mocked_answer_hash_456')
+  })
+
+  it('BK-38: gracefully falls back to local storage and default accounts when Supabase is unreachable', async () => {
+    vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('Network error'))
+
+    const fallbackUsers = await syncStaffUsersFromCloud()
+    expect(fallbackUsers.length).toBeGreaterThanOrEqual(5)
+    expect(fallbackUsers.find(u => u.username === 'admin')).toBeDefined()
   })
 })

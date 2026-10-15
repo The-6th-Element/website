@@ -1,7 +1,16 @@
 // src/utils/userManager.js
 // Staff and Role-Based Access Control (RBAC) for The Sixth Element
+// Features cross-browser and cross-device cloud synchronization via Supabase
 
 import { sha256 } from "./auth.js";
+
+const SUPABASE_URL =
+  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_SUPABASE_URL) ||
+  "https://crjtogivsllhsxuznufn.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyanRvZ2l2c2xsaHN4dXpudWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMDU4ODIsImV4cCI6MjEwNjc4MTg4Mn0.uX8IHMaKAApaROFRehMtZADYOMqb2GdIT-ecvrDAOEA";
 
 export const ROLES = {
   admin: {
@@ -133,6 +142,35 @@ export const DEFAULT_USERS = [
   },
 ];
 
+function mapDbRecordToStaffUser(record) {
+  if (!record || !record.username) return null;
+  return {
+    username: record.username.toLowerCase(),
+    name: record.name || record.username,
+    title: record.title || "",
+    role: record.role || "staff",
+    passwordHash: record.password_hash,
+    securityQuestion: record.security_question || null,
+    securityAnswerHash: record.security_answer_hash || null,
+    isProtected: Boolean(record.is_protected),
+    createdAt: record.created_at ? record.created_at.slice(0, 10) : "2026-10-04",
+  };
+}
+
+function mapStaffUserToDbRecord(user) {
+  return {
+    username: user.username.toLowerCase(),
+    name: user.name,
+    title: user.title || "",
+    role: user.role || "staff",
+    password_hash: user.passwordHash,
+    security_question: user.securityQuestion || null,
+    security_answer_hash: user.securityAnswerHash || null,
+    is_protected: Boolean(user.isProtected),
+    updated_at: new Date().toISOString(),
+  };
+}
+
 /**
  * Returns list of all staff accounts from browser storage or defaults.
  * Reliably merges seeded default accounts with persisted modifications in localStorage.
@@ -182,16 +220,134 @@ function saveStaffUsers(users) {
   try {
     localStorage.setItem("tse_staff_users", JSON.stringify(users));
   } catch {}
-  window.dispatchEvent(new Event("tse_staff_users_updated"));
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("tse_staff_users_updated"));
+  }
+}
+
+/**
+ * Synchronizes staff accounts from Supabase cloud database to local storage.
+ * Gracefully falls back to localStorage/defaults if offline or table is pending creation.
+ */
+export async function syncStaffUsersFromCloud() {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY || typeof fetch === "undefined") {
+    return getStaffUsers();
+  }
+
+  try {
+    const endpoint = `${SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/staff_users?select=*`;
+    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), 3500) : null;
+
+    const res = await fetch(endpoint, {
+      method: "GET",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      signal: controller ? controller.signal : undefined,
+    });
+
+    if (timeoutId) clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const cloudUsers = await res.json();
+      if (Array.isArray(cloudUsers) && cloudUsers.length > 0) {
+        const userMap = new Map();
+        DEFAULT_USERS.forEach((defUser) => {
+          userMap.set(defUser.username.toLowerCase(), { ...defUser });
+        });
+
+        cloudUsers.forEach((rec) => {
+          const appUser = mapDbRecordToStaffUser(rec);
+          if (appUser) {
+            userMap.set(appUser.username, appUser);
+          }
+        });
+
+        const merged = Array.from(userMap.values());
+        try {
+          localStorage.setItem("tse_staff_users", JSON.stringify(merged));
+        } catch {}
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("tse_staff_users_updated"));
+        }
+        return merged;
+      }
+    }
+  } catch {
+    // Supabase table not yet created, offline, or network error. Silently fall back to local storage.
+  }
+
+  return getStaffUsers();
+}
+
+async function pushUserUpdateToCloud(user) {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY || typeof fetch === "undefined") return;
+  try {
+    const endpoint = `${SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/staff_users?username=eq.${encodeURIComponent(user.username.toLowerCase())}`;
+    const dbRecord = mapStaffUserToDbRecord(user);
+    await fetch(endpoint, {
+      method: "PATCH",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify(dbRecord),
+    });
+  } catch {
+    // Offline or network error; local changes preserved
+  }
+}
+
+async function pushUserInsertToCloud(user) {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY || typeof fetch === "undefined") return;
+  try {
+    const endpoint = `${SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/staff_users`;
+    const dbRecord = mapStaffUserToDbRecord(user);
+    await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify(dbRecord),
+    });
+  } catch {}
+}
+
+async function pushUserDeleteToCloud(username) {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY || typeof fetch === "undefined") return;
+  try {
+    const endpoint = `${SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/staff_users?username=eq.${encodeURIComponent(username.toLowerCase())}`;
+    await fetch(endpoint, {
+      method: "DELETE",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        Prefer: "return=minimal",
+      },
+    });
+  } catch {}
 }
 
 /**
  * Authenticates user credentials against the staff directory.
+ * Syncs with Supabase cloud first so that credentials updated on other browsers/devices are recognized immediately.
  */
 export async function authenticateStaff(username, password) {
   if (!username || !password) {
     throw new Error("Please enter both username and password.");
   }
+
+  // Attempt to sync latest cloud credentials across devices (Edge, Chrome, Safari, mobile)
+  try {
+    await syncStaffUsersFromCloud();
+  } catch {}
 
   let cleanUser = username.trim().toLowerCase();
   // Support administrator and owner aliases
@@ -369,6 +525,7 @@ export async function setupSecurityQuestion(username, question, answer) {
   }
 
   saveStaffUsers(updatedList);
+  pushUserUpdateToCloud(updatedUser).catch(() => {});
 
   return {
     success: true,
@@ -445,6 +602,7 @@ export async function verifySecurityAnswerAndResetPassword(username, answer, new
   }
 
   saveStaffUsers(updatedList);
+  pushUserUpdateToCloud(updatedUser).catch(() => {});
 
   return {
     success: true,
@@ -488,6 +646,7 @@ export async function addStaffUser({ username, name, role, title, password, secu
 
   const updated = [...users, newUser];
   saveStaffUsers(updated);
+  pushUserInsertToCloud(newUser).catch(() => {});
   return newUser;
 }
 
@@ -524,6 +683,7 @@ export async function updateStaffUser(username, patch) {
 
   users[index] = updatedUser;
   saveStaffUsers(users);
+  pushUserUpdateToCloud(updatedUser).catch(() => {});
   return updatedUser;
 }
 
@@ -545,6 +705,7 @@ export function deleteStaffUser(username) {
 
   const filtered = users.filter(u => u.username.toLowerCase() !== cleanUsername);
   saveStaffUsers(filtered);
+  pushUserDeleteToCloud(cleanUsername).catch(() => {});
   return true;
 }
 
