@@ -63,8 +63,8 @@ export function GoogleReviewsModal({ theme, onClose }) {
         style={{
           width: "100%",
           maxWidth: 680,
-          height: 650,
-          maxHeight: "88vh",
+          height: 780,
+          maxHeight: "92vh",
           background: theme.surface || "#FFFFFF",
           border: `1px solid ${theme.muted}25`,
           borderRadius: 18,
@@ -78,7 +78,7 @@ export function GoogleReviewsModal({ theme, onClose }) {
         {/* Header */}
         <div
           style={{
-            padding: "20px 24px",
+            padding: "16px 24px",
             borderBottom: `1px solid ${theme.muted}15`,
             display: "flex",
             justifyContent: "space-between",
@@ -185,11 +185,11 @@ export function GoogleReviewsModal({ theme, onClose }) {
         {/* Reviews List */}
         <div
           style={{
-            padding: "20px 24px",
+            padding: "18px 24px",
             overflowY: "auto",
             display: "flex",
             flexDirection: "column",
-            gap: 14,
+            gap: 12,
             flex: 1,
             minHeight: 0,
           }}
@@ -220,7 +220,7 @@ export function GoogleReviewsModal({ theme, onClose }) {
             <div
               key={rev.id}
               style={{
-                padding: "16px 18px",
+                padding: "14px 16px",
                 borderRadius: 12,
                 background: theme.surfaceAlt || "#FAF8F3",
                 border: `1px solid ${theme.muted}15`,
