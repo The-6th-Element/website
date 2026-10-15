@@ -1005,17 +1005,34 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
             <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
               {activeCategoryData.sections?.map((section, si) => (
                 <div key={si}>
-                  <h3 style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: 20,
-                    fontWeight: 500,
-                    color: activeCat === "evening" || activeCat === "festive" ? "#F6F4E3" : "#4B3621",
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "baseline",
+                    flexWrap: "wrap",
                     borderBottom: `1px solid ${activeCat === "festive" ? "rgba(212, 175, 55, 0.4)" : `${COLORS.warmAmber}40`}`,
                     paddingBottom: 8,
                     marginBottom: 16,
                   }}>
-                    {section.name}
-                  </h3>
+                    <h3 style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: 20,
+                      fontWeight: 500,
+                      color: activeCat === "evening" || activeCat === "festive" ? "#F6F4E3" : "#4B3621",
+                      margin: 0,
+                    }}>
+                      {section.name}
+                    </h3>
+                    {section.subtitle && (
+                      <span style={{
+                        fontSize: 12,
+                        fontStyle: "italic",
+                        color: activeCat === "festive" ? "#C2B280" : theme.muted,
+                      }}>
+                        {section.subtitle}
+                      </span>
+                    )}
+                  </div>
 
                   <div style={{
                     display: "grid",

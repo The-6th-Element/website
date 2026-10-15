@@ -106,6 +106,7 @@ export const MENU_DATA = {
     sections: [
       {
         name: "Festive Dinner · To Begin (Choose One)",
+        package: "dinner",
         items: [
           { name: "Christmas Turkey Tikka", desc: "Turkey tikka · cranberry & mint chutney", price: "", tags: ["GF"] },
           { name: "Winter Ruby Tikki", desc: "Beetroot & goat's cheese tikki · tamarind glaze · pistachio crumble", price: "", tags: ["V", "GF"] },
@@ -115,7 +116,9 @@ export const MENU_DATA = {
         ],
       },
       {
-        name: "Festive Dinner · The Main Event (Choose One · Served with Naan or Saffron Rice)",
+        name: "Festive Dinner · The Main Event (Choose One)",
+        subtitle: "Served with Naan or Saffron Rice",
+        package: "dinner",
         items: [
           { name: "Velvet Christmas Makhani", desc: "Butter chicken · tomatoes, butter, cream, cashews & aromatic spices", price: "", tags: ["GF"] },
           { name: "Mulled Spice Chicken Chettinad", desc: "Fragrant spiced chicken chettinad in coconut-peppercorn gravy", price: "", tags: ["GF"] },
@@ -128,22 +131,56 @@ export const MENU_DATA = {
       },
       {
         name: "Festive Dinner · To Finish",
+        package: "dinner",
         items: [
           { name: "Christmas Gulab Jamun", desc: "Warm gulab jamun · Baileys ice cream", price: "", tags: ["V"] },
           { name: "Midnight Chocolate Sphere (Signature Dessert Upgrade)", desc: "Filter coffee chocolate · Baileys ice cream · a little theatre at your table", price: "+£10", tags: ["V"] },
         ],
       },
       {
-        name: "Christmas Feast · For 9+ guests · Sharing for the table (£37.95 pp)",
+        name: "Christmas Feast · On Arrival",
+        subtitle: "Sharing platters for the table (£37.95 pp · For 9+ guests)",
+        package: "feast",
         items: [
-          { name: "On Arrival Sharing Platters", desc: "Christmas Turkey Tikka · Winter Ruby Tikki · Ember Glazed Wings · Winter Shore Pakoras", price: "37.95", tags: ["GF"] },
-          { name: "The Feast Table Spread", desc: "Velvet Christmas Makhani · Golden Paneer Lababdar · Midnight Dal Makhani · Golden Jaipur Aloo · Saffron Rice & Festive Bread Basket", price: "37.95", tags: ["GF"] },
-          { name: "Christmas Gulab Jamun (Sharing Finish)", desc: "Warm gulab jamun · Baileys ice cream (Upgrade to Midnight Chocolate Sphere +£10 pp)", price: "Included", tags: ["V"] },
-          { name: "The Signature Feast Upgrade", desc: "Everything above, plus Ember Lamb Chops (kasundi glaze · pickled shallots & mint chutney) and The Christmas Shank for the table", price: "49.95", tags: ["GF"] },
+          { name: "Christmas Turkey Tikka", desc: "Turkey tikka · cranberry & mint chutney", price: "", tags: ["GF"] },
+          { name: "Winter Ruby Tikki", desc: "Beetroot & goat's cheese tikki · tamarind glaze · pistachio crumble", price: "", tags: ["V", "GF"] },
+          { name: "Ember Glazed Wings", desc: "Chef special chicken wings · in-house marinated · slow-cooked · makhani drizzle", price: "", tags: ["GF"] },
+          { name: "Winter Shore Pakoras", desc: "Samphire pakoras · seaweed salt · house dip", price: "", tags: ["VE"] },
+        ],
+      },
+      {
+        name: "Christmas Feast · The Feast Table Spread",
+        subtitle: "Served family-style with Saffron Rice & Festive Breads",
+        package: "feast",
+        items: [
+          { name: "Velvet Christmas Makhani", desc: "Butter chicken · tomatoes, butter, cream, cashews & aromatic spices", price: "", tags: ["GF"] },
+          { name: "Golden Paneer Lababdar", desc: "Paneer lababdar · tomato, cashew & aromatic spice gravy", price: "", tags: ["V", "GF"] },
+          { name: "Midnight Dal Makhani", desc: "Dal makhani · slow-cooked 12 hours · cultured butter & truffle oil", price: "", tags: ["V", "GF"] },
+          { name: "Golden Jaipur Aloo", desc: "Jaipur aloo · spiced potatoes · mustard oil & fresh herbs", price: "", tags: ["VE", "GF"] },
+          { name: "Saffron Rice & Festive Bread Basket", desc: "Peshawari naan · aloo kulcha · garlic naan · saffron basmati", price: "", tags: ["V"] },
+        ],
+      },
+      {
+        name: "Christmas Feast · To Finish",
+        package: "feast",
+        items: [
+          { name: "Christmas Gulab Jamun", desc: "Warm gulab jamun · Baileys ice cream", price: "", tags: ["V"] },
+          { name: "Midnight Chocolate Sphere (Signature Dessert Upgrade)", desc: "Filter coffee chocolate · Baileys ice cream · a little theatre at your table", price: "+£10", tags: ["V"] },
+        ],
+      },
+      {
+        name: "The Signature Feast · 2 Additional Dishes Included (£49.95 pp)",
+        subtitle: "Everything in the Christmas Feast above, plus 2 signature dishes for the table:",
+        package: "feast",
+        items: [
+          { name: "Ember Lamb Chops (Signature Feast)", desc: "Kasundi glaze · pickled shallots & mint chutney · included for the table in the £49.95 pp Signature Feast", price: "Included", tags: ["GF"] },
+          { name: "The Christmas Shank (Signature Feast)", desc: "12-hour slow-braised lamb shank · Kashmiri reduction · naan or saffron rice · included for the table in the £49.95 pp Signature Feast", price: "Included", tags: ["GF"] },
         ],
       },
       {
         name: "Festive Bottomless Brunch · Fri – Sun 11am – 2pm (£45 pp)",
+        subtitle: "90 minutes of bottomless drinks · Choose one dish with free-flowing pours",
+        package: "brunch",
         items: [
           { name: "90 Mins Bottomless Drinks Pours", desc: "Choice of Prosecco · Mango Mimosa · Bellini · Aperol Spritz · Hugo Spritz (Whole table must take part)", price: "45", tags: [] },
           { name: "Avocado & Feta Sourdough", desc: "Crushed avocado · feta · seeds · lemon · chilli flakes", price: "Included", tags: ["V", "GF*"] },
@@ -162,6 +199,8 @@ export const MENU_DATA = {
       },
       {
         name: "Drinks & Nibbles · For office parties & group celebrations (from £20 pp)",
+        subtitle: "Minimum 10 guests · Sharing nibbles & celebratory drinks packages",
+        package: "drinks",
         items: [
           { name: "The Merry Package (£20 pp)", desc: "2 drinks each (house wine, Prosecco, beer or soft drink) + Sharing nibbles: Bar Nibbles, Poppadoms & chutneys, Samphire Pakoras, Bombay Nachos", price: "20", tags: [] },
           { name: "The Jolly Package (£30 pp)", desc: "3 drinks each (including house cocktails) + Everything in The Merry, plus Chef Special Chicken Wings, Paneer Tikka, Beetroot & Goat's Cheese Tikki", price: "30", tags: [] },

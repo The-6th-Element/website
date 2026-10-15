@@ -80,10 +80,10 @@ describe('Analytics & Telemetry Data Retention & Incremental Tracking', () => {
       expect(screen.getByRole('button', { name: /All-Time Cumulative/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /Today/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /Yesterday/i })).toBeInTheDocument()
+      // In All-Time Cumulative view (default), total visitors is >= 17 (15 + 2)
+      expect(screen.getByText(/17 visitors/i)).toBeInTheDocument()
     })
 
-    // In All-Time Cumulative view (default), total visitors is >= 17 (15 + 2)
-    expect(screen.getByText(/17 visitors/i)).toBeInTheDocument()
     expect(screen.getAllByText('17').length).toBeGreaterThanOrEqual(1)
 
     // Switch to Yesterday

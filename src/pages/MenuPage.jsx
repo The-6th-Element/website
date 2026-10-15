@@ -60,6 +60,41 @@ function getServiceHoursDisplay(categoryKey, data) {
   return "";
 }
 
+const FESTIVE_PACKAGES = [
+  {
+    id: "dinner",
+    title: "FESTIVE DINNER",
+    price: "£35.95",
+    unit: "pp",
+    desc: "2–8 guests · 3 Courses",
+    matches: (s) => s.package === "dinner" || s.name.toLowerCase().includes("festive dinner"),
+  },
+  {
+    id: "feast",
+    title: "CHRISTMAS FEAST",
+    price: "£37.95",
+    unit: "pp",
+    desc: "9+ guests · Sharing table",
+    matches: (s) => s.package === "feast" || s.name.toLowerCase().includes("christmas feast") || s.name.toLowerCase().includes("signature feast"),
+  },
+  {
+    id: "brunch",
+    title: "FESTIVE BOTTOMLESS BRUNCH",
+    price: "£45.00",
+    unit: "pp",
+    desc: "Fri–Sun · 90m drinks",
+    matches: (s) => s.package === "brunch" || s.name.toLowerCase().includes("bottomless brunch"),
+  },
+  {
+    id: "drinks",
+    title: "DRINKS & NIBBLES",
+    price: "from £20",
+    unit: "pp",
+    desc: "Office parties (10+)",
+    matches: (s) => s.package === "drinks" || s.name.toLowerCase().includes("drinks & nibbles"),
+  },
+];
+
 export function MenuPage({ theme, flags, setBookingOpen, navigate }) {
   const { menu } = useMenu();
   const tabs = Object.keys(menu).map((id) => ({ id, label: menu[id].title || id, icon: menu[id].icon || "" }));
@@ -75,6 +110,7 @@ export function MenuPage({ theme, flags, setBookingOpen, navigate }) {
     return defaultMenuTab(flags);
   });
   const [activeDietFilter, setActiveDietFilter] = useState("all");
+  const [selectedFestivePackage, setSelectedFestivePackage] = useState("dinner");
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [groupEnquiryOpen, setGroupEnquiryOpen] = useState(false);
 
@@ -89,9 +125,19 @@ export function MenuPage({ theme, flags, setBookingOpen, navigate }) {
   const data = menu[current] || { title: "", subtitle: "", icon: "", sections: [] };
   const rawSections = data.sections || [];
 
+  // Filter sections by active festive package when viewing the Festive tab (Default: Festive Dinner)
+  const festiveFilteredSections = useMemo(() => {
+    if (current !== "festive") return rawSections;
+    const pkg = FESTIVE_PACKAGES.find((p) => p.id === selectedFestivePackage);
+    if (!pkg) return rawSections;
+    return rawSections.filter((section) => pkg.matches(section));
+  }, [rawSections, current, selectedFestivePackage]);
+
+  const activeBaseSections = current === "festive" ? festiveFilteredSections : rawSections;
+
   // Compute live item counts for all dietary filter chips within the current category tab
   const filterCounts = useMemo(() => {
-    const allItems = rawSections.flatMap((s) => s.items || []);
+    const allItems = activeBaseSections.flatMap((s) => s.items || []);
     return {
       all: allItems.length,
       V: allItems.filter((i) => matchesDietaryFilter(i, "V")).length,
@@ -99,12 +145,12 @@ export function MenuPage({ theme, flags, setBookingOpen, navigate }) {
       GF: allItems.filter((i) => matchesDietaryFilter(i, "GF")).length,
       HALAL: allItems.filter((i) => matchesDietaryFilter(i, "HALAL")).length,
     };
-  }, [rawSections]);
+  }, [activeBaseSections]);
 
   // Option A: Filter / Hide non-matching dishes and empty section headers
   const displaySections = useMemo(() => {
-    if (activeDietFilter === "all") return rawSections;
-    return rawSections
+    if (activeDietFilter === "all") return activeBaseSections;
+    return activeBaseSections
       .map((section) => ({
         ...section,
         items: (section.items || []).filter((item) =>
@@ -112,7 +158,7 @@ export function MenuPage({ theme, flags, setBookingOpen, navigate }) {
         ),
       }))
       .filter((section) => section.items.length > 0);
-  }, [rawSections, activeDietFilter]);
+  }, [activeBaseSections, activeDietFilter]);
 
   const handleDietFilterChange = (filterId) => {
     setActiveDietFilter(filterId);
@@ -351,7 +397,7 @@ export function MenuPage({ theme, flags, setBookingOpen, navigate }) {
                     Book by <strong>31st October</strong> and enjoy a complimentary glass of chilled Prosecco for every guest on Festive Dinner &amp; Christmas Feast bookings.
                   </p>
 
-                  {/* 4 Packages Highlight Pills */}
+                  {/* Selectable Festive Package Cards */}
                   <div
                     style={{
                       display: "grid",
@@ -360,55 +406,59 @@ export function MenuPage({ theme, flags, setBookingOpen, navigate }) {
                       marginBottom: 12,
                       textAlign: "left",
                     }}
+                    role="tablist"
+                    aria-label="Festive Dining Packages"
                   >
-                    <div
-                      style={{
-                        background: theme.surfaceAlt || "#FFFFFF",
-                        border: `1px solid ${COLORS.warmAmber}30`,
-                        borderRadius: 8,
-                        padding: "8px 10px",
-                      }}
-                    >
-                      <div style={{ fontSize: 9.5, fontWeight: 700, color: COLORS.warmAmber, letterSpacing: "0.05em" }}>FESTIVE DINNER</div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: theme.heading }}>£35.95 <span style={{ fontSize: 10, fontWeight: 400, color: theme.muted }}>pp</span></div>
-                      <div style={{ fontSize: 10.5, color: theme.muted }}>2–8 guests · 3 Courses</div>
-                    </div>
-                    <div
-                      style={{
-                        background: theme.surfaceAlt || "#FFFFFF",
-                        border: `1px solid ${COLORS.warmAmber}30`,
-                        borderRadius: 8,
-                        padding: "8px 10px",
-                      }}
-                    >
-                      <div style={{ fontSize: 9.5, fontWeight: 700, color: COLORS.warmAmber, letterSpacing: "0.05em" }}>CHRISTMAS FEAST</div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: theme.heading }}>£37.95 <span style={{ fontSize: 10, fontWeight: 400, color: theme.muted }}>pp</span></div>
-                      <div style={{ fontSize: 10.5, color: theme.muted }}>9+ guests · Sharing table</div>
-                    </div>
-                    <div
-                      style={{
-                        background: theme.surfaceAlt || "#FFFFFF",
-                        border: `1px solid ${COLORS.mossGreen}30`,
-                        borderRadius: 8,
-                        padding: "8px 10px",
-                      }}
-                    >
-                      <div style={{ fontSize: 9.5, fontWeight: 700, color: COLORS.mossGreen, letterSpacing: "0.05em" }}>BOTTOMLESS BRUNCH</div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: theme.heading }}>£45.00 <span style={{ fontSize: 10, fontWeight: 400, color: theme.muted }}>pp</span></div>
-                      <div style={{ fontSize: 10.5, color: theme.muted }}>Fri–Sun · 90m drinks</div>
-                    </div>
-                    <div
-                      style={{
-                        background: theme.surfaceAlt || "#FFFFFF",
-                        border: `1px solid ${COLORS.mossGreen}30`,
-                        borderRadius: 8,
-                        padding: "8px 10px",
-                      }}
-                    >
-                      <div style={{ fontSize: 9.5, fontWeight: 700, color: COLORS.mossGreen, letterSpacing: "0.05em" }}>DRINKS &amp; NIBBLES</div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: theme.heading }}>from £20 <span style={{ fontSize: 10, fontWeight: 400, color: theme.muted }}>pp</span></div>
-                      <div style={{ fontSize: 10.5, color: theme.muted }}>Office parties (10+)</div>
-                    </div>
+                    {FESTIVE_PACKAGES.map((pkg) => {
+                      const isSelected = selectedFestivePackage === pkg.id;
+                      return (
+                        <button
+                          key={pkg.id}
+                          type="button"
+                          role="tab"
+                          aria-selected={isSelected}
+                          aria-label={`${pkg.title} · ${pkg.price} ${pkg.unit} · ${pkg.desc}`}
+                          onClick={() => setSelectedFestivePackage(pkg.id)}
+                          style={{
+                            background: isSelected
+                              ? (theme.surfaceAlt ? `${COLORS.warmAmber}16` : "rgba(191, 138, 47, 0.12)")
+                              : (theme.surfaceAlt || "#FFFFFF"),
+                            border: isSelected
+                              ? `2px solid ${COLORS.warmAmber}`
+                              : `1px solid ${COLORS.warmAmber}30`,
+                            borderRadius: 8,
+                            padding: "8px 10px",
+                            textAlign: "left",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                            boxShadow: isSelected
+                              ? `0 3px 12px ${COLORS.warmAmber}35`
+                              : "none",
+                            transform: isSelected ? "translateY(-1px)" : "none",
+                            display: "block",
+                            width: "100%",
+                            fontFamily: "inherit",
+                          }}
+                        >
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div style={{ fontSize: 9.5, fontWeight: 700, color: COLORS.warmAmber, letterSpacing: "0.05em" }}>
+                              {pkg.title}
+                            </div>
+                            {isSelected && (
+                              <span style={{ fontSize: 9, color: COLORS.warmAmber, fontWeight: 700, letterSpacing: "0.04em" }}>
+                                ● Active
+                              </span>
+                            )}
+                          </div>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: theme.heading, marginTop: 2 }}>
+                            {pkg.price} <span style={{ fontSize: 10, fontWeight: 400, color: theme.muted }}>{pkg.unit}</span>
+                          </div>
+                          <div style={{ fontSize: 10.5, color: isSelected ? theme.heading : theme.muted, marginTop: 1 }}>
+                            {pkg.desc}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
 
                   {/* Direct Action Buttons */}
@@ -536,20 +586,44 @@ export function MenuPage({ theme, flags, setBookingOpen, navigate }) {
           {displaySections.map((section, si) => (
             <FadeIn key={section.name} delay={si * 0.06}>
               <div style={{ marginBottom: 26 }}>
-                <h3
+                <div
                   style={{
-                    fontSize: 11.5,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: theme.accent,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "baseline",
+                    flexWrap: "wrap",
+                    gap: "4px 12px",
                     marginBottom: 8,
-                    fontWeight: 600,
                     paddingBottom: 6,
                     borderBottom: `1px solid ${theme.muted}20`,
                   }}
                 >
-                  {section.name}
-                </h3>
+                  <h3
+                    style={{
+                      fontSize: 11.5,
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      color: theme.accent,
+                      fontWeight: 600,
+                      margin: 0,
+                    }}
+                  >
+                    {section.name}
+                  </h3>
+                  {section.subtitle && (
+                    <span
+                      style={{
+                        fontSize: 11,
+                        color: theme.muted,
+                        fontStyle: "italic",
+                        fontWeight: 400,
+                        letterSpacing: "0.02em",
+                      }}
+                    >
+                      {section.subtitle}
+                    </span>
+                  )}
+                </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                   {section.items.map((item, ii) => (
                     <FadeIn key={item.name} delay={ii * 0.03}>

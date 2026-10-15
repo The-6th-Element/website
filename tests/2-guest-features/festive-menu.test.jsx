@@ -46,21 +46,35 @@ describe('FEATURE-86: Christmas Festive Menu in Menu Section', () => {
     expect(screen.getByRole('heading', { name: /Christmas Group & Office Enquiry/i })).toBeInTheDocument()
   })
 
-  it('displays Festive Dinner, Christmas Feast, Bottomless Brunch, and Drinks packages', () => {
+  it('displays selectable package cards defaulting to Festive Dinner, with smallprint and package switching', () => {
     render(<MenuPage theme={AM_THEME} />)
 
     // Navigate to festive tab
     const festiveTab = screen.getByRole('button', { name: /Festive Menu/i })
     fireEvent.click(festiveTab)
 
-    // Section headings
-    expect(screen.getAllByRole('heading', { name: /Festive Dinner/i }).length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByRole('heading', { name: /Festive Dinner · The Main Event \(Choose One/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /Christmas Feast/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /Festive Bottomless Brunch/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /Drinks & Nibbles/i })).toBeInTheDocument()
+    // Check 4 package cards exist in the header
+    const dinnerCard = screen.getByRole('tab', { name: /FESTIVE DINNER/i })
+    const feastCard = screen.getByRole('tab', { name: /CHRISTMAS FEAST/i })
+    const brunchCard = screen.getByRole('tab', { name: /BOTTOMLESS BRUNCH/i })
+    const drinksCard = screen.getByRole('tab', { name: /DRINKS & NIBBLES/i })
 
-    // Key dishes from Festive Dinner
+    expect(dinnerCard).toBeInTheDocument()
+    expect(feastCard).toBeInTheDocument()
+    expect(brunchCard).toBeInTheDocument()
+    expect(drinksCard).toBeInTheDocument()
+
+    // Default view: Festive Dinner is active
+    expect(dinnerCard).toHaveAttribute('aria-selected', 'true')
+    expect(feastCard).toHaveAttribute('aria-selected', 'false')
+
+    // Section headings in default Festive Dinner view
+    expect(screen.getAllByRole('heading', { name: /Festive Dinner/i }).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getByRole('heading', { name: /Festive Dinner · The Main Event \(Choose One\)/i })).toBeInTheDocument()
+    // Smallprint subtitle
+    expect(screen.getByText(/Served with Naan or Saffron Rice/i)).toBeInTheDocument()
+
+    // Key dishes from Festive Dinner without individual prices
     expect(screen.getAllByText(/Christmas Turkey Tikka/i).length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText(/Winter Ruby Tikki/i).length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText(/Velvet Christmas Makhani/i).length).toBeGreaterThanOrEqual(1)
@@ -73,16 +87,29 @@ describe('FEATURE-86: Christmas Festive Menu in Menu Section', () => {
     // Individual festive dinner items do not display prices (since it's £35.95 pp), only upgrades show +£10
     expect(screen.getAllByText(/\+£10/i).length).toBeGreaterThanOrEqual(1)
 
-    // Christmas Feast offerings
-    expect(screen.getByRole('heading', { name: /Christmas Feast/i })).toBeInTheDocument()
-    expect(screen.getByText(/Signature Feast Upgrade/i)).toBeInTheDocument()
+    // Switch to Christmas Feast card
+    fireEvent.click(feastCard)
+    expect(feastCard).toHaveAttribute('aria-selected', 'true')
+    expect(dinnerCard).toHaveAttribute('aria-selected', 'false')
 
-    // Festive Bottomless Brunch items
+    // Christmas Feast offerings with individual dish lines without prices
+    expect(screen.getAllByRole('heading', { name: /Christmas Feast/i }).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getByRole('heading', { name: /The Signature Feast/i })).toBeInTheDocument()
+    expect(screen.getByText(/Golden Jaipur Aloo/i)).toBeInTheDocument()
+    expect(screen.getByText(/Saffron Rice & Festive Bread Basket/i)).toBeInTheDocument()
+    // Signature Feast extension items
+    expect(screen.getByText(/Ember Lamb Chops \(Signature Feast\)/i)).toBeInTheDocument()
+
+    // Switch to Bottomless Brunch card
+    fireEvent.click(brunchCard)
+    expect(screen.getByRole('heading', { name: /Festive Bottomless Brunch/i })).toBeInTheDocument()
     expect(screen.getByText(/Avocado & Feta Sourdough/i)).toBeInTheDocument()
     expect(screen.getByText(/House Masala Shakshuka/i)).toBeInTheDocument()
     expect(screen.getByText(/90 Mins Bottomless Drinks Pours/i)).toBeInTheDocument()
 
-    // Drinks & Nibbles packages
+    // Switch to Drinks & Nibbles card
+    fireEvent.click(drinksCard)
+    expect(screen.getByRole('heading', { name: /Drinks & Nibbles/i })).toBeInTheDocument()
     expect(screen.getByText(/The Merry Package/i)).toBeInTheDocument()
     expect(screen.getByText(/The Jolly Package/i)).toBeInTheDocument()
     expect(screen.getByText(/Welcome Glass of Prosecco/i)).toBeInTheDocument()

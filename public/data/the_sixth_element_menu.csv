@@ -52,19 +52,28 @@ festive,Festive Dinner · To Begin (Choose One),Winter Ruby Tikki,,Beetroot & go
 festive,Festive Dinner · To Begin (Choose One),Ember Glazed Wings,,Chef special chicken wings · in-house marinated · slow-cooked · makhani drizzle,GF
 festive,Festive Dinner · To Begin (Choose One),Winter Shore Pakoras,,Samphire pakoras · seaweed salt · house dip,VE
 festive,Festive Dinner · To Begin (Choose One),Fireside Paneer Tikka,,Paneer tikka · mustard pickle marinade · smoked yoghurt,V; GF
-festive,Festive Dinner · The Main Event (Choose One · Served with Naan or Saffron Rice),Velvet Christmas Makhani,,"Butter chicken · tomatoes, butter, cream, cashews & aromatic spices",GF
-festive,Festive Dinner · The Main Event (Choose One · Served with Naan or Saffron Rice),Mulled Spice Chicken Chettinad,,Fragrant spiced chicken chettinad in coconut-peppercorn gravy,GF
-festive,Festive Dinner · The Main Event (Choose One · Served with Naan or Saffron Rice),Midwinter Malabar Prawns,,"King prawn · coconut, curry leaf & Malabar spice sauce",GF
-festive,Festive Dinner · The Main Event (Choose One · Served with Naan or Saffron Rice),Golden Paneer Lababdar,,"Paneer lababdar · tomato, cashew & aromatic spice gravy",V; GF
-festive,Festive Dinner · The Main Event (Choose One · Served with Naan or Saffron Rice),Winter White Malai Kofta,,Delicate paneer dumplings in spiced cashew gravy,V
-festive,Festive Dinner · The Main Event (Choose One · Served with Naan or Saffron Rice),Midnight Dal Makhani,,Dal makhani · slow-cooked 12 hours · cultured butter & truffle oil,V; GF
-festive,Festive Dinner · The Main Event (Choose One · Served with Naan or Saffron Rice),The Christmas Shank (Signature Main Upgrade),+£10,12-hour slow-braised lamb shank · Kashmiri reduction · naan or saffron rice,GF
+festive,Festive Dinner · The Main Event (Choose One),Velvet Christmas Makhani,,"Butter chicken · tomatoes, butter, cream, cashews & aromatic spices",GF
+festive,Festive Dinner · The Main Event (Choose One),Mulled Spice Chicken Chettinad,,Fragrant spiced chicken chettinad in coconut-peppercorn gravy,GF
+festive,Festive Dinner · The Main Event (Choose One),Midwinter Malabar Prawns,,"King prawn · coconut, curry leaf & Malabar spice sauce",GF
+festive,Festive Dinner · The Main Event (Choose One),Golden Paneer Lababdar,,"Paneer lababdar · tomato, cashew & aromatic spice gravy",V; GF
+festive,Festive Dinner · The Main Event (Choose One),Winter White Malai Kofta,,Delicate paneer dumplings in spiced cashew gravy,V
+festive,Festive Dinner · The Main Event (Choose One),Midnight Dal Makhani,,Dal makhani · slow-cooked 12 hours · cultured butter & truffle oil,V; GF
+festive,Festive Dinner · The Main Event (Choose One),The Christmas Shank (Signature Main Upgrade),+£10,12-hour slow-braised lamb shank · Kashmiri reduction · naan or saffron rice,GF
 festive,Festive Dinner · To Finish,Christmas Gulab Jamun,,Warm gulab jamun · Baileys ice cream,V
 festive,Festive Dinner · To Finish,Midnight Chocolate Sphere (Signature Dessert Upgrade),+£10,Filter coffee chocolate · Baileys ice cream · a little theatre at your table,V
-festive,Christmas Feast · For 9+ guests · Sharing for the table (£37.95 pp),On Arrival Sharing Platters,37.95,Christmas Turkey Tikka · Winter Ruby Tikki · Ember Glazed Wings · Winter Shore Pakoras,GF
-festive,Christmas Feast · For 9+ guests · Sharing for the table (£37.95 pp),The Feast Table Spread,37.95,Velvet Christmas Makhani · Golden Paneer Lababdar · Midnight Dal Makhani · Golden Jaipur Aloo · Saffron Rice & Festive Bread Basket,GF
-festive,Christmas Feast · For 9+ guests · Sharing for the table (£37.95 pp),Christmas Gulab Jamun (Sharing Finish),Included,Warm gulab jamun · Baileys ice cream (Upgrade to Midnight Chocolate Sphere +£10 pp),V
-festive,Christmas Feast · For 9+ guests · Sharing for the table (£37.95 pp),The Signature Feast Upgrade,49.95,"Everything above, plus Ember Lamb Chops (kasundi glaze · pickled shallots & mint chutney) and The Christmas Shank for the table",GF
+festive,Christmas Feast · On Arrival,Christmas Turkey Tikka,,Turkey tikka · cranberry & mint chutney,GF
+festive,Christmas Feast · On Arrival,Winter Ruby Tikki,,Beetroot & goat's cheese tikki · tamarind glaze · pistachio crumble,V; GF
+festive,Christmas Feast · On Arrival,Ember Glazed Wings,,Chef special chicken wings · in-house marinated · slow-cooked · makhani drizzle,GF
+festive,Christmas Feast · On Arrival,Winter Shore Pakoras,,Samphire pakoras · seaweed salt · house dip,VE
+festive,Christmas Feast · The Feast Table Spread,Velvet Christmas Makhani,,"Butter chicken · tomatoes, butter, cream, cashews & aromatic spices",GF
+festive,Christmas Feast · The Feast Table Spread,Golden Paneer Lababdar,,"Paneer lababdar · tomato, cashew & aromatic spice gravy",V; GF
+festive,Christmas Feast · The Feast Table Spread,Midnight Dal Makhani,,Dal makhani · slow-cooked 12 hours · cultured butter & truffle oil,V; GF
+festive,Christmas Feast · The Feast Table Spread,Golden Jaipur Aloo,,Jaipur aloo · spiced potatoes · mustard oil & fresh herbs,VE; GF
+festive,Christmas Feast · The Feast Table Spread,Saffron Rice & Festive Bread Basket,,Peshawari naan · aloo kulcha · garlic naan · saffron basmati,V
+festive,Christmas Feast · To Finish,Christmas Gulab Jamun,,Warm gulab jamun · Baileys ice cream,V
+festive,Christmas Feast · To Finish,Midnight Chocolate Sphere (Signature Dessert Upgrade),+£10,Filter coffee chocolate · Baileys ice cream · a little theatre at your table,V
+festive,The Signature Feast · 2 Additional Dishes Included (£49.95 pp),Ember Lamb Chops (Signature Feast),Included,Kasundi glaze · pickled shallots & mint chutney · included for the table in the £49.95 pp Signature Feast,GF
+festive,The Signature Feast · 2 Additional Dishes Included (£49.95 pp),The Christmas Shank (Signature Feast),Included,12-hour slow-braised lamb shank · Kashmiri reduction · naan or saffron rice · included for the table in the £49.95 pp Signature Feast,GF
 festive,Festive Bottomless Brunch · Fri – Sun 11am – 2pm (£45 pp),90 Mins Bottomless Drinks Pours,45,Choice of Prosecco · Mango Mimosa · Bellini · Aperol Spritz · Hugo Spritz (Whole table must take part),
 festive,Festive Bottomless Brunch · Fri – Sun 11am – 2pm (£45 pp),Avocado & Feta Sourdough,Included,Crushed avocado · feta · seeds · lemon · chilli flakes,V; GF*
 festive,Festive Bottomless Brunch · Fri – Sun 11am – 2pm (£45 pp),House Masala Shakshuka,Included,Spiced tomatoes · poached eggs · coriander · sourdough · vegan option available,V; GF*
