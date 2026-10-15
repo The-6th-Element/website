@@ -100,7 +100,7 @@ export function InstagramSection({ theme }) {
     <section
       id="instagram-feed"
       style={{
-        padding: "90px 24px",
+        padding: "36px 24px 64px",
         background: theme.surface,
         position: "relative",
         borderTop: `1px solid ${theme.muted}15`,

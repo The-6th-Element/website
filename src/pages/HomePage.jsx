@@ -63,7 +63,7 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
       {/* Hero Viewport (reclaimed vertical space, fits in one clean view) */}
       <section
         style={{
-          minHeight: "100vh",
+          minHeight: "clamp(580px, 85vh, 760px)",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -71,7 +71,7 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
           background: theme.hero,
           position: "relative",
           textAlign: "center",
-          padding: "calc(98px + env(safe-area-inset-top, 0px)) 24px 28px",
+          padding: "calc(88px + env(safe-area-inset-top, 0px)) 24px 32px",
           overflow: "hidden",
         }}
       >
@@ -573,14 +573,14 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
         <div
           style={{
             position: "absolute",
-            bottom: 24,
+            bottom: 12,
             left: "50%",
             transform: "translateX(-50%)",
             animation: "float 2s ease-in-out infinite",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: 6,
+            gap: 4,
             opacity: 0.75,
             cursor: "pointer",
           }}
@@ -589,13 +589,13 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             if (el) el.scrollIntoView({ behavior: "smooth" });
           }}
         >
-          <span style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: theme.muted }}>
+          <span style={{ fontSize: 9.5, letterSpacing: "0.2em", textTransform: "uppercase", color: theme.muted }}>
             Live Moments
           </span>
           <div
             style={{
               width: 1,
-              height: 24,
+              height: 16,
               background: `linear-gradient(to bottom, ${theme.accent}, transparent)`,
             }}
           />
