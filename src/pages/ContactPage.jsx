@@ -1,6 +1,6 @@
 // src/pages/ContactPage.jsx
 import React from "react";
-import { MAP_EMBED_SRC, MAP_DIRECTIONS_URL } from "../data/config";
+import { MAP_EMBED_SRC, MAP_DIRECTIONS_URL, DELIVEROO_CONFIG } from "../data/config";
 import { FadeIn } from "../components/ui/FadeIn";
 import { trackDirectionsClick, trackContactClick } from "../utils/analytics";
 import { BookTableButton } from "../components/ui/BookTableButton";
@@ -142,6 +142,69 @@ export function ContactPage({ theme, setBookingOpen }) {
                   onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
                 >
                   📍 Get Directions
+                </a>
+              </div>
+
+              {/* Delivery & Takeaway (FEATURE-79) */}
+              <div
+                style={{
+                  marginTop: 24,
+                  padding: "16px 18px",
+                  borderRadius: 14,
+                  background: `${theme.muted}0a`,
+                  border: `1px solid ${theme.muted}20`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 16,
+                  flexWrap: "wrap",
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      color: "#00CDBC",
+                      fontWeight: 700,
+                      marginBottom: 4,
+                    }}
+                  >
+                    🛵 Local Delivery
+                  </div>
+                  <div style={{ fontSize: 14, color: theme.heading, fontWeight: 500 }}>
+                    Order directly via Deliveroo
+                  </div>
+                  <div style={{ fontSize: 12, color: theme.muted, marginTop: 2 }}>
+                    Delivering across East Sheen, Richmond, Mortlake &amp; Barnes
+                  </div>
+                </div>
+                <a
+                  href={DELIVEROO_CONFIG.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "9px 18px",
+                    borderRadius: 24,
+                    background: "#00CDBC",
+                    color: "#ffffff",
+                    textDecoration: "none",
+                    fontFamily: "'Outfit', sans-serif",
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    letterSpacing: "0.02em",
+                    boxShadow: "0 2px 8px rgba(0,205,188,0.3)",
+                    whiteSpace: "nowrap",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-1px)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                >
+                  Order on Deliveroo ↗
                 </a>
               </div>
             </div>

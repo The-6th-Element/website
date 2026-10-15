@@ -13,6 +13,7 @@ import {
   matchesDietaryFilter,
   DIETARY_FILTERS,
 } from "../components/menu/DietaryFilterBar";
+import { DELIVEROO_CONFIG } from "../data/config";
 
 /**
  * Returns curated background and accent colors for dietary badges.
@@ -309,6 +310,122 @@ export function MenuPage({ theme, flags, setBookingOpen, navigate }) {
                 />
               </div>
             )}
+          </div>
+        </FadeIn>
+
+        {/* Deliveroo Local Delivery Banner (FEATURE-79) */}
+        <FadeIn delay={0.12}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 16,
+              flexWrap: "wrap",
+              padding: "12px 18px",
+              marginBottom: 20,
+              borderRadius: 16,
+              background: `linear-gradient(135deg, rgba(0,205,188,0.08) 0%, ${theme.accent}0d 100%)`,
+              border: `1px solid rgba(0,205,188,0.28)`,
+              boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 240, flex: "1 1 auto" }}>
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 36,
+                  height: 36,
+                  borderRadius: "50%",
+                  background: "#00CDBC",
+                  color: "#ffffff",
+                  fontSize: 18,
+                  flexShrink: 0,
+                  boxShadow: "0 2px 8px rgba(0,205,188,0.35)",
+                }}
+                aria-hidden="true"
+              >
+                🛵
+              </span>
+              <div>
+                <div
+                  style={{
+                    fontFamily: "'Outfit', sans-serif",
+                    fontSize: 13.5,
+                    fontWeight: 600,
+                    color: theme.heading,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <span>Enjoy The Sixth Element at Home</span>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      padding: "2px 8px",
+                      borderRadius: 12,
+                      background: "rgba(0,205,188,0.18)",
+                      color: "#00a89a",
+                    }}
+                  >
+                    DELIVEROO
+                  </span>
+                </div>
+                <div
+                  style={{
+                    fontFamily: "'Outfit', sans-serif",
+                    fontSize: 12,
+                    color: theme.muted,
+                    marginTop: 2,
+                  }}
+                >
+                  Local delivery across East Sheen, Richmond, Mortlake &amp; Barnes · Direct to your doorstep
+                </div>
+              </div>
+            </div>
+
+            <a
+              href={DELIVEROO_CONFIG.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                padding: "9px 18px",
+                borderRadius: 24,
+                background: "#00CDBC",
+                color: "#ffffff",
+                textDecoration: "none",
+                fontFamily: "'Outfit', sans-serif",
+                fontSize: 12.5,
+                fontWeight: 600,
+                letterSpacing: "0.02em",
+                transition: "all 0.2s ease",
+                boxShadow: "0 2px 10px rgba(0,205,188,0.35)",
+                whiteSpace: "nowrap",
+                WebkitTapHighlightColor: "transparent",
+                touchAction: "manipulation",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,205,188,0.45)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "none";
+                e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,205,188,0.35)";
+              }}
+            >
+              Order on Deliveroo <span style={{ fontSize: 14 }}>↗</span>
+            </a>
           </div>
         </FadeIn>
 

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Logomark } from "../ui/Logomark";
 import { BookTableButton } from "../ui/BookTableButton";
+import { DELIVEROO_CONFIG } from "../../data/config";
 
 export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, topOffset = 0, setBookingOpen }) {
   const [scrolled, setScrolled] = useState(false);
@@ -206,7 +207,7 @@ export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, to
             </button>
           ))}
           {setBookingOpen && (
-            <div style={{ marginTop: 16 }}>
+            <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
               <BookTableButton
                 size="md"
                 theme={theme}
@@ -216,6 +217,36 @@ export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, to
                   setBookingOpen(true);
                 }}
               />
+              <a
+                href={DELIVEROO_CONFIG.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  width: "100%",
+                  minHeight: 44,
+                  padding: "10px 16px",
+                  borderRadius: 24,
+                  background: "rgba(0, 205, 188, 0.12)",
+                  border: "1px solid rgba(0, 205, 188, 0.35)",
+                  color: "#00CDBC",
+                  textDecoration: "none",
+                  fontFamily: "'Outfit', sans-serif",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  letterSpacing: "0.03em",
+                  WebkitTapHighlightColor: "transparent",
+                  touchAction: "manipulation",
+                  boxSizing: "border-box",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <span>🛵</span> Order for Delivery (Deliveroo) <span>↗</span>
+              </a>
             </div>
           )}
         </div>

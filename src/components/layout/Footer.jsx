@@ -1,6 +1,7 @@
 // src/components/layout/Footer.jsx
 import React from "react";
 import { Logomark } from "../ui/Logomark";
+import { DELIVEROO_CONFIG } from "../../data/config";
 
 export function Footer({ theme, navigate, onOpenAdmin }) {
   return (
@@ -71,6 +72,27 @@ export function Footer({ theme, navigate, onOpenAdmin }) {
                 {p === "impact" ? "Social Impact" : p === "about" ? "Our Story" : p === "events" ? "Events" : p}
               </button>
             ))}
+            <a
+              href={DELIVEROO_CONFIG.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 5,
+                color: "#00CDBC",
+                fontSize: 13,
+                fontWeight: 500,
+                padding: "6px 0 0",
+                fontFamily: "'Outfit', sans-serif",
+                textDecoration: "none",
+                transition: "opacity 0.2s ease",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = 0.8)}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = 1)}
+            >
+              Deliveroo (Delivery) ↗
+            </a>
           </div>
           <div>
             <div
