@@ -1573,9 +1573,8 @@ export function StaffPage({
                   >
                     Toast Tables Integration
                   </div>
-                  <p style={{ fontSize: 13, color: theme.muted, lineHeight: 1.7, fontWeight: 300 }}>
+                  <p style={{ fontSize: 13, color: theme.muted, lineHeight: 1.7, fontWeight: 300, margin: 0 }}>
                     Table reservations are powered by Toast Tables. The booking page loads in a spacious modal window directly on your site.
-                    To modify the Toast link, update <code style={{ background: `${theme.muted}15`, padding: "2px 6px", borderRadius: 4 }}>TOAST_CONFIG.reservationUrl</code>.
                   </p>
                 </div>
 

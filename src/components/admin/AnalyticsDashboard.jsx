@@ -33,7 +33,7 @@ export function AnalyticsDashboard({ theme }) {
   const handleClear = () => {
     if (
       window.confirm(
-        "Clear the local recent event stream? Note: All-time cumulative numbers and cloud historical records are permanently retained."
+        "Clear only the recent local activity stream below? All-time cumulative stats and historical metrics are permanently retained."
       )
     ) {
       localStorage.removeItem("t6e_offline_events_buffer");
@@ -255,6 +255,7 @@ export function AnalyticsDashboard({ theme }) {
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
           <button
             onClick={refreshMetrics}
+            title="Immediately fetch the latest local and cloud analytics"
             style={{
               padding: "8px 16px",
               borderRadius: 20,
@@ -267,21 +268,6 @@ export function AnalyticsDashboard({ theme }) {
             }}
           >
             ↻ Refresh
-          </button>
-          <button
-            onClick={handleClear}
-            title="Clear the temporary recent debug event buffer"
-            style={{
-              padding: "8px 16px",
-              borderRadius: 20,
-              border: `1px solid #d9302540`,
-              background: "#d9302510",
-              color: "#d93025",
-              fontSize: 12,
-              cursor: "pointer",
-            }}
-          >
-            Clear Stream
           </button>
         </div>
       </div>
@@ -573,7 +559,26 @@ export function AnalyticsDashboard({ theme }) {
               Real-time clickstream of visitor actions across the website.
             </div>
           </div>
-          <span style={{ fontSize: 12, color: theme.muted }}>Auto-updates live</span>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <span style={{ fontSize: 12, color: theme.muted }}>Auto-updates live</span>
+            {metrics.recentEvents.length > 0 && (
+              <button
+                onClick={handleClear}
+                title="Clear only the recent activity clickstream below. Cumulative and historical stats are permanently preserved."
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: 6,
+                  border: `1px solid ${theme.muted}30`,
+                  background: "transparent",
+                  color: theme.muted,
+                  fontSize: 11,
+                  cursor: "pointer",
+                }}
+              >
+                Clear Log
+              </button>
+            )}
+          </div>
         </div>
 
         {metrics.recentEvents.length === 0 ? (
