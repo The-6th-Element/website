@@ -110,5 +110,13 @@ export const GOOGLE_CONFIG = {
   apiKey: "AIzaSyCe3boH2pmNmbmn0aqjPi6MUSLSd7juBWQ",
   mapsUri: "https://maps.google.com/?cid=8306889198970696055",
   reviewUri: "https://search.google.com/local/writereview?placeid=ChIJGQQLEQAPdkgRd3Et9bb_R3M",
-  businessProfileManagerUri: "https://business.google.com/locations",
+  businessProfileManagerUri: "https://business.google.com/reviews",
+  localReviewsUri: "https://search.google.com/local/reviews?placeid=ChIJGQQLEQAPdkgRd3Et9bb_R3M",
+  getReviewReplyUri: (authorName) => {
+    if (authorName) {
+      return `https://www.google.com/search?q=The+Sixth+Element+East+Sheen+reviews+${encodeURIComponent(authorName)}`;
+    }
+    return "https://business.google.com/reviews";
+  },
 };
+

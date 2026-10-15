@@ -268,24 +268,47 @@ export function GoogleReviewsManager({ theme }) {
                 </div>
 
                 {isPending && (
-                  <button
-                    onClick={() => handleOpenAiDraft(rev)}
-                    style={{
-                      padding: "6px 14px",
-                      borderRadius: 16,
-                      background: isSelected ? COLORS.warmAmber : `${COLORS.warmAmber}15`,
-                      color: isSelected ? "#FAF8F0" : COLORS.warmAmber,
-                      border: `1px solid ${COLORS.warmAmber}50`,
-                      fontSize: 11.5,
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 4,
-                    }}
-                  >
-                    ✨ Draft AI Reply
-                  </button>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <a
+                      href={GOOGLE_CONFIG.getReviewReplyUri ? GOOGLE_CONFIG.getReviewReplyUri(rev.authorName) : `https://www.google.com/search?q=The+Sixth+Element+East+Sheen+reviews+${encodeURIComponent(rev.authorName)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={`Open ${rev.authorName}'s review on Google to reply`}
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: 16,
+                        background: "transparent",
+                        color: theme.muted,
+                        border: `1px solid ${theme.muted}30`,
+                        fontSize: 11,
+                        fontWeight: 500,
+                        textDecoration: "none",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      ↗ View on Google
+                    </a>
+                    <button
+                      onClick={() => handleOpenAiDraft(rev)}
+                      style={{
+                        padding: "6px 14px",
+                        borderRadius: 16,
+                        background: isSelected ? COLORS.warmAmber : `${COLORS.warmAmber}15`,
+                        color: isSelected ? "#FAF8F0" : COLORS.warmAmber,
+                        border: `1px solid ${COLORS.warmAmber}50`,
+                        fontSize: 11.5,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      ✨ Draft AI Reply
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -423,23 +446,45 @@ export function GoogleReviewsManager({ theme }) {
                     ))}
                   </div>
 
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12, paddingTop: 10, borderTop: `1px solid ${theme.muted}15` }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12, paddingTop: 10, borderTop: `1px solid ${theme.muted}15`, flexWrap: "wrap", gap: 10 }}>
                     <span style={{ fontSize: 11, color: theme.muted }}>
-                      Tip: Copy a response above, then paste directly into Google Business Profile.
+                      Tip: Copy a response above, then jump straight to {rev.authorName}'s review to paste and reply on Google.
                     </span>
-                    <a
-                      href={GOOGLE_CONFIG.businessProfileManagerUri}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        fontSize: 11,
-                        color: theme.accent,
-                        fontWeight: 600,
-                        textDecoration: "none",
-                      }}
-                    >
-                      Paste on Google Business Profile ↗
-                    </a>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                      <a
+                        href={GOOGLE_CONFIG.getReviewReplyUri ? GOOGLE_CONFIG.getReviewReplyUri(rev.authorName) : `https://www.google.com/search?q=The+Sixth+Element+East+Sheen+reviews+${encodeURIComponent(rev.authorName)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 6,
+                          fontSize: 11.5,
+                          color: COLORS.earthBrown,
+                          background: `${COLORS.warmAmber}25`,
+                          padding: "6px 14px",
+                          borderRadius: 16,
+                          fontWeight: 600,
+                          textDecoration: "none",
+                          border: `1px solid ${COLORS.warmAmber}60`,
+                        }}
+                      >
+                        🎯 Jump to {rev.authorName}'s Review on Google ↗
+                      </a>
+                      <a
+                        href={GOOGLE_CONFIG.businessProfileManagerUri}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          fontSize: 11,
+                          color: theme.accent,
+                          fontWeight: 500,
+                          textDecoration: "none",
+                        }}
+                      >
+                        GBP Reviews Dashboard ↗
+                      </a>
+                    </div>
                   </div>
                 </div>
               )}
