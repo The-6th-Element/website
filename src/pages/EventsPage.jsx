@@ -5,6 +5,7 @@ import { COLORS } from "../theme/tokens";
 import { useEvents } from "../hooks/useContent";
 import { GroupEnquiryModal } from "../components/features/GroupEnquiryModal";
 import { FadeIn } from "../components/ui/FadeIn";
+import { BookTableButton } from "../components/ui/BookTableButton";
 
 export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-2026" }) {
   const { events } = useEvents();
@@ -597,30 +598,12 @@ export function EventsPage({ theme, setBookingOpen, initialEventId = "christmas-
                 alignItems: "center",
               }}
             >
-              <button
-                type="button"
+              <BookTableButton
                 onClick={() => setBookingOpen(true)}
-                style={{
-                  flex: "1 1 200px",
-                  background: `linear-gradient(135deg, ${COLORS.mossGreen}, #4A562B)`,
-                  color: "#FFFFFF",
-                  border: "none",
-                  borderRadius: 12,
-                  padding: "14px 24px",
-                  fontSize: 15,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  boxShadow: "0 6px 20px rgba(96, 110, 61, 0.35)",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  transition: "all 0.2s ease",
-                }}
-              >
-                <span>Book Table</span>
-                <span>›</span>
-              </button>
+                theme={theme}
+                size="lg"
+                style={{ flex: "1 1 200px" }}
+              />
 
               {selectedEvent.hasGroupEnquiry && (
                 <button

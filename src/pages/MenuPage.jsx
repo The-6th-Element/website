@@ -6,6 +6,7 @@ import { useMenu } from "../hooks/useContent";
 import { FadeIn } from "../components/ui/FadeIn";
 import { PrintMenuModal } from "../components/admin/PrintMenuModal";
 import { GroupEnquiryModal } from "../components/features/GroupEnquiryModal";
+import { BookTableButton } from "../components/ui/BookTableButton";
 import { trackMenuTab, trackDietaryFilter } from "../utils/analytics";
 import {
   DietaryFilterBar,
@@ -462,30 +463,13 @@ export function MenuPage({ theme, flags, setBookingOpen, navigate }) {
                   </div>
 
                   {/* Direct Action Buttons */}
-                  <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", alignItems: "center" }}>
                     {setBookingOpen && (
-                      <button
-                        type="button"
+                      <BookTableButton
                         onClick={() => setBookingOpen(true)}
-                        style={{
-                          background: `linear-gradient(135deg, ${COLORS.mossGreen}, #4A562B)`,
-                          color: "#FFFFFF",
-                          border: "none",
-                          borderRadius: 20,
-                          padding: "8px 16px",
-                          fontSize: 12,
-                          fontWeight: 600,
-                          cursor: "pointer",
-                          boxShadow: "0 3px 10px rgba(96, 110, 61, 0.3)",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 5,
-                          fontFamily: "'Outfit', sans-serif",
-                        }}
-                      >
-                        <span>Book Festive Table</span>
-                        <span>›</span>
-                      </button>
+                        theme={theme}
+                        size="sm"
+                      />
                     )}
                     <button
                       type="button"

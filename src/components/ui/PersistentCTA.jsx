@@ -1,5 +1,6 @@
 // src/components/ui/PersistentCTA.jsx
 import React, { useState, useEffect } from "react";
+import { BookTableButton } from "./BookTableButton";
 
 export function PersistentCTA({ theme, flags = {}, setBookingOpen }) {
   const [visible, setVisible] = useState(false);
@@ -24,28 +25,14 @@ export function PersistentCTA({ theme, flags = {}, setBookingOpen }) {
         animation: "slideDown 0.3s ease",
       }}
     >
-      <button
+      <BookTableButton
         onClick={() => setBookingOpen(true)}
+        theme={theme}
+        size="md"
         style={{
-          padding: "12px 24px",
-          minHeight: 44,
-          borderRadius: 30,
-          border: "none",
-          background: theme.accent,
-          color: "#fff",
-          cursor: "pointer",
-          fontFamily: "'Outfit', sans-serif",
-          fontSize: 13,
-          fontWeight: 500,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
-          transition: "transform 0.3s ease",
-          WebkitTapHighlightColor: "transparent",
+          boxShadow: "0 6px 24px rgba(0,0,0,0.25)",
         }}
-        onMouseEnter={(e) => (e.target.style.transform = "translateY(-2px)")}
-        onMouseLeave={(e) => (e.target.style.transform = "none")}
-      >
-        Book a Table
-      </button>
+      />
     </div>
   );
 }

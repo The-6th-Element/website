@@ -349,7 +349,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
               Menu Studio &amp; CSV Template Manager
             </h1>
             <div style={{ fontSize: 12, color: theme.muted, marginTop: 2 }}>
-              {isCustom ? "🟢 Custom Menu Active in Browser" : "Default Menu Loaded"}
+              Standard Menu Management (Daytime &amp; Evening) · {isCustom ? "🟢 Custom Menu Active in Browser" : "Default Menu Loaded"}
               {dirty && <span style={{ color: COLORS.warmAmber, fontWeight: 600 }}> · (Unsaved changes)</span>}
             </div>
           </div>
@@ -644,10 +644,10 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
               gap: 10,
             }}>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {Object.keys(draft).map(cat => {
+                {Object.keys(draft).filter(cat => cat !== "festive").map(cat => {
                   const active = activeCat === cat;
-                  const icon = cat === "daytime" ? "☀️" : cat === "evening" ? "🌙" : cat === "festive" ? "🎄" : draft[cat]?.icon || "📋";
-                  const label = draft[cat]?.title || (cat === "festive" ? "Festive Menu" : `${cat.charAt(0).toUpperCase() + cat.slice(1)} Menu`);
+                  const icon = cat === "daytime" ? "☀️" : cat === "evening" ? "🌙" : draft[cat]?.icon || "📋";
+                  const label = draft[cat]?.title || `${cat.charAt(0).toUpperCase() + cat.slice(1)} Menu`;
                   return (
                     <button
                       key={cat}
@@ -978,7 +978,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
                   fontWeight: 700,
-                  color: activeCat === "festive" ? "#D4AF37" : COLORS.warmAmber,
+                  color: COLORS.warmAmber,
                 }}>
                   ● Live Customer Preview
                 </span>
@@ -986,18 +986,18 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                   fontFamily: "'Cormorant Garamond', serif",
                   fontSize: 28,
                   fontWeight: 400,
-                  color: activeCat === "evening" || activeCat === "festive" ? "#F6F4E3" : "#4B3621",
+                  color: activeCat === "evening" ? "#F6F4E3" : "#4B3621",
                   marginTop: 4,
                 }}>
-                  {activeCategoryData.title || (activeCat === "daytime" ? "Daytime" : activeCat === "evening" ? "Evening" : "Festive Menu")}
+                  {activeCategoryData.title || (activeCat === "daytime" ? "Daytime" : "Evening")}
                 </h2>
-                <div style={{ fontSize: 13, color: activeCat === "evening" ? "#7A7060" : activeCat === "festive" ? "#A89D8B" : "#6E6456", fontStyle: "italic" }}>
+                <div style={{ fontSize: 13, color: activeCat === "evening" ? "#7A7060" : "#6E6456", fontStyle: "italic" }}>
                   {activeCategoryData.subtitle}
                 </div>
               </div>
 
               <div style={{ fontSize: 28 }}>
-                {activeCat === "daytime" ? "☀️" : activeCat === "evening" ? "🌙" : activeCat === "festive" ? "🎄" : (activeCategoryData.icon || "📋")}
+                {activeCat === "daytime" ? "☀️" : "🌙"}
               </div>
             </div>
 
@@ -1010,7 +1010,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                     justifyContent: "space-between",
                     alignItems: "baseline",
                     flexWrap: "wrap",
-                    borderBottom: `1px solid ${activeCat === "festive" ? "rgba(212, 175, 55, 0.4)" : `${COLORS.warmAmber}40`}`,
+                    borderBottom: `1px solid ${COLORS.warmAmber}40`,
                     paddingBottom: 8,
                     marginBottom: 16,
                   }}>
@@ -1018,7 +1018,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                       fontFamily: "'Cormorant Garamond', serif",
                       fontSize: 20,
                       fontWeight: 500,
-                      color: activeCat === "evening" || activeCat === "festive" ? "#F6F4E3" : "#4B3621",
+                      color: activeCat === "evening" ? "#F6F4E3" : "#4B3621",
                       margin: 0,
                     }}>
                       {section.name}
@@ -1027,7 +1027,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                       <span style={{
                         fontSize: 12,
                         fontStyle: "italic",
-                        color: activeCat === "festive" ? "#C2B280" : theme.muted,
+                        color: theme.muted,
                       }}>
                         {section.subtitle}
                       </span>

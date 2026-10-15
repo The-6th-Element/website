@@ -5,13 +5,13 @@ import React from 'react'
 import { MenuStudio } from '../../src/components/admin/MenuStudio'
 import { AM_THEME } from '../../src/theme/tokens'
 
-describe('MenuStudio: Staff Festive / Christmas Menu & Dietary Tag Management', () => {
+describe('MenuStudio: Staff Standard Menu (Daytime & Evening) & Dietary Tag Management', () => {
   beforeEach(() => {
     localStorage.clear()
     sessionStorage.clear()
   })
 
-  it('renders Daytime, Evening, and Festive Menu tabs in the category switcher', () => {
+  it('renders Daytime and Evening tabs in category switcher and excludes promotional Festive Menu', () => {
     render(
       <MenuStudio
         theme={AM_THEME}
@@ -21,13 +21,15 @@ describe('MenuStudio: Staff Festive / Christmas Menu & Dietary Tag Management', 
       />
     )
 
-    // Verify all 3 category tabs are present
+    // Standard menu tabs must be present
     expect(screen.getByRole('button', { name: /Daytime/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Evening/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Festive Menu/i })).toBeInTheDocument()
+
+    // Festive Menu is a temporary promotion managed outside Menu Studio
+    expect(screen.queryByRole('button', { name: /Festive Menu/i })).not.toBeInTheDocument()
   })
 
-  it('switches to Festive Menu and displays festive sections and items in editor and preview', () => {
+  it('displays Daytime sections by default and switches to Evening sections and preview', () => {
     render(
       <MenuStudio
         theme={AM_THEME}
@@ -37,19 +39,18 @@ describe('MenuStudio: Staff Festive / Christmas Menu & Dietary Tag Management', 
       />
     )
 
-    const festiveTab = screen.getByRole('button', { name: /Festive Menu/i })
-    fireEvent.click(festiveTab)
-
-    // Editor should show festive section inputs
-    expect(screen.getByDisplayValue(/Festive Dinner · To Begin/i)).toBeInTheDocument()
-    expect(screen.getAllByDisplayValue(/Christmas Turkey Tikka/i).length).toBeGreaterThanOrEqual(1)
-
-    // Live preview should show festive header and icon
+    // Default active category is Daytime
     expect(screen.getByText(/● Live Customer Preview/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/🎄/i).length).toBeGreaterThanOrEqual(2)
+    expect(screen.getAllByText(/☀️/i).length).toBeGreaterThanOrEqual(1)
+
+    const eveningTab = screen.getByRole('button', { name: /Evening/i })
+    fireEvent.click(eveningTab)
+
+    // Live preview should now reflect Evening dining
+    expect(screen.getAllByText(/🌙/i).length).toBeGreaterThanOrEqual(1)
   })
 
-  it('provides HALAL tag toggle so staff can introduce Halal qualifiers whenever desired', () => {
+  it('provides HALAL tag toggle so staff can introduce Halal qualifiers whenever desired on standard dishes', () => {
     render(
       <MenuStudio
         theme={AM_THEME}
@@ -59,10 +60,7 @@ describe('MenuStudio: Staff Festive / Christmas Menu & Dietary Tag Management', 
       />
     )
 
-    const festiveTab = screen.getByRole('button', { name: /Festive Menu/i })
-    fireEvent.click(festiveTab)
-
-    // Locate the first "+ HALAL" tag button (on dishes currently without Halal)
+    // Locate the first "+ HALAL" tag button on daytime dishes
     const addHalalButtons = screen.getAllByRole('button', { name: /\+ HALAL/i })
     expect(addHalalButtons.length).toBeGreaterThan(0)
 
@@ -80,7 +78,7 @@ describe('MenuStudio: Staff Festive / Christmas Menu & Dietary Tag Management', 
     expect(screen.queryByRole('button', { name: /✓ HALAL/i })).not.toBeInTheDocument()
   })
 
-  it('allows adding a new section within Festive Menu', () => {
+  it('allows adding a new section within the Standard Menu', () => {
     render(
       <MenuStudio
         theme={AM_THEME}
@@ -89,9 +87,6 @@ describe('MenuStudio: Staff Festive / Christmas Menu & Dietary Tag Management', 
         userName="deepak"
       />
     )
-
-    const festiveTab = screen.getByRole('button', { name: /Festive Menu/i })
-    fireEvent.click(festiveTab)
 
     const addSectionBtn = screen.getByRole('button', { name: /\+ Add Section/i })
     fireEvent.click(addSectionBtn)

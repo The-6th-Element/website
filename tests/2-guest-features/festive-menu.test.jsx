@@ -34,7 +34,7 @@ describe('FEATURE-86: Christmas Festive Menu in Menu Section', () => {
     expect(screen.getAllByText(/Drinks & Nibbles/i).length).toBeGreaterThanOrEqual(1)
 
     // Check action buttons in hero card
-    const bookTableBtn = screen.getByRole('button', { name: /Book Festive Table/i })
+    const bookTableBtn = screen.getByRole('button', { name: /Book Table/i })
     expect(bookTableBtn).toBeInTheDocument()
     fireEvent.click(bookTableBtn)
     expect(setBookingOpen).toHaveBeenCalledWith(true)

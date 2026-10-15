@@ -251,6 +251,7 @@ export default function TheSixthElement() {
         navigate={navigate}
         currentPage={currentPage}
         topOffset={barVisible ? ANNOUNCEMENT_BAR_H : 0}
+        setBookingOpen={flags?.booking_enabled !== false ? handleOpenBooking : undefined}
       />
 
       {currentPage === "home" && (
@@ -278,7 +279,12 @@ export default function TheSixthElement() {
       )}
       {currentPage === "impact" && <SocialImpactPage theme={theme} />}
       {currentPage === "about" && <AboutPage theme={theme} />}
-      {currentPage === "contact" && <ContactPage theme={theme} />}
+      {currentPage === "contact" && (
+        <ContactPage
+          theme={theme}
+          setBookingOpen={flags?.booking_enabled !== false ? handleOpenBooking : undefined}
+        />
+      )}
       {currentPage === "staff" && (
         <StaffPage
           theme={theme}

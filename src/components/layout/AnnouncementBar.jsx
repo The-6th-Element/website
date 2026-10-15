@@ -4,6 +4,7 @@ import { COLORS } from "../../theme/tokens";
 import { usePromotions, isPromoLive } from "../../hooks/useContent";
 import { trackPromoClick } from "../../utils/analytics";
 import { GroupEnquiryModal } from "../features/GroupEnquiryModal";
+import { BookTableButton } from "../ui/BookTableButton";
 
 export const ANNOUNCEMENT_BAR_H = 40;
 
@@ -718,33 +719,15 @@ export function AnnouncementBar({ theme, onToggle, navigate, setBookingOpen }) {
               }}
             >
               {setBookingOpen && (
-                <button
-                  type="button"
+                <BookTableButton
                   onClick={() => {
                     setActiveModalPromo(null);
                     setBookingOpen(true);
                   }}
-                  style={{
-                    flex: "1 1 170px",
-                    background: `linear-gradient(135deg, ${COLORS.mossGreen}, #4B5A2C)`,
-                    color: "#FFFFFF",
-                    border: "none",
-                    borderRadius: 10,
-                    padding: "10px 18px",
-                    fontSize: 13.5,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    boxShadow: "0 4px 14px rgba(96, 110, 61, 0.35)",
-                    transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 6,
-                  }}
-                >
-                  <span>Book a Table</span>
-                  <span aria-hidden="true">›</span>
-                </button>
+                  theme={theme}
+                  size="md"
+                  style={{ flex: "1 1 170px" }}
+                />
               )}
 
               {activeModalPromo.email && (

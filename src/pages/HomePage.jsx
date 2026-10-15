@@ -3,6 +3,7 @@ import React from "react";
 import { COLORS } from "../theme/tokens";
 import { FadeIn } from "../components/ui/FadeIn";
 import { CTAButton } from "../components/ui/CTAButton";
+import { BookTableButton } from "../components/ui/BookTableButton";
 import { InstagramSection } from "../components/features/InstagramSection";
 
 // Element icons defining each natural element
@@ -517,7 +518,7 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
 
                   <div className="hero-cta" style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 6 }}>
                     {flags?.booking_enabled !== false && (
-                      <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={theme} />
+                      <BookTableButton onClick={() => setBookingOpen(true)} theme={theme} size="lg" />
                     )}
                     <CTAButton
                       label="Explore Menu"
@@ -592,7 +593,7 @@ export function HomePage({ theme, isAM, navigate, setBookingOpen, flags }) {
             Whether it's morning light or evening warmth — your table awaits.
           </p>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-            <CTAButton label="Book a Table" onClick={() => setBookingOpen(true)} primary theme={{ ...theme, text: COLORS.ivory }} />
+            <BookTableButton onClick={() => setBookingOpen(true)} theme={theme} size="lg" />
             <CTAButton label="View Menu" onClick={() => navigate("menu")} theme={{ ...theme, text: COLORS.ivory, accent: COLORS.ivory }} />
           </div>
         </FadeIn>

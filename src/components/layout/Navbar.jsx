@@ -1,8 +1,9 @@
 // src/components/layout/Navbar.jsx
 import React, { useState, useEffect } from "react";
 import { Logomark } from "../ui/Logomark";
+import { BookTableButton } from "../ui/BookTableButton";
 
-export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, topOffset = 0 }) {
+export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, topOffset = 0, setBookingOpen }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -104,6 +105,14 @@ export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, to
               {l.label}
             </button>
           ))}
+          {setBookingOpen && (
+            <BookTableButton
+              size="sm"
+              theme={theme}
+              onClick={() => setBookingOpen(true)}
+              style={{ marginLeft: 6 }}
+            />
+          )}
         </div>
 
         {/* Mobile Hamburger */}
@@ -196,6 +205,19 @@ export function Navbar({ theme, menuOpen, setMenuOpen, navigate, currentPage, to
               {l.label}
             </button>
           ))}
+          {setBookingOpen && (
+            <div style={{ marginTop: 16 }}>
+              <BookTableButton
+                size="md"
+                theme={theme}
+                fullWidth
+                onClick={() => {
+                  setMenuOpen(false);
+                  setBookingOpen(true);
+                }}
+              />
+            </div>
+          )}
         </div>
       )}
     </nav>
