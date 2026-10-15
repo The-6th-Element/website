@@ -16,9 +16,9 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 ---
 
 ## 📊 Backlog Summary Metrics
-- 🟢 **Complete**: 52 items
+- 🟢 **Complete**: 53 items
 - 🟡 **Yet to Deploy**: 0 items
-- 🔵 **Prioritised**: 13 items
+- 🔵 **Prioritised**: 12 items
 - ⚪ **Backlog**: 19 items
 - 💡 **Discovery**: 6 items
 - ❌ **Cancelled**: 1 item
@@ -107,7 +107,7 @@ All items follow the unified **`FEATURE-NN`** standard nomenclature with legacy 
 | **FEATURE-75** | `SEC-01` | Quality Assurance & Automated Testing | **Automated Security, SAST & Vulnerability Test Suite** | Automated security testing integrated into CI/CD quality gates: dependency CVE vulnerability audits (npm audit), client-side XSS injection sanitization tests, sensitive credential/secret leakage checks before bundling, and RBAC privilege escalation resistance tests. | High | 🟢 Complete |
 | **FEATURE-76** | `BK-40` | Guest Experience & Mobile Optimizations | **Dedicated Events Hub & Master-Detail Event Viewer (`EVENTS` Navigation)** | Add top-level navigation item 'Events' situated between 'Menu' and 'Social Impact' leading to /events. Master-detail responsive architecture with left-hand events directory and dynamically generated right-hand event views displaying Title, Start & End dates, rich narrative Description, Offers & Packages, Toast 'Book Table' reservation action, and Group Enquiry modal. Supported by an extensible catalog for easily adding future events. | High | 🟢 Complete |
 | **FEATURE-77** | `BK-28` | Operations & System Health | **Incremental Telemetry & Persistent Multi-Day Analytics Retention** | Ensure website traffic metrics and dining intent telemetry are strictly incremental and retained across code deployments and daily midnight GMT rollovers. Includes timeframe selector (All-Time Cumulative, Today, Yesterday), permanent multi-day rollup summary, and resilient client-side aggregation. | High | 🟢 Complete |
-| **FEATURE-78** | `GBP-01` | Google Business Profile | **Google Business Profile API Connection & OAuth2 Link (Foundational Link)** | Establish secure Google Cloud Project API connection, OAuth2 account authorization, and credentials vaulting in Staff Portal for venue identity verification and API handshake. | High | 🔵 Prioritised |
+| **FEATURE-78** | `GBP-01` | Google Business Profile | **Google Business Profile & Places API Connection (Foundational Link)** | Verified ownership of The Sixth Element on Google Business Profile (Store Code `06233181898163879843`), established Google Cloud Project connection with Places API (New), vaulted Place ID (`ChIJGQQLEQAPdkgRd3Et9bb_R3M`) and CID (`8306889198970696055`), restricted API key domain access, implemented Staff Portal Google Connection diagnostic card with live handshake testing, and added 1-tap customer Google Review deep-linking. | High | 🟢 Complete |
 | **FEATURE-79** | `GBP-02` | Google Business Profile | **'Reserve with Google' & 'Order Online' Direct Toast Tables & Deliveroo Integrations** | Verified live Google Search Knowledge Panel direct integrations ('Reserve a table' via Toast Tables and 'Order online' via Deliveroo), and implemented dedicated multi-touchpoint Deliveroo ordering and delivery integration across the website (Menu page luxury callout banner, mobile navigation drawer 1-tap ordering, Contact page local delivery card, and footer navigation links with native iOS/Android app deep-linking support). | High | 🟢 Complete |
 | **FEATURE-80** | `GBP-03` | Google Business Profile | **Live Google Reviews Ingestion & AI Reputation Manager** | Automated periodic sync of authentic 5-star Google customer reviews into the website showcase (advancing `FEATURE-69 / BK-09`), with Staff Portal alerts and AI-assisted reply drafting. | High | 🔵 Prioritised |
 | **FEATURE-81** | `GBP-04` | Google Business Profile | **Google Food Menus & Structured Pricing Synchronization** | Programmatic sync of daytime brunch and evening dining menus, prices, descriptions, and dietary badges (V, VE, GF, DF) from Menu Studio into Google's structured Food Ordering tabs. | Medium | ⚪ Backlog |
@@ -178,10 +178,11 @@ For a venue situated at `210 Upper Richmond Road West, London SW14 8AH`, **over 
 
 #### Detailed Scope of the 8 Google Business Profile Features:
 
-1. **`FEATURE-78` (`GBP-01`) — Google Business Profile API Connection & OAuth2 Link (Foundational Link)**:
-   - **Prerequisite Scope**: Google Cloud Console project creation, Google My Business / Business Profile APIs activation, OAuth2 client ID/secret configuration.
-   - **Staff Portal Integration**: Add a secure "Google Connection" sub-card in `/staff` Settings allowing authorized admins to authenticate and verify venue location ID (`ChIJ...`).
-   - **Security**: Store refreshed OAuth2 tokens securely with encrypted session tokens.
+1. **`FEATURE-78` (`GBP-01`) — Google Business Profile & Places API Connection (Foundational Link) (🟢 Complete)**:
+   - **Venue Identity & Verification**: Verified venue ownership on Google Business Profile (Store Code: `06233181898163879843`), vaulted Google Place ID (`ChIJGQQLEQAPdkgRd3Et9bb_R3M`) and CID (`8306889198970696055`).
+   - **Google Cloud Platform (GCP)**: Created `The Sixth Element` GCP project, enabled **Places API (New)**, vaulted API key, and restricted HTTP referrers to production (`the6thelement.co.uk`), GitHub staging (`the-6th-element.github.io`), and local development (`localhost:5173`).
+   - **Staff Portal Integration**: Implemented live `GoogleConnectionCard` in `/staff` Settings with live API handshake test execution (confirming latency and 200 OK status), venue data display, and 1-tap customer Google Review deep-link generator.
+   - **Direct Guest Action**: Added direct "⭐ Review Us on Google ↗" action button on `/contact` routing directly to the venue's 5-star review dialog.
 
 2. **`FEATURE-79` (`GBP-02`) — 'Reserve with Google' & 'Order Online' Direct Toast Tables & Deliveroo Integrations (🟢 Complete)**:
    - **Reserve with Google (Toast Tables)**: Live Google Search Knowledge Panel direct integration via Toast Tables, cutting dining table reservations from 4 taps down to 1 directly from Google Search and Google Maps.
