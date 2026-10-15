@@ -73,8 +73,18 @@ export function UserManager({ theme, currentUser }) {
     try {
       const patch = {};
       if (newPassword) patch.newPassword = newPassword;
-      if (modalQuestion) patch.securityQuestion = modalQuestion;
-      if (modalAnswer) patch.newSecurityAnswer = modalAnswer;
+
+      if (modalAnswer && modalAnswer.trim()) {
+        patch.securityQuestion = modalQuestion;
+        patch.newSecurityAnswer = modalAnswer.trim();
+      } else if (modalQuestion !== passwordModalUser.securityQuestion && !passwordModalUser.securityQuestion) {
+        // If user is setting a question for the first time, answer is required
+        setFeedback({ type: "error", message: "Please provide a secret answer for the selected security question." });
+        return;
+      } else if (modalQuestion !== passwordModalUser.securityQuestion) {
+        setFeedback({ type: "error", message: "Please provide the secret answer corresponding to the new question." });
+        return;
+      }
 
       if (!newPassword && !modalAnswer && modalQuestion === passwordModalUser.securityQuestion) {
         setFeedback({ type: "error", message: "Please enter a new password or update the security answer." });

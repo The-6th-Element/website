@@ -21,9 +21,6 @@ function getTagStyle(t, theme) {
   if (t === "COMING SOON") {
     return { bg: `${theme.accent}20`, color: theme.accent, border: `${theme.accent}40` };
   }
-  if (t === "HALAL" || t === "H") {
-    return { bg: "rgba(74, 124, 143, 0.16)", color: "#3B6E80", border: "rgba(74, 124, 143, 0.3)" };
-  }
   if (t === "GF" || t === "GF*") {
     return { bg: `${COLORS.warmAmber}18`, color: COLORS.warmAmber, border: `${COLORS.warmAmber}35` };
   }
@@ -144,7 +141,6 @@ export function MenuPage({ theme, flags, setBookingOpen, navigate }) {
       V: allItems.filter((i) => matchesDietaryFilter(i, "V")).length,
       VE: allItems.filter((i) => matchesDietaryFilter(i, "VE")).length,
       GF: allItems.filter((i) => matchesDietaryFilter(i, "GF")).length,
-      HALAL: allItems.filter((i) => matchesDietaryFilter(i, "HALAL")).length,
     };
   }, [activeBaseSections]);
 

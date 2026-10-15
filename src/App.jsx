@@ -78,6 +78,7 @@ export default function TheSixthElement() {
         username: session.username,
         role: session.role,
         title: session.title,
+        hasSecurityQuestion: session.hasSecurityQuestion,
         token: savedToken,
         loading: false,
       });
@@ -95,6 +96,7 @@ export default function TheSixthElement() {
       username: result.username,
       role: result.role,
       title: result.title,
+      hasSecurityQuestion: result.hasSecurityQuestion,
       token: result.token,
       loading: false,
     });

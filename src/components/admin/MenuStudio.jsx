@@ -863,7 +863,7 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                           <span style={{ fontSize: 10, textTransform: "uppercase", color: theme.muted, fontWeight: 600 }}>
                             Dietary:
                           </span>
-                          {["V", "VE", "GF", "GF*", "DF", "HALAL"].map(tag => {
+                          {["V", "VE", "GF", "GF*", "DF"].map(tag => {
                             const active = Array.isArray(item.tags) && item.tags.includes(tag);
                             return (
                               <button
@@ -872,9 +872,9 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                                 style={{
                                   padding: "2px 8px",
                                   borderRadius: 12,
-                                  border: `1px solid ${active ? (tag === "HALAL" ? "#3B6E80" : COLORS.warmAmber) : `${theme.muted}30`}`,
-                                  background: active ? (tag === "HALAL" ? "rgba(74, 124, 143, 0.25)" : `${COLORS.warmAmber}25`) : "transparent",
-                                  color: active ? (tag === "HALAL" ? "#5D9BB0" : COLORS.warmAmber) : theme.muted,
+                                  border: `1px solid ${active ? COLORS.warmAmber : `${theme.muted}30`}`,
+                                  background: active ? `${COLORS.warmAmber}25` : "transparent",
+                                  color: active ? COLORS.warmAmber : theme.muted,
                                   cursor: "pointer",
                                   fontSize: 10,
                                   fontWeight: 600,
@@ -1094,9 +1094,9 @@ export function MenuStudio({ theme, onClose, userRole, userName }) {
                                   letterSpacing: "0.05em",
                                   padding: "1px 6px",
                                   borderRadius: 10,
-                                  background: t === "HALAL" || t === "H" ? "rgba(74, 124, 143, 0.2)" : `${COLORS.warmAmber}20`,
-                                  color: t === "HALAL" || t === "H" ? "#5D9BB0" : COLORS.warmAmber,
-                                  border: t === "HALAL" || t === "H" ? "1px solid rgba(74, 124, 143, 0.4)" : "none",
+                                  background: `${COLORS.warmAmber}20`,
+                                  color: COLORS.warmAmber,
+                                  border: "none",
                                 }}
                               >
                                 {t}

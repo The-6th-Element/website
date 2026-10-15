@@ -50,7 +50,7 @@ describe('MenuStudio: Staff Standard Menu (Daytime & Evening) & Dietary Tag Mana
     expect(screen.getAllByText(/🌙/i).length).toBeGreaterThanOrEqual(1)
   })
 
-  it('provides HALAL tag toggle so staff can introduce Halal qualifiers whenever desired on standard dishes', () => {
+  it('provides DF tag toggle so staff can manage Dairy-Free qualifiers and ensures Halal is removed', () => {
     render(
       <MenuStudio
         theme={AM_THEME}
@@ -60,22 +60,25 @@ describe('MenuStudio: Staff Standard Menu (Daytime & Evening) & Dietary Tag Mana
       />
     )
 
-    // Locate the first "+ HALAL" tag button on daytime dishes
-    const addHalalButtons = screen.getAllByRole('button', { name: /\+ HALAL/i })
-    expect(addHalalButtons.length).toBeGreaterThan(0)
+    // Halal tag must not be present
+    expect(screen.queryByRole('button', { name: /\+ HALAL/i })).not.toBeInTheDocument()
 
-    // Click to add HALAL to the first dish
-    fireEvent.click(addHalalButtons[0])
+    // Locate the first "+ DF" tag button on daytime dishes
+    const addDfButtons = screen.getAllByRole('button', { name: /\+ DF/i })
+    expect(addDfButtons.length).toBeGreaterThan(0)
 
-    // Should now toggle to "✓ HALAL"
-    expect(screen.getAllByRole('button', { name: /✓ HALAL/i }).length).toBeGreaterThanOrEqual(1)
+    // Click to add DF to the first dish
+    fireEvent.click(addDfButtons[0])
+
+    // Should now toggle to "✓ DF"
+    expect(screen.getAllByRole('button', { name: /✓ DF/i }).length).toBeGreaterThanOrEqual(1)
 
     // Click again to remove it
-    const activeHalalBtn = screen.getByRole('button', { name: /✓ HALAL/i })
-    fireEvent.click(activeHalalBtn)
+    const activeDfBtn = screen.getByRole('button', { name: /✓ DF/i })
+    fireEvent.click(activeDfBtn)
 
-    // Should return to "+ HALAL"
-    expect(screen.queryByRole('button', { name: /✓ HALAL/i })).not.toBeInTheDocument()
+    // Should return to "+ DF"
+    expect(screen.queryByRole('button', { name: /✓ DF/i })).not.toBeInTheDocument()
   })
 
   it('allows adding a new section within the Standard Menu', () => {

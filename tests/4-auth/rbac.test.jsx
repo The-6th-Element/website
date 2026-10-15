@@ -38,25 +38,33 @@ describe('BK-14 & BK-38: RBAC & User Management Regression Suite', () => {
     expect(hasPermission('staff', 'canManagePromos')).toBe(false)
   })
 
-  it('guarantees owner account cannot be deleted', () => {
+  it('guarantees core administrator accounts (pooja, admin, deepak) cannot be deleted', () => {
     expect(() => deleteStaffUser('pooja')).toThrow(/Owner account cannot be deleted/i)
+    expect(() => deleteStaffUser('admin')).toThrow(/Core administrator accounts cannot be deleted/i)
+    expect(() => deleteStaffUser('deepak')).toThrow(/Core administrator accounts cannot be deleted/i)
   })
 
-  it('provides default seeded users with correct roles and NO predefined security answers', () => {
+  it('provides default seeded users with distinct admin, pooja, and deepak accounts', () => {
     const users = getStaffUsers()
+    const admin = users.find(u => u.username === 'admin')
     const owner = users.find(u => u.username === 'pooja')
+    const deepak = users.find(u => u.username === 'deepak')
     const manager = users.find(u => u.username === 'manager')
+
+    expect(admin).toBeDefined()
+    expect(admin.role).toBe('admin')
+    expect(admin.isProtected).toBe(true)
 
     expect(owner).toBeDefined()
     expect(owner.role).toBe('admin')
     expect(owner.isProtected).toBe(true)
-    expect(owner.securityQuestion).toBeNull()
-    expect(owner.securityAnswerHash).toBeNull()
+
+    expect(deepak).toBeDefined()
+    expect(deepak.role).toBe('admin')
+    expect(deepak.isProtected).toBe(true)
 
     expect(manager).toBeDefined()
     expect(manager.role).toBe('manager')
-    expect(manager.securityQuestion).toBeNull()
-    expect(manager.securityAnswerHash).toBeNull()
   })
 
   it('BK-38: populates 6-8 predefined questions for dropdown selection', () => {
@@ -72,30 +80,38 @@ describe('BK-14 & BK-38: RBAC & User Management Regression Suite', () => {
     expect(() => getSecurityQuestionForUser('deepak')).toThrow(
       /No security question has been set up for 'deepak' yet/i
     )
+    expect(() => getSecurityQuestionForUser('admin')).toThrow(
+      /No security question has been set up for 'System Administrator' yet/i
+    )
     expect(() => getSecurityQuestionForUser('nonexistent_user')).toThrow(/No account found/i)
   })
 
-  it('BK-38: allows user to select a question and complete one-time setup, then reset password', async () => {
-    // 1. One-time setup: user selects a question from dropdown and submits their secret answer
+  it('BK-38: independently sets up secret questions for admin, deepak, and pooja and retains them', async () => {
+    // Setup for admin
+    await setupSecurityQuestion('admin', SECURITY_QUESTIONS[0], 'Oxford Academy')
+    // Setup for deepak
+    await setupSecurityQuestion('deepak', SECURITY_QUESTIONS[1], 'London')
+    // Setup for pooja
+    await setupSecurityQuestion('pooja', SECURITY_QUESTIONS[2], 'Mini Cooper')
+
+    // Each account retains its own distinct question
+    expect(getSecurityQuestionForUser('admin').question).toBe(SECURITY_QUESTIONS[0])
+    expect(getSecurityQuestionForUser('administrator').question).toBe(SECURITY_QUESTIONS[0]) // alias
+    expect(getSecurityQuestionForUser('deepak').question).toBe(SECURITY_QUESTIONS[1])
+    expect(getSecurityQuestionForUser('pooja').question).toBe(SECURITY_QUESTIONS[2])
+    expect(getSecurityQuestionForUser('owner').question).toBe(SECURITY_QUESTIONS[2]) // alias
+  })
+
+  it('BK-38: resets password via secret answer and enforces changed password revocation of default password', async () => {
     const chosenQuestion = SECURITY_QUESTIONS[0]
-    const setupRes = await setupSecurityQuestion('deepak', chosenQuestion, 'Greenwood High')
-    expect(setupRes.success).toBe(true)
-    expect(setupRes.question).toBe(chosenQuestion)
+    await setupSecurityQuestion('deepak', chosenQuestion, 'Greenwood High')
 
-    // 2. Querying user's security question now retrieves their chosen question
-    const deepakQ = getSecurityQuestionForUser('deepak')
-    expect(deepakQ.question).toBe(chosenQuestion)
-
-    // Alias 'admin' resolves to deepak's question
-    const adminQ = getSecurityQuestionForUser('admin')
-    expect(adminQ.question).toBe(chosenQuestion)
-
-    // 3. Rejects incorrect answers
+    // Rejects incorrect answers
     await expect(
       verifySecurityAnswerAndResetPassword('deepak', 'Wrong School', 'NewPass123!')
     ).rejects.toThrow(/Incorrect answer to secret question/i)
 
-    // 4. Accepts valid answer (case-insensitive & trimmed) and resets password
+    // Accepts valid answer and resets password
     const resetRes = await verifySecurityAnswerAndResetPassword(
       'deepak',
       '  greenwood high  ',
@@ -103,10 +119,15 @@ describe('BK-14 & BK-38: RBAC & User Management Regression Suite', () => {
     )
     expect(resetRes.success).toBe(true)
 
-    // 5. User logs in with newly reset password
+    // User logs in with newly reset password
     const loginRes = await authenticateStaff('deepak', 'MyBrandNewPass2026!')
     expect(loginRes.username).toBe('deepak')
     expect(loginRes.hasSecurityQuestion).toBe(true)
     expect(loginRes.token).toBeDefined()
+
+    // Default password must now fail (revoked!)
+    await expect(
+      authenticateStaff('deepak', 'thesixthelement')
+    ).rejects.toThrow(/Invalid username or password/i)
   })
 })

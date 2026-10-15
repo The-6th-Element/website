@@ -33,17 +33,11 @@ describe('BK-29 & BK-14: Dietary & Lifestyle Filter Chips (Regression Suite)', (
       expect(matchesDietaryFilter({ tags: ['GF*'] }, 'GF')).toBe(true)
       expect(matchesDietaryFilter({ tags: ['V'] }, 'GF')).toBe(false)
     })
-
-    it('matches Halal Friendly (HALAL) for dishes tagged HALAL or H', () => {
-      expect(matchesDietaryFilter({ tags: ['HALAL'] }, 'HALAL')).toBe(true)
-      expect(matchesDietaryFilter({ tags: ['H'] }, 'HALAL')).toBe(true)
-      expect(matchesDietaryFilter({ tags: ['V'] }, 'HALAL')).toBe(false)
-    })
   })
 
   describe('Component: DietaryFilterBar interactive rendering', () => {
-    it('renders all 5 dietary filter chips with counts', () => {
-      const counts = { all: 24, V: 14, VE: 6, GF: 10, HALAL: 8 }
+    it('renders all 4 dietary filter chips with counts', () => {
+      const counts = { all: 24, V: 14, VE: 6, GF: 10 }
       const onSelect = vi.fn()
 
       render(
@@ -59,7 +53,7 @@ describe('BK-29 & BK-14: Dietary & Lifestyle Filter Chips (Regression Suite)', (
       expect(screen.getByRole('button', { name: /Vegetarian/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /Plant-Based/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /Gluten-Friendly/i })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /Halal Friendly/i })).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /Halal Friendly/i })).not.toBeInTheDocument()
 
       // Click vegetarian filter
       const vegButton = screen.getByRole('button', { name: /Vegetarian/i })

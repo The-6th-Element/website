@@ -77,6 +77,17 @@ export const SECURITY_QUESTIONS = [
 // Security questions & answers are not pre-seeded; users choose a question and set their answer during one-time setup.
 export const DEFAULT_USERS = [
   {
+    username: "admin",
+    name: "System Administrator",
+    title: "Administrator",
+    role: "admin",
+    passwordHash: "b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4",
+    securityQuestion: null,
+    securityAnswerHash: null,
+    isProtected: true, // Primary system administrator account
+    createdAt: "2026-10-04",
+  },
+  {
     username: "pooja",
     name: "Pooja Somani",
     title: "Owner",
@@ -95,7 +106,7 @@ export const DEFAULT_USERS = [
     passwordHash: "b04d383e241a9bfac21f56bf6b2dad8e066b27e5189662e893bc378fb1a70db4",
     securityQuestion: null,
     securityAnswerHash: null,
-    isProtected: true,
+    isProtected: true, // Primary admin account
     createdAt: "2026-10-04",
   },
   {
@@ -124,6 +135,7 @@ export const DEFAULT_USERS = [
 
 /**
  * Returns list of all staff accounts from browser storage or defaults.
+ * Reliably merges seeded default accounts with persisted modifications in localStorage.
  */
 export function getStaffUsers() {
   try {
@@ -131,24 +143,36 @@ export function getStaffUsers() {
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.map((user) => {
-          const defaultMatch = DEFAULT_USERS.find(
-            (d) => d.username.toLowerCase() === user.username.toLowerCase()
-          );
-          if (defaultMatch) {
-            return {
-              ...defaultMatch,
-              ...user,
-              securityQuestion: user.securityQuestion || null,
-              securityAnswerHash: user.securityAnswerHash || null,
-            };
-          }
-          return user;
+        // Build map seeded with defaults
+        const userMap = new Map();
+        DEFAULT_USERS.forEach((defUser) => {
+          userMap.set(defUser.username.toLowerCase(), { ...defUser });
         });
+
+        // Overlay saved custom properties and accounts
+        parsed.forEach((user) => {
+          if (!user || !user.username) return;
+          const key = user.username.toLowerCase();
+          const existing = userMap.get(key);
+          if (existing) {
+            userMap.set(key, {
+              ...existing,
+              ...user,
+              // Strictly preserve passwordHash and security credentials
+              passwordHash: user.passwordHash || existing.passwordHash,
+              securityQuestion: user.securityQuestion != null ? user.securityQuestion : existing.securityQuestion,
+              securityAnswerHash: user.securityAnswerHash != null ? user.securityAnswerHash : existing.securityAnswerHash,
+            });
+          } else {
+            userMap.set(key, { ...user });
+          }
+        });
+
+        return Array.from(userMap.values());
       }
     }
   } catch {}
-  return DEFAULT_USERS;
+  return DEFAULT_USERS.map((u) => ({ ...u }));
 }
 
 /**
@@ -170,8 +194,8 @@ export async function authenticateStaff(username, password) {
   }
 
   let cleanUser = username.trim().toLowerCase();
-  // Support common administrator and owner aliases
-  if (cleanUser === "admin" || cleanUser === "administrator") cleanUser = "deepak";
+  // Support administrator and owner aliases
+  if (cleanUser === "administrator") cleanUser = "admin";
   if (cleanUser === "owner") cleanUser = "pooja";
 
   const inputHash = await sha256(password.trim());
@@ -190,12 +214,8 @@ export async function authenticateStaff(username, password) {
     );
   }
 
-  // Verify hash with fallback to default master password for seeded accounts
-  const defaultAccount = DEFAULT_USERS.find(d => d.username.toLowerCase() === found?.username.toLowerCase());
-  const isValidPassword = found && (
-    found.passwordHash === inputHash || 
-    (defaultAccount && defaultAccount.passwordHash === inputHash)
-  );
+  // Verify hash strictly: changed passwords revoke old defaults
+  const isValidPassword = Boolean(found && found.passwordHash === inputHash);
 
   if (!found || !isValidPassword) {
     throw new Error("Invalid username or password. Please verify and try again.");
@@ -256,7 +276,7 @@ export function getSecurityQuestionForUser(username) {
   }
 
   let cleanUser = username.trim().toLowerCase();
-  if (cleanUser === "admin" || cleanUser === "administrator") cleanUser = "deepak";
+  if (cleanUser === "administrator") cleanUser = "admin";
   if (cleanUser === "owner") cleanUser = "pooja";
 
   const users = getStaffUsers();
@@ -309,7 +329,7 @@ export async function setupSecurityQuestion(username, question, answer) {
   }
 
   let cleanUser = username.trim().toLowerCase();
-  if (cleanUser === "admin" || cleanUser === "administrator") cleanUser = "deepak";
+  if (cleanUser === "administrator") cleanUser = "admin";
   if (cleanUser === "owner") cleanUser = "pooja";
 
   const users = getStaffUsers();
@@ -373,7 +393,7 @@ export async function verifySecurityAnswerAndResetPassword(username, answer, new
   }
 
   let cleanUser = username.trim().toLowerCase();
-  if (cleanUser === "admin" || cleanUser === "administrator") cleanUser = "deepak";
+  if (cleanUser === "administrator") cleanUser = "admin";
   if (cleanUser === "owner") cleanUser = "pooja";
 
   const users = getStaffUsers();
@@ -476,7 +496,9 @@ export async function addStaffUser({ username, name, role, title, password, secu
  */
 export async function updateStaffUser(username, patch) {
   const users = getStaffUsers();
-  const cleanUsername = username.toLowerCase();
+  let cleanUsername = username.toLowerCase();
+  if (cleanUsername === "administrator") cleanUsername = "admin";
+  if (cleanUsername === "owner") cleanUsername = "pooja";
   const index = users.findIndex((u) => u.username.toLowerCase() === cleanUsername);
   if (index === -1) throw new Error("User not found.");
 
@@ -514,8 +536,11 @@ export function deleteStaffUser(username) {
   const target = users.find(u => u.username.toLowerCase() === cleanUsername);
 
   if (!target) throw new Error("User not found.");
-  if (target.isProtected || target.username === "pooja") {
+  if (target.username === "pooja" || cleanUsername === "pooja") {
     throw new Error("The Owner account cannot be deleted.");
+  }
+  if (target.isProtected || ["admin", "deepak"].includes(cleanUsername)) {
+    throw new Error("Core administrator accounts cannot be deleted.");
   }
 
   const filtered = users.filter(u => u.username.toLowerCase() !== cleanUsername);

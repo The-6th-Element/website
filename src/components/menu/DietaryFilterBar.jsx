@@ -8,7 +8,6 @@ export const DIETARY_FILTERS = [
   { id: "V", label: "Vegetarian", icon: "🌿", description: "Vegetarian and plant-based dishes" },
   { id: "VE", label: "Plant-Based", icon: "🌱", description: "100% plant-based / vegan dishes" },
   { id: "GF", label: "Gluten-Friendly", icon: "🌾", description: "Gluten-free and gluten-friendly options" },
-  { id: "HALAL", label: "Halal Friendly", icon: "🌙", description: "Halal-suitable poultry, lamb & preparations" },
 ];
 
 /**
@@ -27,9 +26,6 @@ export function matchesDietaryFilter(item, filterId) {
   }
   if (filterId === "GF") {
     return tags.includes("GF") || tags.includes("GF*");
-  }
-  if (filterId === "HALAL") {
-    return tags.includes("HALAL") || tags.includes("H");
   }
 
   return tags.includes(filterId);

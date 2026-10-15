@@ -1174,7 +1174,7 @@ export function StaffPage({
                 </h3>
               </div>
               <p style={{ fontSize: 13, color: theme.muted, lineHeight: 1.6, fontWeight: 300 }}>
-                Launch the full interactive spreadsheet to batch-edit daytime, evening &amp; Christmas festive menus, dietary tags (V, VE, GF, Halal), categories, or download and upload CSV files.
+                Launch the full interactive spreadsheet to batch-edit daytime &amp; evening dining menus, dietary tags (V, VE, GF, DF), categories, or download and upload CSV files.
               </p>
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>

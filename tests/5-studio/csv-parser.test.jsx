@@ -39,7 +39,7 @@ describe('BK-14: Menu Studio CSV Import/Export Suite', () => {
               name: 'Old Delhi Butter Chicken',
               price: '£16.00',
               desc: 'Smoked tandoori chicken, fenugreek, makhani sauce',
-              tags: ['GF', 'HALAL'],
+              tags: ['GF', 'DF'],
             },
           ],
         },
@@ -58,7 +58,7 @@ describe('BK-14: Menu Studio CSV Import/Export Suite', () => {
     const csv = [
       'Category,Section,Name,Price,Description,DietaryTags',
       'daytime,Brunch,Eggs Florentine,£11.00,Poached eggs and spinach,V',
-      'evening,Mains,Kerala Prawn Curry,£17.50,Coconut and curry leaves,GF; HALAL',
+      'evening,Mains,Kerala Prawn Curry,£17.50,Coconut and curry leaves,GF; DF',
     ].join('\r\n')
 
     const res = csvToMenu(csv)
@@ -75,7 +75,7 @@ describe('BK-14: Menu Studio CSV Import/Export Suite', () => {
     expect(mainsSec).toBeDefined()
     expect(mainsSec.items[0].name).toBe('Kerala Prawn Curry')
     expect(mainsSec.items[0].tags).toContain('GF')
-    expect(mainsSec.items[0].tags).toContain('HALAL')
+    expect(mainsSec.items[0].tags).toContain('DF')
   })
 
   it('parses CSV text with festive / Christmas category seamlessly', () => {
