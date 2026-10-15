@@ -8,6 +8,7 @@ import {
   addStaffUser,
   updateStaffUser,
   deleteStaffUser,
+  syncStaffUsersFromCloud,
 } from "../../utils/userManager.js";
 
 export function UserManager({ theme, currentUser }) {
@@ -35,6 +36,7 @@ export function UserManager({ theme, currentUser }) {
   useEffect(() => {
     const handleSync = () => setUsers(getStaffUsers());
     window.addEventListener("tse_staff_users_updated", handleSync);
+    syncStaffUsersFromCloud().catch(() => {});
     return () => window.removeEventListener("tse_staff_users_updated", handleSync);
   }, []);
 

@@ -9,6 +9,7 @@ import {
   setupSecurityQuestion,
   getSecurityQuestionForUser,
   verifySecurityAnswerAndResetPassword,
+  syncStaffUsersFromCloud,
 } from "../utils/userManager";
 import { UserManager } from "../components/admin/UserManager";
 import { PromotionsManager } from "../components/admin/PromotionsManager";
@@ -62,6 +63,7 @@ export function StaffPage({
   useEffect(() => {
     const handleSync = () => setStaffUsersList(getStaffUsers());
     window.addEventListener("tse_staff_users_updated", handleSync);
+    syncStaffUsersFromCloud().catch(() => {});
     return () => window.removeEventListener("tse_staff_users_updated", handleSync);
   }, []);
 
