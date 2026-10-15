@@ -17,7 +17,8 @@
     "test:security": "vitest run tests/6-security",
     "security:audit": "npm audit --audit-level=high",
     "test:ci": "vitest run --reporter=default --reporter=json --outputFile=test-report.json",
-    "test:report": "node scripts/traceability-reporter.js"
+    "test:report": "node scripts/traceability-reporter.js",
+    "backlog:refresh": "python scripts/refresh-backlog.py"
   },
   "dependencies": {
     "react": "^18.3.1",
