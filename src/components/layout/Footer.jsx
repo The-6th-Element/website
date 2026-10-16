@@ -1,9 +1,19 @@
 // src/components/layout/Footer.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Logomark } from "../ui/Logomark";
-import { DELIVEROO_CONFIG } from "../../data/config";
+import { DELIVEROO_CONFIG, INSTAGRAM_CONFIG, FACEBOOK_CONFIG } from "../../data/config";
+import { getOperatingHoursConfig, getFormattedHoursSummary } from "../../data/operatingHours";
 
 export function Footer({ theme, navigate, onOpenAdmin }) {
+  const [hoursConfig, setHoursConfig] = useState(() => getOperatingHoursConfig());
+
+  useEffect(() => {
+    const handleUpdate = () => setHoursConfig(getOperatingHoursConfig());
+    window.addEventListener("tse_operating_hours_updated", handleUpdate);
+    return () => window.removeEventListener("tse_operating_hours_updated", handleUpdate);
+  }, []);
+
+  const summary = getFormattedHoursSummary(hoursConfig.weekly);
   return (
     <footer
       style={{
@@ -107,20 +117,58 @@ export function Footer({ theme, navigate, onOpenAdmin }) {
             >
               Connect
             </div>
-            {["Instagram", "Facebook", "TikTok"].map((s) => (
-              <div
-                key={s}
-                style={{
-                  fontSize: 13,
-                  color: theme.text,
-                  fontWeight: 300,
-                  padding: "4px 0",
-                  cursor: "pointer",
-                }}
-              >
-                {s}
-              </div>
-            ))}
+            <a
+              href={INSTAGRAM_CONFIG.profileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="The Sixth Element on Instagram"
+              style={{
+                display: "block",
+                fontSize: 13,
+                color: theme.text,
+                fontWeight: 300,
+                padding: "4px 0",
+                textDecoration: "none",
+                fontFamily: "'Outfit', sans-serif",
+                transition: "opacity 0.2s ease, color 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = theme.accent || "#C27A4E";
+                e.currentTarget.style.opacity = "0.8";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = theme.text;
+                e.currentTarget.style.opacity = "1";
+              }}
+            >
+              Instagram ↗
+            </a>
+            <a
+              href={FACEBOOK_CONFIG.profileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="The Sixth Element on Facebook"
+              style={{
+                display: "block",
+                fontSize: 13,
+                color: theme.text,
+                fontWeight: 300,
+                padding: "4px 0",
+                textDecoration: "none",
+                fontFamily: "'Outfit', sans-serif",
+                transition: "opacity 0.2s ease, color 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = theme.accent || "#C27A4E";
+                e.currentTarget.style.opacity = "0.8";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = theme.text;
+                e.currentTarget.style.opacity = "1";
+              }}
+            >
+              Facebook ↗
+            </a>
           </div>
           <div>
             <div
@@ -136,9 +184,13 @@ export function Footer({ theme, navigate, onOpenAdmin }) {
               Hours
             </div>
             <div style={{ fontSize: 13, color: theme.text, fontWeight: 300, lineHeight: 1.7 }}>
-              Mon – Fri: 8am – 10pm
-              <br />
-              Sat – Sun: 9am – 11pm
+              {summary.lines && summary.lines.length > 0 ? (
+                summary.lines.map((line, idx) => (
+                  <div key={idx}>{line}</div>
+                ))
+              ) : (
+                <div>{summary.fullText}</div>
+              )}
             </div>
           </div>
         </div>

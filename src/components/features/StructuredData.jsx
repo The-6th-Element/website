@@ -1,8 +1,10 @@
 // src/components/features/StructuredData.jsx
 import React from "react";
 import { TOAST_CONFIG } from "../../data/config.js";
+import { getOperatingHoursConfig, getStructuredDataOpeningHours } from "../../data/operatingHours.js";
 
 export function StructuredData() {
+  const hoursConfig = getOperatingHoursConfig();
   const reservationUrl =
     TOAST_CONFIG?.reservationUrl ||
     "https://tables.toasttab.com/restaurants/5503e03f-b188-421c-aa8f-5a2c8e27fd59/findTime";
@@ -94,34 +96,10 @@ export function StructuredData() {
         value: true,
       },
     ],
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday"],
-        opens: "08:00",
-        closes: "22:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Friday"],
-        opens: "08:00",
-        closes: "23:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Saturday"],
-        opens: "09:00",
-        closes: "23:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Sunday"],
-        opens: "09:00",
-        closes: "21:00",
-      },
-    ],
+    openingHoursSpecification: getStructuredDataOpeningHours(hoursConfig.weekly),
     sameAs: [
       "https://www.instagram.com/the.sixth.element.210",
+      "https://www.facebook.com/profile.php?id=61590832889345",
       "https://tables.toasttab.com/restaurants/5503e03f-b188-421c-aa8f-5a2c8e27fd59/findTime",
     ],
     keywords:

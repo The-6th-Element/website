@@ -1,11 +1,39 @@
 // src/pages/ContactPage.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { MAP_EMBED_SRC, MAP_DIRECTIONS_URL, DELIVEROO_CONFIG, GOOGLE_CONFIG } from "../data/config";
 import { FadeIn } from "../components/ui/FadeIn";
 import { trackDirectionsClick, trackContactClick } from "../utils/analytics";
 import { BookTableButton } from "../components/ui/BookTableButton";
+import {
+  getOperatingHoursConfig,
+  getLiveOperatingStatus,
+  getFormattedHoursSummary,
+  formatTime12h,
+} from "../data/operatingHours";
 
 export function ContactPage({ theme, setBookingOpen }) {
+  const [hoursConfig, setHoursConfig] = useState(() => getOperatingHoursConfig());
+  const [liveStatus, setLiveStatus] = useState(() => getLiveOperatingStatus(hoursConfig));
+  const [showFullSchedule, setShowFullSchedule] = useState(false);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      const cfg = getOperatingHoursConfig();
+      setHoursConfig(cfg);
+      setLiveStatus(getLiveOperatingStatus(cfg));
+    };
+    window.addEventListener("tse_operating_hours_updated", handleUpdate);
+    const interval = setInterval(() => {
+      setLiveStatus(getLiveOperatingStatus(getOperatingHoursConfig()));
+    }, 20000);
+    return () => {
+      window.removeEventListener("tse_operating_hours_updated", handleUpdate);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const todayLondonName = new Date().toLocaleDateString("en-GB", { timeZone: "Europe/London", weekday: "long" });
+  const summary = getFormattedHoursSummary(hoursConfig.weekly);
   return (
     <div style={{ paddingTop: 120, minHeight: "100vh" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 24px 80px" }}>
@@ -59,13 +87,18 @@ export function ContactPage({ theme, setBookingOpen }) {
               </h3>
               {[
                 { icon: "📍", label: "Address", value: "210 Upper Richmond Road West\nLondon, SW14 8AH" },
-                { icon: "🕐", label: "Hours", value: "Mon–Fri: 8am – 10pm\nSat–Sun: 9am – 11pm" },
+                {
+                  icon: "🕐",
+                  label: "Hours",
+                  isHours: true,
+                  value: `${summary.line1}\n${summary.line2}\n${summary.line3}`,
+                },
                 { icon: "📞", label: "Phone", value: "+44 (0) 20 3518 8688", href: "tel:+442035188688", type: "phone" },
                 { icon: "📧", label: "Email", value: "info@the6thelement.co.uk", href: "mailto:info@the6thelement.co.uk", type: "email" },
               ].map((item) => (
                 <div key={item.label} style={{ display: "flex", gap: 16, marginBottom: 24 }}>
                   <div style={{ fontSize: 20, marginTop: 2 }}>{item.icon}</div>
-                  <div>
+                  <div style={{ flex: 1 }}>
                     <div
                       style={{
                         fontSize: 12,
@@ -78,7 +111,167 @@ export function ContactPage({ theme, setBookingOpen }) {
                     >
                       {item.label}
                     </div>
-                    {item.href ? (
+
+                    {item.isHours ? (
+                      <div>
+                        {/* Real-time Status Badge */}
+                        <div
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 8,
+                            padding: "3px 10px",
+                            borderRadius: 20,
+                            background: `${liveStatus.color || "#2ECC71"}15`,
+                            border: `1px solid ${liveStatus.color || "#2ECC71"}40`,
+                            marginBottom: 8,
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: 7,
+                              height: 7,
+                              borderRadius: "50%",
+                              background: liveStatus.color || "#2ECC71",
+                            }}
+                          />
+                          <span
+                            style={{
+                              fontSize: 11,
+                              fontWeight: 600,
+                              color: liveStatus.color || "#2ECC71",
+                            }}
+                          >
+                            {liveStatus.badge} · {liveStatus.detail}
+                          </span>
+                        </div>
+
+                        {/* Emergency Notice if Active */}
+                        {hoursConfig.emergencyNotice?.enabled && (
+                          <div
+                            style={{
+                              padding: "8px 12px",
+                              borderRadius: 8,
+                              background:
+                                hoursConfig.emergencyNotice.type === "closure"
+                                  ? "rgba(231, 76, 60, 0.15)"
+                                  : "rgba(230, 126, 34, 0.15)",
+                              border: `1px solid ${
+                                hoursConfig.emergencyNotice.type === "closure" ? "#E74C3C" : "#E67E22"
+                              }`,
+                              fontSize: 12,
+                              color: theme.heading,
+                              marginBottom: 10,
+                            }}
+                          >
+                            <strong>⚠️ {hoursConfig.emergencyNotice.badge || "SPECIAL NOTICE"}:</strong>{" "}
+                            {hoursConfig.emergencyNotice.message}
+                          </div>
+                        )}
+
+                        <div
+                          style={{
+                            fontSize: 14,
+                            color: theme.text,
+                            fontWeight: 300,
+                            whiteSpace: "pre-line",
+                            lineHeight: 1.6,
+                          }}
+                        >
+                          {item.value}
+                        </div>
+
+                        {/* Expandable Schedule Toggle */}
+                        <button
+                          onClick={() => setShowFullSchedule(!showFullSchedule)}
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            padding: 0,
+                            color: theme.accent,
+                            fontSize: 12,
+                            fontWeight: 500,
+                            marginTop: 6,
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 4,
+                          }}
+                        >
+                          <span>{showFullSchedule ? "Hide Schedule ▴" : "View Day-by-Day Schedule ▾"}</span>
+                        </button>
+
+                        {showFullSchedule && (
+                          <div
+                            style={{
+                              marginTop: 12,
+                              padding: "12px 14px",
+                              borderRadius: 10,
+                              background: theme.surfaceAlt,
+                              border: `1px solid ${theme.muted}20`,
+                              fontSize: 12,
+                            }}
+                          >
+                            <div style={{ fontWeight: 600, color: theme.heading, marginBottom: 8 }}>
+                              Full Weekly Trading Hours
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {hoursConfig.weekly.map((d) => {
+                                const isToday = d.day === todayLondonName;
+                                return (
+                                  <div
+                                    key={d.day}
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                      padding: "4px 6px",
+                                      borderRadius: 6,
+                                      background: isToday ? `${theme.accent}15` : "transparent",
+                                      color: isToday ? theme.accent : theme.text,
+                                      fontWeight: isToday ? 600 : 300,
+                                    }}
+                                  >
+                                    <span>
+                                      {d.day} {isToday && "(Today)"}
+                                    </span>
+                                    <span>
+                                      {d.open ? `${formatTime12h(d.openTime)} – ${formatTime12h(d.closeTime)}` : "Closed"}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+
+                            {hoursConfig.holidays && hoursConfig.holidays.length > 0 && (
+                              <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px solid ${theme.muted}20` }}>
+                                <div style={{ fontWeight: 600, color: theme.heading, marginBottom: 6 }}>
+                                  Upcoming Holiday Hours
+                                </div>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                  {hoursConfig.holidays.slice(0, 3).map((h) => (
+                                    <div
+                                      key={h.id || h.date}
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        color: theme.muted,
+                                        fontSize: 11,
+                                      }}
+                                    >
+                                      <span>{h.name}</span>
+                                      <span>
+                                        {h.isClosed ? "Closed" : `${formatTime12h(h.openTime)}–${formatTime12h(h.closeTime)}`}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ) : item.href ? (
                       <a
                         href={item.href}
                         onClick={() => trackContactClick(item.type)}

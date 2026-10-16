@@ -94,6 +94,12 @@ export const INSTAGRAM_CONFIG = {
   beholdFeedUrl: "https://feeds.behold.so/ujJfSNtQnyj153fUHfi4",
 };
 
+// ── Facebook Section Config ────────────────────────────────────────
+export const FACEBOOK_CONFIG = {
+  profileUrl: "https://www.facebook.com/profile.php?id=61590832889345",
+};
+export const FACEBOOK_URL = FACEBOOK_CONFIG.profileUrl;
+
 // ── Old Spike Roastery Social Impact URL ───────────────────────────
 export const OLD_SPIKE_URL = "https://oldspikeroastery.com/pages/impact";
 

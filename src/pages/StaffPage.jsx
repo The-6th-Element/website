@@ -21,6 +21,7 @@ import { PrintMenuModal } from "../components/admin/PrintMenuModal";
 import { AnalyticsDashboard } from "../components/admin/AnalyticsDashboard";
 import { GoogleConnectionCard } from "../components/admin/GoogleConnectionCard";
 import { GoogleReviewsManager } from "../components/admin/GoogleReviewsManager";
+import { OperatingHoursManager } from "../components/admin/OperatingHoursManager";
 
 export function StaffPage({
   theme,
@@ -54,6 +55,7 @@ export function StaffPage({
     canManageUsers && { id: "users", label: "Staff & Users", icon: "👥" },
     canManagePromos && { id: "promos", label: "Offers & Promos", icon: "🎁" },
     canManagePromos && { id: "events", label: "Events & Gatherings", icon: "🗓️" },
+    canEditSettings && { id: "hours", label: "Operating Hours", icon: "⏰" },
     { id: "analytics", label: "Traffic & Intent", icon: "📊" },
     canEditSettings && { id: "settings", label: "Operations & Display", icon: "⚙️" },
   ].filter(Boolean);
@@ -1383,6 +1385,13 @@ export function StaffPage({
                   </p>
                 </div>
                 <AnalyticsDashboard theme={theme} />
+              </div>
+            )}
+
+            {/* TAB: Operating Hours & Omnichannel Sync (FEATURE-83) */}
+            {activeTab === "hours" && canEditSettings && (
+              <div>
+                <OperatingHoursManager theme={theme} />
               </div>
             )}
 

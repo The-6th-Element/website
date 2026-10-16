@@ -71,8 +71,8 @@ describe('Analytics & Telemetry Data Retention & Incremental Tracking', () => {
     render(<AnalyticsDashboard theme={AM_THEME} />)
 
     // Verify header and guarantee banner
-    expect(screen.getByText(/Website Traffic & Dining Intent Telemetry/i)).toBeInTheDocument()
-    expect(screen.getByText(/Persistent Historical Retention:/i)).toBeInTheDocument()
+    expect(screen.getByText(/Website Traffic & Customer Activity/i)).toBeInTheDocument()
+    expect(screen.getByText(/All-Time Visitor History:/i)).toBeInTheDocument()
 
     // Wait for Supabase live data to merge
     await waitFor(() => {

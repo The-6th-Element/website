@@ -220,7 +220,7 @@ export function AnalyticsDashboard({ theme }) {
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
             <span style={{ fontSize: 18 }}>📊</span>
             <h3 style={{ margin: 0, fontSize: 18, color: theme.heading, fontWeight: 500 }}>
-              Website Traffic & Dining Intent Telemetry
+              Website Traffic & Customer Activity
             </h3>
             <span
               style={{
@@ -232,7 +232,7 @@ export function AnalyticsDashboard({ theme }) {
                 color: metrics.isLiveConnected ? "#137333" : "#B06000",
               }}
             >
-              {metrics.isLiveConnected ? "🟢 Live Cloud Sync (Supabase)" : "⚡ First-Party Local Buffer"}
+              {metrics.isLiveConnected ? "🟢 Connected to Cloud" : "⚡ Local Storage"}
             </span>
             <span
               style={{
@@ -244,11 +244,11 @@ export function AnalyticsDashboard({ theme }) {
                 color: COLORS.mossGreen,
               }}
             >
-              🔒 Incremental & Retained
+              🔒 History Saved
             </span>
           </div>
           <p style={{ margin: 0, fontSize: 13, color: theme.muted, lineHeight: 1.5 }}>
-            100% GDPR & PECR compliant. Tracks anonymous customer buying signals without third-party cookies or intrusive banners.
+            100% privacy-friendly. Shows how many customers visit the website and interact with menus and booking buttons.
           </p>
         </div>
 
@@ -272,7 +272,7 @@ export function AnalyticsDashboard({ theme }) {
         </div>
       </div>
 
-      {/* Incremental Retention Guarantee Banner */}
+      {/* Daily Visitor Retention Banner */}
       <div
         style={{
           background: `${COLORS.mossGreen}12`,
@@ -286,7 +286,7 @@ export function AnalyticsDashboard({ theme }) {
       >
         <span style={{ fontSize: 22 }}>🛡️</span>
         <div style={{ fontSize: 13, color: theme.text, lineHeight: 1.6 }}>
-          <strong>Persistent Historical Retention:</strong> Website traffic is strictly incremental and permanently preserved across all code pushes, git commits, and server deployments. At midnight GMT, each trading day archives into your historical database (e.g. yesterday&apos;s {aggregatedStats.yesterday.visitors} visitors) while continuously adding to your <strong>All-Time Cumulative</strong> total.
+          <strong>All-Time Visitor History:</strong> Website visitor numbers are saved automatically at midnight each day (e.g. yesterday&apos;s {aggregatedStats.yesterday.visitors} visitors) and added to your <strong>All-Time</strong> total, so your traffic history is never lost.
         </div>
       </div>
 
@@ -305,7 +305,7 @@ export function AnalyticsDashboard({ theme }) {
         }}
       >
         <div style={{ fontSize: 12, fontWeight: 600, color: theme.heading, display: "flex", alignItems: "center", gap: 6 }}>
-          <span>📅 Telemetry Timeframe:</span>
+          <span>📅 View Traffic By:</span>
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
