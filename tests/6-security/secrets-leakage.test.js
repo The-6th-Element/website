@@ -35,7 +35,8 @@ describe('FEATURE-75 (SEC-01): Secret Leakage & Bundle Integrity Scanner', () =>
         { name: 'AWS Access Key', regex: /AKIA[0-9A-Z]{16}/ },
         { name: 'GitHub Personal Access Token', regex: /ghp_[a-zA-Z0-9]{36}/ },
         { name: 'Private Key PEM Block', regex: /-----BEGIN (RSA |EC |OPENSSH |)PRIVATE KEY-----/ },
-        { name: 'Supabase Service Role JWT', regex: /eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+service_role/ }
+        { name: 'Supabase Service Role JWT', regex: /eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+service_role/ },
+        { name: 'Google Cloud / Maps API Key', regex: /AIza[0-9A-Za-z\\-_]{35}/ }
       ];
 
       for (const filePath of files) {

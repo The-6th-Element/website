@@ -12,6 +12,16 @@ export function GoogleConnectionCard({ theme }) {
   const handleTestHandshake = async () => {
     setTestStatus("testing");
     setTestResult(null);
+
+    if (!GOOGLE_CONFIG.apiKey) {
+      setTestStatus("error");
+      setTestResult({
+        latency: 0,
+        error: "Google Maps API Key not configured. Set VITE_GOOGLE_MAPS_API_KEY in .env.local to enable live Places handshake.",
+      });
+      return;
+    }
+
     const startTime = performance.now();
     try {
       const response = await fetch(
