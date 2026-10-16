@@ -37,6 +37,9 @@ describe("FEATURE-78: Google Business Profile & Places API Connection (GBP-01)",
   });
 
   it("handles live API handshake test execution", async () => {
+    const originalKey = GOOGLE_CONFIG.apiKey;
+    GOOGLE_CONFIG.apiKey = "mock-api-key-for-test-handshake";
+
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -48,18 +51,21 @@ describe("FEATURE-78: Google Business Profile & Places API Connection (GBP-01)",
     });
     vi.stubGlobal("fetch", mockFetch);
 
-    render(<GoogleConnectionCard theme={testTheme} />);
+    try {
+      render(<GoogleConnectionCard theme={testTheme} />);
 
-    const testBtn = screen.getByRole("button", { name: /Test API Handshake/i });
-    expect(testBtn).toBeInTheDocument();
+      const testBtn = screen.getByRole("button", { name: /Test API Handshake/i });
+      expect(testBtn).toBeInTheDocument();
 
-    fireEvent.click(testBtn);
+      fireEvent.click(testBtn);
 
-    await waitFor(() => {
-      expect(screen.getByText(/API Handshake Live & Verified/i)).toBeInTheDocument();
-    });
-
-    vi.unstubAllGlobals();
+      await waitFor(() => {
+        expect(screen.getByText(/API Handshake Live & Verified/i)).toBeInTheDocument();
+      });
+    } finally {
+      GOOGLE_CONFIG.apiKey = originalKey;
+      vi.unstubAllGlobals();
+    }
   });
 
   it("renders Review Us on Google link on ContactPage", () => {
