@@ -55,6 +55,8 @@ for line in lines:
                 status = "Discovery"
             elif "Cancelled" in raw_status:
                 status = "Cancelled"
+            elif "Parked" in raw_status:
+                status = "Parked"
             else:
                 status = raw_status
 
@@ -79,6 +81,7 @@ status_counts = {
     "Backlog": sum(1 for f in features if f["status"] == "Backlog"),
     "Discovery": sum(1 for f in features if f["status"] == "Discovery"),
     "Cancelled": sum(1 for f in features if f["status"] == "Cancelled"),
+    "Parked": sum(1 for f in features if f["status"] == "Parked"),
 }
 categories = sorted(list(set(f["category"] for f in features)))
 
@@ -190,7 +193,7 @@ html_template = f'''<!DOCTYPE html>
   /* Summary KPI Cards */
   .summary-grid {{
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(8, 1fr);
     gap: 10px;
     margin-bottom: 16px;
   }}
@@ -229,6 +232,8 @@ html_template = f'''<!DOCTYPE html>
   .card-discovery .summary-label {{ color: #7B1FA2; }}
   .card-cancelled .summary-num {{ color: #C5221F; }}
   .card-cancelled .summary-label {{ color: #C5221F; }}
+  .card-parked .summary-num {{ color: #7A6F62; }}
+  .card-parked .summary-label {{ color: #7A6F62; }}
 
   /* Sticky Interactive Controls Bar */
   .controls-bar {{
@@ -463,6 +468,7 @@ html_template = f'''<!DOCTYPE html>
   .status-backlog {{ background: #F1F3F4; color: #5F6368; }}
   .status-discovery {{ background: #F3E8FD; color: #7B1FA2; }}
   .status-cancelled {{ background: #FCE8E6; color: #C5221F; text-decoration: line-through; }}
+  .status-parked {{ background: #EFEFEF; color: #5F6368; }}
 
   /* Print Media Overrides */
   @media print {{
@@ -556,6 +562,10 @@ html_template = f'''<!DOCTYPE html>
       <div class="summary-num">{status_counts.get('Cancelled', 0)}</div>
       <div class="summary-label">Cancelled</div>
     </div>
+    <div class="summary-card card-parked">
+      <div class="summary-num">{status_counts.get('Parked', 0)}</div>
+      <div class="summary-label">Parked</div>
+    </div>
   </div>
 
   <!-- Sticky Controls Bar -->
@@ -580,6 +590,7 @@ html_template = f'''<!DOCTYPE html>
           <option value="Backlog">Backlog</option>
           <option value="Discovery">Discovery</option>
           <option value="Cancelled">Cancelled</option>
+          <option value="Parked">Parked</option>
         </select>
       </div>
 
