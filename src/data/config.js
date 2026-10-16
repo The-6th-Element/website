@@ -107,7 +107,7 @@ export const GOOGLE_CONFIG = {
   placeId: "ChIJGQQLEQAPdkgRd3Et9bb_R3M",
   cid: "8306889198970696055",
   storeCode: "06233181898163879843",
-  apiKey: "AIzaSyCe3boH2pmNmbmn0aqjPi6MUSLSd7juBWQ",
+  apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
   mapsUri: "https://maps.google.com/?cid=8306889198970696055",
   reviewUri: "https://search.google.com/local/writereview?placeid=ChIJGQQLEQAPdkgRd3Et9bb_R3M",
   businessProfileManagerUri: "https://business.google.com/reviews",
